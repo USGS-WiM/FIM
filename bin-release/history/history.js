@@ -511,9 +511,7 @@ BrowserHistory = (function() {
         }, 
         setTitle: function(title) {
             try {
-            	if (backStack.length != 0) {
-                	backStack[backStack.length - 1].title = title;
-                }
+                backStack[backStack.length - 1].title = title;
             } catch(e) { }
             //if on safari, set the title to be the empty string. 
             if (browser.safari) {
