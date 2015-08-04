@@ -842,7 +842,7 @@
 					</s:Rect>
 					<s:VGroup paddingTop="5" paddingLeft="5" paddingBottom="10">
 						<s:VGroup id="layerToggles" paddingTop="5" paddingLeft="10">
-							<wim:LayerToggle id="weatherToggle" layerID="0" serviceLayerID="weather" layerTitle="National Weather Service Radar" selected="{weather.visible}" />
+							<wim:LayerToggle id="weatherToggle" layerID="0" serviceLayerID="weather" layerTitle="National Weather Service Radars" selected="{weather.visible}" />
 							<wim:LayerToggle id="warningsToggle" layerID="0" serviceLayerID="warningsTest" layerTitle="Flood Watches/Warnings" selected="{warningsTest.visible}" />
 							<wim:LayerToggle id="nwisToggle" layerID="0" serviceLayerID="nwisSites" layerTitle="NWIS gages" selected="{nwisSites.visible}" />
 							<s:HGroup>
