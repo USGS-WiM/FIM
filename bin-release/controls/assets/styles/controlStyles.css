@@ -1,0 +1,53 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+.controlBox {
+	color: White;
+	background-color:"0x000000";
+	border-color: Black;
+	border-style: Solid;
+	corner-radius: 5px;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px; 
+}
+
+.controlBoxWhiteBorder {
+	color: White;
+	background-color:"0x000000";
+	border-color: White;
+	border-style: Solid;
+	corner-radius: 5px;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px; 
+}
+
+.controlBoxTrans {
+	color: White;
+	background-color:"0x000000";
+	background-alpha:0.5;
+	border-color: Black;
+	border-style: Solid;
+	corner-radius: 5px;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px; 
+}
+
+
+.InfoExpandButton {                
+	disabledSkin: Embed(source="../assets/swfs/skins.swf", symbol="Callout_expandButtonDisabledSkin");                            
+	downSkin: Embed(source="../assets/swfs/skins.swf", symbol="Callout_expandButtonDownSkin");                            
+	overSkin: Embed(source="../assets/swfs/skins.swf", symbol="Callout_expandButtonOverSkin");                            
+	upSkin: Embed(source="../assets/swfs/skins.swf", symbol="Callout_expandButtonUpSkin");                         
+}
+
+.embedFontStyle {
+	fontFamily:myMyriadFont;
+	fontSize: 20pt;
+}

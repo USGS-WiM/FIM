@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!-- FOR: FIMMapServer, review -->
+<!-- 06.01.12 - NE - Start as FIMI Mapper resource file. -->
+<!-- 02.23.12 - NE - Created. -->
+<!--
+*************************
+ ENGLISH RESOURCES
+************************* 
+ -->
+<resources>
+  <!-- Settings -->
+  
+  <!--  URLs -->
+  <resourceBundle name="urls">
+	<resource name="fimiSitesUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/sites/MapServer/0"/>
+	<resource name="fimiSitesDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/sites/MapServer"/>
+	<resource name="fimiSitesLegendUrl" value="http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMMapper/fimi_sites_for_legend/MapServer"/>
+	<resource name="floodExtentsUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtents/MapServer/0"></resource>
+  	<resource name="floodExtentsDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtents/MapServer"></resource>
+  	<resource name="breachUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/breach/MapServer/0"></resource>
+  	<resource name="floodBreachDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/breach/MapServer"></resource>
+  	<resource name="floodExtentsMultiUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer/0"></resource>
+  	<resource name="floodExtentsMultiDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer"></resource>
+  	<resource name="floodExtentsMultiTableUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer/1"></resource>
+  	<resource name="floodExtentsMultiLayerUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer"></resource>
+  	<resource name="floodBreachMultiUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/breachMulti/MapServer/0"></resource>
+  	<resource name="floodBreachMultiDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/breachMulti/MapServer"></resource>
+  	<resource name="floodExtentsThreeUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMTest/floodExtentsThreeSites/MapServer/0"></resource>
+  	<resource name="floodExtentsThreeDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMTest/floodExtentsThreeSites/MapServer"></resource>
+  	<resource name="floodExtentsThreeTableUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMTest/floodExtentsThreeSites/MapServer/1"></resource>
+  	<resource name="gridsIdentifyUrl" value="http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMMapper/grids/MapServer"></resource>
+  	<resource name="suppLayersUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/suppLyrs/MapServer"></resource>
+	<resource name="printUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/printTool/GPServer/printTool"></resource>
+  	<resource name="fimiMoreInfoUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/fim_add_info/MapServer/1"></resource>
+  </resourceBundle>
+  <resourceBundle name="urls.proxies">
+  	<resource name="httpProxy" value="http://wim.usgs.gov/proxies/httpProxy/Default.aspx?"></resource>
+  	<resource name="nwisChartProxy" value="http://wim.usgs.gov/proxies/nwisChartProxy/Default.aspx?"></resource>
+  	<resource name="webCamProxy" value="http://wim.usgs.gov/webCam/webCamNew/Default.aspx?webCamInfo="></resource>
+  </resourceBundle>
+  <resourceBundle name="urls.nonWim">
+  	<resource name="ahpsForecastUrl" value="http://gis.srh.noaa.gov/ArcGIS/rest/services/ahps_gauges/MapServer"></resource>
+  	<resource name="hazusUrl" value="http://ec2-107-21-245-18.compute-1.amazonaws.com//hazus-ws-staging/hazus.py?execute=quickass&region="></resource>
+  </resourceBundle>
+
+  <!-- UI graphics -->
+  <resourceBundle name="ui.graphics">
+    <resource name="headerLogo" value="assets/images/usgsLogoSm.jpg" />
+    <resource name="wimLogo" value="assets/images/wim_logo_sm_4c.gif" />    
+  </resourceBundle>
+  
+  <!-- UI text -->
+  <resourceBundle name="ui.text">
+  	<!--  Application Titles -->
+    <resource name="mainTitle" value="Flood Inundation Mapper"/>
+     <resource name="subTitle" value="FOR REVIEW ONLY, NOT FOR PUBLIC DISTRIBUTION"></resource>
+    <!-- Component Text -->
+    <resource name="geocodeSearchButtonText" value="Find Location"/>
+    <resource name="geocodeSearchHintText" value="Type Address, Landmark, etc..." />
+    <resource name="headerFooterLinks" value="USGS Links"/>
+  </resourceBundle>
+</resources>

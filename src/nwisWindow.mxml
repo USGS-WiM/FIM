@@ -1,0 +1,1907 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 07.15.15 - NE - Start as simplified NWIS window. -->
+<!-- 01.14.14 - NE - Tweaks to handle new MN library. -->
+<!-- 07.25.13 - NE - Updates to HAZUS tab to use new look and services. -->
+<!-- 04.16.13 - NE - Tweak to fix color of current stage on top 10 historic chart. Tweaked flood stage areas for annual peaks chart. -->
+<!-- 04.12.13 - NE - Adjustments for better display of historic chart data. -->
+<!-- 04.11.13 - NE - Added fix for handling historical flooding only in FIMIDev. -->
+<!-- 02.28.13 - NE - Added interactive historic flood charts. -->
+<!-- 09.06.12 - NE - Added webcam caption handling. -->
+<!-- 08.28.12 - NE - Updated webcam tab to handle webcams of multiple types. -->
+<!-- 08.16.12 - NE - Fix to flood bar calc function. --> 
+<!-- 07.11.12 - NE - Updated to draw color bars by flood slider for sites without forecast data. -->
+<!-- 05.01.12 - NE - Removed current NAVD88 from flood tools tab. Data not available through NWIS. -->
+<!-- 04.26.12 - NE - Updated hydrograph to show part of the action stage and the 'action' label. -->
+<!-- 04.23.12 - NE - Changed references to hazus-ws-staging to hazus-ws. Tweaked behavior of hazus tab to avoid null references when flood tools load. -->
+<!-- 04.11.12 - NE - Changed request for current site values to waterservices.usgs.gov. Changed handling in mapper. Altered service on epa13. -->
+<!-- 04.10.12 - NE - Changed link and text for disclaimer in services and data tab. Fixed data annotation including present time line from solid to dotted. -->
+<!-- 03.26.12 - NE - Fixed bug with info window when collapsed and flood data not yet loaded. -->
+<!-- 03.26.12 - NE - Addition of collapse/expand option for flood tools. Minor UI tweaks. -->
+<!-- 03.26.12 - NE - Adjusted visibility to hide window when disclaimer is still showing in the case of opening and zooming to a site using the url parameter siteno. -->
+<!-- 03.26.12 - NE - Fixes to present data line and annotations and adjustments for scituate site. Fixes to flood bar graphic that accompanies slider. -->
+<!-- 03.23.12 - NE - Updated flood level colors in hydrograph. Added title to slider box. Added stacked bar along side flider slider to show flood levels for estimated flood conditions. -->
+<!-- 03.19.12 - NE - Minor UI tweaks. -->
+<!-- 03.14.12 - NE - Tweaks to hydrograph look and flood tools layout. -->
+<!-- 02.28.12 - NE - Fixed bug with scituate hydrograph not loading. -->
+<!-- 02.23.12 - NE - Tweaked to handle Scituate hydrograph by requesting NWS observed data. Scituate has no USGS ID. -->
+<!-- 02.16.12 - NE - Updated webcam functionality. -->
+<!-- 02.06.12 - NE - Updated project info related records query responder. -->
+<!-- 02.06.12 - NE - Updated to show report thumbnails correctly. -->
+<!-- 02.04.12 - NE - Fixed project info query to use file gdb based data with OBJECTID rather than FID. -->
+<!-- 02.03.12 - NE - Added area to adjust hydrographs by an input value. Used for demo purposes to show areas in flood. -->
+<!-- 02.02.12 - NE - Made custom data tip so that the time could be included for hydrograph. -->
+<!-- 02.01.12 - NE - Made USGS and NWS stream gage data different colors. -->
+<!-- 01.23.12 - NE - Fixed to show hydrographs without NWS prediction data. -->
+<!-- 12.14.11 - NE - Updated with prototype for new interactive hydrograph. -->
+<!-- 12.08.11 - NE - Updated to use new model for Hazus WMS. -->
+<!-- 12.05.11 - NE - Major addition of Hazus mapping service and quick assessment tweaks. -->
+<!-- 11.28.11 - NE - Slight relocation of webcam iframe. -->
+<!-- 11.23.11 - NE - Adjusted Zoom to flood study area button and label. -->
+<!-- 11.23.11 - NE - Removed Forecast tab from flood tools. -->
+<!-- 11.22.11 - NE - Added HAZUS quick assessment data for sites with working web services. Reworked flood tools window. -->
+<!-- 11.16.11 - NE - Added ability to populate unique project creator and reviewer info for each site. -->
+<!-- 11.01.11 - NE - Updated loading screen background color for NWIS chart. -->
+<!-- 11.01.11 - NE - Added NWIS presentation quality graphs and NWISGraphImage component from controls. -->
+<!-- 10.27.11 - NE - Adjustments for grid query. -->
+<!-- 10.19.11 - NE - Added breach data functionality. -->
+<!-- 10.07.11 - NE - Fixed bug with NWS forecast request handling. -->
+<!-- 10.06.11 - NE - Updates to download links and close functionality. -->
+<!-- 06.15.11 - JB - Added logos. -->
+<!-- 06.14.11 - NE - Added web cam screenshot. -->
+<!-- 06.14.11 - NE - Updated Services and Data tab layout. -->
+<!-- 06.13.11 - NE - Added Historical Flooding tab. Adjusted zoom to extent features button text. -->
+<!-- 04.29.11 - NE - Added httpProxy to nws web service request. -->
+<!-- 03.18.11 - NE - Added opacity slider to flood tools tab. -->
+<!-- 01.21.10 - NE - Added NWS 24hr forecast and forecast time. -->
+<!-- 12.13.10 - NE - Updated to exclude maximize button on window. -->
+<!-- 11.17.10 - NE - Updated for grid query capability. Added functionality to zoom to extent of flood graphics for site. Added loading message while flood graphics are returned to map.  -->
+<!-- 11.15.10 - NE - Updated FloodToolsWindow styles.  Updated floodSlideChange event. -->
+<!-- 11.9.10 - NE - Moved much of flood tools functionality to FloodToolsWindow component mxml file. -->
+<!-- 11.4.10 - NE - Initial creation of FloodToolsWindow component -->
+<wim:WiMInfoWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" 
+				   xmlns:esri="http://www.esri.com/2008/ags"
+				   xmlns:osmf="http://ns.adobe.com/osmf"
+				   xmlns:wim="gov.usgs.wim.controls.*" 
+				   xmlns:localControls="controls.*"
+				   xmlns:flexiframe="http://code.google.com/p/flex-iframe/"
+				   title="{data.Name}: {siteName}" 
+				   visible="{FlexGlobals.topLevelApplication.mainDisclaimer.visible != true}"
+				   creationComplete="componentLoad()">
+	
+	<fx:Style source="assets/styles/main.css"/>
+	
+	<wim:states>
+		<s:State name="normal" />
+		<s:State name="hazus" />
+		<s:State name="info" />
+		<s:State name="hazusAndInfo" />
+	</wim:states>
+	
+	<fx:Declarations>
+		<s:Transition id="show">
+			<s:Wipe id="wipeShow" duration="1000" direction="left" />
+		</s:Transition>
+		<s:Transition id="hide">
+			<s:Wipe id="wipeHide" duration="1000" direction="right" />
+		</s:Transition>
+		
+		<esri:QueryTask id="siteTask" url="{resourceManager.getString('urls', 'fimiSitesUrl')}" disableClientCaching="true" useAMF="false" />       
+		<esri:Query id="siteQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>REPORT</fx:String>
+				<fx:String>REP_LINK</fx:String>
+				<fx:String>DATA_LINK</fx:String>
+				<fx:String>STUDY_DATE</fx:String>
+				<fx:String>REP_THUMB</fx:String>
+				<fx:String>AHPS_ID</fx:String>
+				<fx:String>HAS_BREACH</fx:String>
+				<fx:String>HAS_WEBCAM</fx:String>
+				<fx:String>HAS_HAZUS</fx:String>
+				<fx:String>HAS_GRIDS</fx:String>
+				<fx:String>HAZUS_REG</fx:String>
+				<fx:String>WEBCAM_INFO</fx:String>
+				<fx:String>WEBCAM_CAP</fx:String>
+				<fx:String>STATE</fx:String>
+				<fx:String>Public</fx:String>
+				<fx:String>COMMUNITY</fx:String>
+				<fx:String>REALTIME</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:RelationshipQuery id="projectInfoQuery"
+								returnGeometry="false" 
+								relationshipId="0">
+			<esri:outFields>
+				<fx:String>ENTITY</fx:String>
+				<fx:String>URL</fx:String>
+				<fx:String>TYPE</fx:String>
+			</esri:outFields>
+		</esri:RelationshipQuery>
+		
+		<esri:QueryTask id="moreInfoTask" disableClientCaching="true" url="{resourceManager.getString('urls', 'fimiMoreInfoUrl')}" useAMF="false" />
+		<esri:Query id="moreInfoQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>ADD_INFO</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:QueryTask id="nwsTask" disableClientCaching="true" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/0" />       
+		<esri:Query id="nwsQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>Forecast</fx:String>
+				<fx:String>FcstTime</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<s:RadioButtonGroup id="forecastButtonGroup" itemClick="forecast_changeHandler(event);" />
+		
+		<mx:Text id="historicalFloodingText">
+			<mx:htmlText>
+				<![CDATA[<p></p>]]>
+			</mx:htmlText> 
+		</mx:Text>
+		
+		<mx:Stroke id="yAxisStroke" color="0xAAAAAA" caps="square" weight="8" />
+		<mx:Stroke id="yAxisTick" color="0xAAAAAA" caps="square" weight="2" />
+		<mx:Stroke id="xAxisStroke" color="0xAAAAAA" caps="square" weight="2" />
+		<mx:Stroke id="xAxisTick" color="0xAAAAAA" caps="square" weight="2" />
+		
+		<mx:Stroke id="top10xAxisTick" weight="0" />
+		
+		<mx:SolidColor id="allHistoricFloodsFill" color="black" />
+		
+		<mx:SolidColor id="allHistoricFloodsColumnFill" color="black" alpha="1"/>
+		<mx:Stroke id="allHistoricFloodsColumnStroke" color="black" weight="1"/>
+		
+		<mx:SolidColor id="top10FloodsColumnFill" color="0x6699CC" alpha="1"/>
+		<mx:SolidColor id="currentTop10FloodsColumnFill" color="0x333333" alpha="1"/>
+		<!--<mx:Stroke id="top10FloodsColumnStroke" color="black" weight="1"/>-->
+
+		
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.esri.ags.FeatureSet;
+			import com.esri.ags.Graphic;
+			import com.esri.ags.geometry.Extent;
+			import com.esri.ags.geometry.MapPoint;
+			import com.esri.ags.utils.GraphicUtil;
+			import com.esri.ags.utils.WebMercatorUtil;
+			import com.google.code.flexiframe.IFrame;
+			
+			import flash.net.*;
+			
+			import mx.charts.ChartItem;
+			import mx.charts.DateTimeAxis;
+			import mx.charts.HitData;
+			import mx.charts.chartClasses.Series;
+			import mx.charts.events.ChartItemEvent;
+			import mx.charts.series.LineSeries;
+			import mx.charts.series.items.ColumnSeriesItem;
+			import mx.collections.ArrayCollection;
+			import mx.collections.IList;
+			import mx.collections.ItemResponder;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			import mx.collections.XMLListCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.SliderEvent;
+			import mx.events.StateChangeEvent;
+			import mx.messaging.management.ObjectName;
+			import mx.rpc.AsyncResponder;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
+			import mx.utils.ArrayUtil;
+			import mx.utils.ObjectProxy;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			import mx.utils.object_proxy;
+			
+			import org.osmf.elements.HTMLElement;
+			
+			import spark.events.IndexChangeEvent;
+			//import mx.rpc.http.mxml.HTTPService;
+			
+			[Bindable]
+			private var siteFID:String = FlexGlobals.topLevelApplication.siteFID;
+			[Bindable]
+			private var siteNo:String = FlexGlobals.topLevelApplication.siteNo;
+			[Bindable]
+			private var ahpsID:String = FlexGlobals.topLevelApplication.ahpsID;
+			[Bindable]
+			private var siteState:String = FlexGlobals.topLevelApplication.siteState;
+			[Bindable]
+			private var siteCommunity:String = FlexGlobals.topLevelApplication.siteCommunity;
+			[Bindable]
+			private var siteInfo:ArrayCollection;
+			[Bindable]
+			private var forecastArray:ArrayCollection;
+			
+			[Bindable]
+			private var gageHeight:String;
+			[Bindable]
+			private var navd88Alt:String;
+			[Bindable]
+			private var discharge:String;
+			
+			[Bindable]
+			private var dd_cd:String;
+			[Bindable]
+			private var gageValues:ArrayCollection = FlexGlobals.topLevelApplication.gageValues;
+			[Bindable]
+			private var altitudeValues:ArrayCollection = FlexGlobals.topLevelApplication.altitudeValues;
+			[Bindable]
+			private var forecastData:ArrayCollection;
+			[Bindable]
+			private var floodStages:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var sigLevelsArray:Object;
+			[Bindable]
+			private var hydrographArray:ArrayCollection;
+			
+			private var timeZoneInfo:Object;
+			
+			[Bindable]
+			private var siteName:String = "";
+			[Bindable]
+			private var siteLat:Number;
+			[Bindable]
+			private var siteLng:Number;
+			
+			[Bindable]
+			private var hasBreach:int;
+			
+			private var breachExisting:Object = new Object();
+			
+			[Bindable]
+			private var hazusObj:Object = new Object();
+			[Bindable]
+			private var hazusScenarioLevels:Array = new Array();
+			
+			[Bindable]
+			private var presentTimeData:ArrayCollection = new ArrayCollection();
+			
+			private var firstList:ArrayCollection;
+			private var secondList:ArrayCollection;
+			private var thirdList:ArrayCollection;
+			private var fourthList:ArrayCollection;
+			private var fifthList:ArrayCollection;
+			
+			private var aliasMode:Boolean = false;
+			private var aliasItemsObject:Object;
+			
+			private var gageValuesQueryResults:Array;
+			
+			[Bindable]
+			private var historicPeakResultIWant:Boolean = false;
+			[Bindable]
+			private var historicPeakResultReturned:Boolean = false;
+			
+			[Bindable]
+			private var allHistoricFloods:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var top10HistoricFloods:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var allHistoricFloodStages:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var top10HistoricFloodStages:ArrayCollection = new ArrayCollection();
+			
+			[Bindable] 
+			private var top10DataTips:Array = new Array();
+			
+			[Bindable]
+			private var tempAllFloods:ArrayCollection;
+			
+			[Bindable]
+			private var moreInfo:String = '';
+			private var hasMoreInfo:Boolean;
+			
+			private var actionVal:Number = 0;
+			private var floodVal:Number = 0;
+			private var moderateVal:Number = 0;
+			private var majorVal:Number = 0;
+			private var topcurveVal:Number = 0;
+			
+			
+			protected function componentLoad():void
+			{
+				if (siteNo) {
+					
+					siteNo = StringUtil.trim(siteNo);
+					
+					//FlexGlobals.topLevelApplication.snapToFlood = snapToFlood;
+					
+					// Request for current gage height and streamflow for site
+					// FIX: Request also to include siteinfo and may eliminate the need for the separate site info query
+					var dataRequest:HTTPService = new HTTPService();
+					dataRequest.method = "GET";
+					dataRequest.url = resourceManager.getString('urls.proxies', 'httpProxy')+"site_no="+siteNo+"&dataTest=true"; //"http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=04103500";
+					dataRequest.addEventListener(ResultEvent.RESULT, reqResult);
+					dataRequest.send();
+					
+					// Request for site info
+					// int(siteNo) != 0 used to filter out sites with non-numeric IDs such as scituate, MA
+					if (int(siteNo) != 0) {
+						var infoRequest:HTTPService = new HTTPService();
+						infoRequest.method = "GET";
+						infoRequest.url = resourceManager.getString('urls.proxies', 'httpProxy')+"site_no="+siteNo+"&siteInfo=true"; //"http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=04103500";
+						infoRequest.addEventListener(ResultEvent.RESULT, infoResult);
+						infoRequest.send();
+					}
+					
+					//Get state code for historical request
+					var foundState:Boolean = false;
+					var stateCode:String = data.stateCd;
+					
+					//For use in development only mode of historical tool. keeps requests from occuring fo r
+					/*if (resourceManager.getString('ui.text', 'subTitle').match("FOR DEVELOPMENT ONLY") != null) {
+						for (var i:int = 0; i < usStates.length; i++) {
+							if (foundState == false) {
+								if (usStates[i].name == siteState) {
+									stateCode = usStates[i].abbreviation;
+									foundState = true;
+								}
+							}
+						}
+					}*/
+					
+					//Request for historical flood data
+					var historicalRequest:HTTPService = new HTTPService();
+					historicalRequest.method = "GET";
+					if (stateCode == null) { //change back to null
+						historicalRequest.url = resourceManager.getString('urls.proxies', 'httpProxy')+"&site_no="+siteNo+"&historical=true"; //http://nwis.waterdata.usgs.gov/ms/nwis/peak?site_no=02473000&agency_cd=USGS&format=rdb
+					} else {
+						//historicalRequest.url = resourceManager.getString('urls.proxies', 'httpProxy')+"stateCd=in&site_no="+siteNo+"&historical=true"; //http://nwis.waterdata.usgs.gov/ms/nwis/peak?site_no=02473000&agency_cd=USGS&format=rdb
+						historicalRequest.url = resourceManager.getString('urls.proxies', 'httpProxy')+"stateCd="+stateCode.toLowerCase()+"&site_no="+siteNo+"&historical=true"; //http://nwis.waterdata.usgs.gov/ms/nwis/peak?site_no=02473000&agency_cd=USGS&format=rdb
+					}
+					historicalRequest.addEventListener(ResultEvent.RESULT, historicResult);
+					historicalRequest.send();
+					
+					// Request to retrieve all observed data for hydrograph in flood tools
+					var hydroRequest:HTTPService = new HTTPService();
+					hydroRequest.method = "GET";
+					if (int(siteNo) == 0) {
+						hydroRequest.url = resourceManager.getString('urls.proxies', 'httpProxy')+"site_no="+ahpsID+"&hydroGet=true&nwsHydro=true"; //"http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=04103500";
+					} else {
+						hydroRequest.url = resourceManager.getString('urls.proxies', 'httpProxy')+"site_no="+siteNo+"&hydroGet=true"; //"http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=04103500";
+					}
+					hydroRequest.addEventListener(ResultEvent.RESULT, hydroGetResult);
+					hydroRequest.addEventListener(FaultEvent.FAULT, hydroFault);
+					hydroRequest.send();
+					
+					// Request to get all forecast data for hydrograph in flood tools
+					/* if (ahpsID != 'NONE' && ahpsID != null) {
+						var forecastService:HTTPService = new HTTPService();
+						forecastService.method = "GET";
+						forecastService.url = resourceManager.getString('urls.proxies', 'httpProxy')+"ahpsID="+ahpsID; //"http://water.weather.gov/ahps2/hydrograph_to_xml.php?gage="+ahpsID+"&amp;output=xml";
+						forecastService.addEventListener(ResultEvent.RESULT, forecastRequest);
+						forecastService.send();
+					} else if (ahpsID == 'NONE' || ahpsID == null) {
+						forecastArray = new ArrayCollection();
+					} */
+					
+					//siteQuery.geometry = FlexGlobals.topLevelApplication.map.extent;
+					siteQuery.where = "SITE_NO = '" + siteNo + "'";
+					//siteTask.execute(siteQuery,new AsyncResponder(siteResult, infoFault, {type: "siteTask"}));
+					
+					maximizeButton.visible = false;
+					maximizeButton.includeInLayout = false;
+					minimizeButton.right = 24;
+					
+					zoomToFeaturesOnMap.addEventListener(MouseEvent.CLICK, zoomToFeatures);
+					
+					FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, function():void {
+						if (FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider.length > 0 && floodTabs.visible == true) {
+							zoomToFeaturesOnMap.enabled = true;
+						}
+					});
+					
+					zoomToFeaturesOnMap.visible = true;
+					zoomToFeaturesOnMap.includeInLayout = true;
+					zoomToFeaturesOnMap.enabled = true;
+					
+				}
+				
+			}
+			
+			
+			private function hydroFault(info:Object, token:Object = null):void {
+				trace('errored');
+			}
+			
+			protected function siteResult(featureSet:FeatureSet, token:Object = null):void
+			{
+				siteInfo = new ArrayCollection();
+				if (featureSet) {
+					//siteInfo.addItem({report_title: featureSet.features[0].attributes.REPORT, report_link: featureSet.features[0].attributes.REP_LINK, data_link: featureSet.features[0].attributes.DATA_LINK, rep_thumb: featureSet.features[0].attributes.REP_THUMB, has_hazus: featureSet.features[0].attributes.HAS_HAZUS, hazus_region: featureSet.features[0].attributes.HAZUS_REG, has_webcam: featureSet.features[0].attributes.HAS_WEBCAM, webcam_info: featureSet.features[0].attributes.WEBCAM_INFO});
+					// FIX: need to remove adjustment for these three sites and have it work off the site service.
+					siteInfo.addItem({report_title: featureSet.features[0].attributes.REPORT, 
+						report_link: featureSet.features[0].attributes.REP_LINK, 
+						data_link: featureSet.features[0].attributes.DATA_LINK, 
+						study_date: featureSet.features[0].attributes.STUDY_DATE,
+						rep_thumb: featureSet.features[0].attributes.REP_THUMB, 
+						has_hazus: featureSet.features[0].attributes.HAS_HAZUS, 
+						hazus_region: featureSet.features[0].attributes.HAZUS_REG, 
+						has_webcam: featureSet.features[0].attributes.HAS_WEBCAM, 
+						webcam_info: featureSet.features[0].attributes.WEBCAM_INFO, 
+						webcam_cap: featureSet.features[0].attributes.WEBCAM_CAP,
+						state: featureSet.features[0].attributes.STATE, 
+						pubSite: featureSet.features[0].attributes.PUBLIC,
+						community: featureSet.features[0].attributes.COMMUNITY,
+						realtime: featureSet.features[0].attributes.REALTIME
+					});
+					
+					if (featureSet.features[0].attributes.Public == 0) {
+						siteStatus.visible = true;
+					}
+					
+					nwsTask.executeLastResult = null;
+					nwsQuery.where = "GaugeLID = '" + featureSet.features[0].attributes.AHPS_ID.toUpperCase() + "'";
+					nwsTask.useAMF = false;
+					nwsTask.execute(nwsQuery);
+					
+					/* if (siteInfo.getItemAt(0).has_hazus == 1 && siteInfo.getItemAt(0).has_webcam == 1) {
+						currentState = "hazusAndWebCam";
+					} else if (siteInfo.getItemAt(0).has_hazus == 1) {
+						currentState = "hazusOnly";
+					} else if (siteInfo.getItemAt(0).has_webcam == 1) {
+						currentState = "webCamOnly";
+					}  */
+					
+					moreInfoQuery.where = "USGSID = '" + siteNo + "'"; 
+					moreInfoTask.execute(moreInfoQuery, new AsyncResponder(moreInfoResult, infoFault, {type: 'moreInfoTask'}));
+					
+					function moreInfoResult(result:Object, token:Object = null):void {
+						if (result.features.length > 0) {
+							hasMoreInfo = true;
+							moreInfo = result.attributes[0].ADD_INFO;
+							stateCheck();
+						} else {
+							trace('no more info for site');
+							stateCheck();
+						}
+					}
+					
+					/* if (siteInfo.getItemAt(0).has_webcam == 1) {
+						var webcamFrame:IFrame = new IFrame();
+						webcamFrame.id = "webCamIFrame";
+						webcamFrame.overlayDetection = true;
+						webcamFrame.source = resourceManager.getString('urls.proxies', 'webCamProxy')+encodeURIComponent(siteInfo.getItemAt(0).webcam_info);
+						webcamFrame.x = webCam.x;
+						webcamFrame.y = webCam.y;
+						webCam.addChild(webcamFrame);
+						trace('webcam added?');
+					} */
+				}
+			}
+			
+			private function stateCheck():void {
+				if (siteInfo.getItemAt(0).has_hazus == 1 && hasMoreInfo == true) {
+					currentState = "hazusAndInfo";
+				} else if (siteInfo.getItemAt(0).has_hazus == 1) {
+					currentState = "hazus";
+				} else if (hasMoreInfo == true) {
+					currentState = "info";
+				} else {
+					currentState = "normal";
+				}
+			}
+			
+			protected function projInfoGet(event:FlexEvent):void {
+				projectInfoQuery.objectIds = [int(siteFID)];
+				// Will have to add responder as soon as sites with multiple creaters and reviewers are added to the db.
+				siteTask.executeRelationshipQuery(projectInfoQuery, new AsyncResponder(projInfoResult, infoFault, {type: 'siteTask'}));
+			}
+			
+			protected function projInfoResult(result:Object, token:Object = null):void {
+				var featureSet:FeatureSet = result[siteFID];
+				if (featureSet is FeatureSet) {
+					var i:int;
+					var createdTitle:Text = new Text();
+					createdTitle.text = "Maps created by";
+					createdByBox.addChild(createdTitle);
+					var reviewedTitle:Text = new Text();
+					reviewedTitle.text = "Maps reviewed by";
+					reviewedByBox.addChild(reviewedTitle);
+					for (i=0;i<featureSet.attributes.length;i++) {
+						// code to add each entry for created by and reviewed by
+						/*<mx:Text text="No info." visible="{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY == null}" includeInLayout="{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY == null}" />
+							<mx:Text visible="{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY != null}" includeInLayout="{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY != null}" htmlText="Maps created by &lt;a href=&quot;{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATE_URL}&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY}&lt;/u&gt;&lt;/a&gt;" fontSize="12" fontWeight="bold" />
+						*/
+						if (featureSet.attributes[i].TYPE == "C") {
+							var creator:Text = new Text();
+							creator.text = featureSet.attributes[i].ENTITY;
+							var createUrl:String = featureSet.attributes[i].URL;
+							creator.toolTip = createUrl;
+							if (createUrl != 'NONE') {
+								creator.styleName = "line";
+								creator.buttonMode = true;
+								creator.useHandCursor = true;
+								creator.mouseChildren = false;
+								creator.addEventListener(MouseEvent.CLICK, function click(event:MouseEvent):void {
+									navigateToURL(new URLRequest(event.currentTarget.toolTip));
+								});
+							}
+							createdByBox.addChild(creator);
+							createdByBox.visible = true;
+							createdByBox.includeInLayout = true;
+						}
+						if (featureSet.attributes[i].TYPE == "R") {
+							var reviewer:Text = new Text();
+							reviewer.text = featureSet.attributes[i].ENTITY;
+							var reviewUrl:String = featureSet.attributes[i].URL;
+							reviewer.toolTip = reviewUrl;
+							if (reviewUrl != 'NONE') {
+								reviewer.styleName = "line";
+								reviewer.buttonMode = true;
+								reviewer.useHandCursor = true;
+								reviewer.mouseChildren = false;
+								reviewer.addEventListener(MouseEvent.CLICK, function click(event:MouseEvent):void {
+									navigateToURL(new URLRequest(event.currentTarget.toolTip));
+								});
+							}
+							reviewedByBox.addChild(reviewer);
+							reviewedByBox.visible = true;
+							reviewedByBox.includeInLayout = true;
+						}
+						if (featureSet.attributes[i].TYPE == "L") {
+							var logo:Image = new Image();
+							logo.source = "http://wimcloud.usgs.gov/FIM/logos/" + featureSet.attributes[i].ENTITY;
+							var logoLinkUrl:String = featureSet.attributes[i].URL;
+							//logo.toolTip = logoLinkUrl;
+							if (logoLinkUrl != 'NONE') {
+								/* logo.addEventListener(MouseEvent.CLICK, function click(event:MouseEvent):void {
+									navigateToURL(new URLRequest(event.currentTarget.toolTip));
+								}); */
+							}
+							coopLogoBox.addChild(logo);
+							coopLogoBox.visible = true;
+							coopLogoBox.includeInLayout = true;
+						}
+					}
+				}
+			}
+			
+			protected function infoFault(info:Object, token:Object = null):void
+			{
+				//Alert.show(info.toString());
+				trace(token.type + ": floodTools: " + info.toString());
+			} 
+			
+			protected function reqResult(event:ResultEvent):void
+			{
+				var resultObj:Object = com.esri.ags.utils.JSON.decode(event.result as String);
+				for (var i:int = 0; i < resultObj.value.timeSeries.length; i++) {
+					
+					var paramCode:String = resultObj.value.timeSeries[i].variable.variableCode[0].value;
+					if (resultObj.value.timeSeries[i].values[0].value.length != 0) {
+						var paramValue:String = resultObj.value.timeSeries[i].values[0].value[0].value;
+					}
+					
+					if (paramCode == "00060") {
+						discharge = paramValue;
+					} else if (paramCode == "00065") {
+						gageHeight = paramValue;
+					} else if (paramCode == "63160") {
+						navd88Alt = paramValue;
+					}
+				}
+			}
+			
+			protected function infoResult(event:ResultEvent):void {
+				siteName = event.result.mapper.sites.site.sna;
+				siteLat = event.result.mapper.sites.site.lat;
+				siteLng = event.result.mapper.sites.site.lng;
+			}
+			
+			protected function hazusResult(event:ResultEvent):void
+			{
+				var response:String = event.result as String;
+				if (response.match('metadata') != null) {
+					hazusObj = com.esri.ags.utils.JSON.decode(event.result as String);
+					trace('have object');
+				} else {
+					var currentSiteInfo:Object = siteInfo.getItemAt(0);
+					currentSiteInfo.has_hazus = 0;
+					siteInfo.setItemAt(currentSiteInfo, 0);
+					stateCheck();
+				}
+				
+			}
+			
+			protected function historicResult(event:ResultEvent):void {
+				
+				historicPeakResultReturned = true;
+				var historicResult:String = event.result.toString();
+				var dataSortField:SortField = new SortField();
+				var numericDataSort:Sort = new Sort();
+				
+				if (historicResult.match("No sites") != null) { 
+					historicPeakResultIWant = false;
+				} else {
+					historicPeakResultIWant = true;
+					
+					//Parse result here........................
+					var historicResultByLine:Array = historicResult.split("\n");
+					
+					for (var i:int = 0; i < historicResultByLine.length; i++) {
+						var currentLine:String = historicResultByLine[i];
+						if (currentLine.match("#") == null && currentLine.match("USGS") != null) {
+							var lineSplit:Array = currentLine.split("\t");
+							var dateFlood:String = lineSplit[2];
+							var gageHeightFlood:String = lineSplit[6];
+							var codeFlood:String = lineSplit[7];
+							allHistoricFloods.addItem({date: dateFlood+"T00:00:00", gageHeight: gageHeightFlood, code: codeFlood});
+						}
+					}
+					
+					
+					//Adds a chrono index to keep track of chronological order of flood peaks
+					
+					for (i = 0; i < allHistoricFloods.length; i++) {
+						allHistoricFloods[i].chrono = i;
+					}
+					
+					//Sort array collection by top 10 descending and then get first 10 items
+					dataSortField = new SortField();
+					dataSortField.name = "gageHeight";
+					dataSortField.numeric = true;
+					dataSortField.descending = true;
+					
+					numericDataSort = new Sort();
+					numericDataSort.fields = [dataSortField];
+					
+					tempAllFloods = allHistoricFloods;
+					
+					allHistoricFloods.sort = numericDataSort;
+					allHistoricFloods.refresh();
+					
+					for (i = 0; i < allHistoricFloods.length; i++) {
+						if (i < 10) {
+							var date:Array = allHistoricFloods.getItemAt(i).date.split('T');
+							top10HistoricFloods.addItem({date: date[0], gageHeight: allHistoricFloods.getItemAt(i).gageHeight, code: allHistoricFloods.getItemAt(i).code, chrono: allHistoricFloods.getItemAt(i).chrono});
+						}
+					}
+					
+					//reorder top 10 peaks by chrono index
+					var top10SortField:SortField = new SortField();
+					top10SortField.name = "chrono";
+					top10SortField.numeric = true;
+					
+					var top10DataSort:Sort = new Sort();
+					top10DataSort.fields = [top10SortField];
+					
+					//Set current chrono to -2. will set last 365 peak chono to -1
+					top10HistoricFloods.addItemAt({date: 'Current Stage', gageHeight: gageHeight, chrono: -2}, 0);
+					//Test to add to empty items to see if I can fake the padding in the AreaChart, because padding property on horizontal axis resets to 0 for AreaCharts
+					top10HistoricFloods.addItemAt({date: '', gageHeight: 0, chrono: -3}, 0);
+					top10HistoricFloods.addItemAt({date: ' ', gageHeight: 0, chrono: 999}, top10HistoricFloods.length);
+					
+					top10HistoricFloods.sort = top10DataSort;
+					top10HistoricFloods.refresh();
+					
+					if (forecastArray != null && hydrographArray != null && floodStages.length > 0 && top10HistoricFloodStages.length == 0 && allHistoricFloods.length > 0) {
+						top10HistoricFloodStages.addItemAt({date: top10HistoricFloods.getItemAt(0).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+						top10HistoricFloodStages.addItemAt({date: top10HistoricFloods.getItemAt(top10HistoricFloods.length-1).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+						
+						dataSortField = new SortField();
+						dataSortField.name = "chrono";
+						dataSortField.numeric = true;
+						
+						numericDataSort = new Sort();
+						numericDataSort.fields = [dataSortField];
+						
+						tempAllFloods.sort = numericDataSort;
+						tempAllFloods.refresh();
+						
+						allHistoricFloodStages.addItemAt({date: tempAllFloods.getItemAt(0).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+						allHistoricFloodStages.addItemAt({date: tempAllFloods.getItemAt(allHistoricFloods.length-1).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+						
+						snapToFlood();
+						
+					}
+					
+				}
+			}
+			
+			private function adjustAllFloodStagesData(event:FlexEvent):void {
+				if (allHistoricFloodStages != null && allHistoricFloodStages.length != 0) {
+					allHistoricFloodStages.removeItemAt(0);
+					allHistoricFloodStages.addItemAt({date: historicFloodStagesMaxMinParser(annualPeaksDateTimeAxis.minimum), record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+					allHistoricFloodStages.removeItemAt(allHistoricFloodStages.length-1);
+					allHistoricFloodStages.addItem({date: historicFloodStagesMaxMinParser(annualPeaksDateTimeAxis.maximum), record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()});
+					allHistoricFloodStages.refresh();
+				}
+			}
+			
+			private function historicFloodStagesMaxMinParser(date:Date):String {
+				//YYYY-MM-DDT00:00:00
+				var parsedDate:String;
+				
+				var year:String = date.fullYear.toString();
+				var month:String = (date.month+1).toString();
+				var day:String = date.date.toString();
+				
+				parsedDate = year+'-'+month+'-'+day+'T00:00:00';
+			
+				return parsedDate;
+			}
+			
+			protected function forecastRequest(event:ResultEvent):void
+			{
+				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame') {
+					forecastArray = event.result.site.forecast.datum as ArrayCollection;
+					sigLevelsArray = event.result.site.sigstages;
+					
+					/* if (sigLevels.action != null) {
+						actionVal = sigLevels.action.value;
+					}
+					if (sigLevels.flood != null) {
+						floodVal = sigLevels.flood.value;
+					}
+					if (sigLevels.moderate != null) {
+						moderateVal = sigLevels.moderate.value;
+					}
+					if (sigLevels.major != null) {
+						majorVal = sigLevels.major.value;
+					}
+					if (sigLevels.topcurve != null) {
+						topcurveVal = sigLevels.topcurve.value;
+					} */
+					
+					floodBarCalc();
+					
+					if (sigLevelsArray != null && sigLevelsArray.action != null && sigLevelsArray.flood != null != 0 && sigLevelsArray.moderate != null && sigLevelsArray.major != null) {
+						if (hydrographArray != null && int(siteNo) != 0) {
+							floodStages = new ArrayCollection([{date: hydrographArray.getItemAt(0).dateTime, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()},
+								{date: forecastArray.getItemAt(forecastArray.length-1).valid.value, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}]);
+						} else if (hydrographArray != null && int(siteNo) == 0) {
+							floodStages = new ArrayCollection([{date: hydrographArray.getItemAt(0).valid.value, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()},
+								{date: forecastArray.getItemAt(forecastArray.length-1).valid.value, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}]);
+						}
+					}
+				} else if (event.result.site.sigstages != null) {
+					forecastArray = new ArrayCollection();
+					sigLevelsArray = event.result.site.sigstages;
+					
+					/* if (sigLevels.action != null) {
+						actionVal = sigLevels.action.value;
+					}
+					if (sigLevels.flood != null) {
+						floodVal = sigLevels.flood.value;
+					}
+					if (sigLevels.moderate != null) {
+						moderateVal = sigLevels.moderate.value;
+					}
+					if (sigLevels.major != null) {
+						majorVal = sigLevels.major.value;
+					}
+					if (sigLevels.topcurve != null) {
+						topcurveVal = sigLevels.topcurve.value;
+					} */
+					
+					floodBarCalc();
+					
+					if (sigLevelsArray != null && sigLevelsArray.action != null && sigLevelsArray.flood != null != 0 && sigLevelsArray.moderate != null && sigLevelsArray.major != null) {
+						if (hydrographArray != null && int(siteNo) != 0) {
+							floodStages = new ArrayCollection([{date: hydrographArray.getItemAt(0).dateTime, record: (sigLevelsArray.record-sigLevelsArray.major) < 0 ? '0' : (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()},
+								{date: hydrographArray.getItemAt(hydrographArray.length-1).dateTime, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}]);
+						} else if (hydrographArray != null && int(siteNo) == 0) {
+							floodStages = new ArrayCollection([{date: hydrographArray.getItemAt(0).valid.value, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()},
+								{date: hydrographArray.getItemAt(hydrographArray.length-1).dateTime, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}]);
+						}
+					}
+				} else {
+					forecastArray = new ArrayCollection();
+				}
+				
+				if (hydrographArray != null && forecastArray.length > 0) {
+					hydroYAxis.maximum = getMaxMin('max');
+					annotationAdds('full');
+				} else if (hydrographArray != null) {
+					hydroYAxis.maximum = getMaxMin('max');
+					annotationAdds('part');
+					//add new annotationAdds method or tweak current one
+				}
+				
+				if (forecastArray != null && hydrographArray != null && floodStages.length > 0 && top10HistoricFloodStages.length == 0 && allHistoricFloods.length > 0) {
+					top10HistoricFloodStages.addItemAt({date: top10HistoricFloods.getItemAt(0).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+					top10HistoricFloodStages.addItemAt({date: top10HistoricFloods.getItemAt(top10HistoricFloods.length-1).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+					
+					var dataSortField:SortField = new SortField();
+					dataSortField.name = "chrono";
+					dataSortField.numeric = true;
+					
+					var numericDataSort:Sort = new Sort();
+					numericDataSort.fields = [dataSortField];
+					
+					tempAllFloods.sort = numericDataSort;
+					tempAllFloods.refresh();
+					
+					allHistoricFloodStages.addItemAt({date: tempAllFloods.getItemAt(0).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+					allHistoricFloodStages.addItemAt({date: tempAllFloods.getItemAt(allHistoricFloods.length-1).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+				
+					snapToFlood();
+					
+				}
+			}
+			
+			private function hydroGetResult(event:ResultEvent):void {
+				// handler for USGS observed hydrograph. Most cases.
+				if (int(siteNo) != 0) {
+					if (event.result.timeSeriesResponse.timeSeries.values.length > 1) {
+						hydrographArray = event.result.timeSeriesResponse.timeSeries.values[0].value;
+					} else {
+						hydrographArray = checkForNoData(event.result.timeSeriesResponse.timeSeries.values.value);
+						//hydrographArray = event.result.timeSeriesResponse.timeSeries.values.value;
+					}
+					timeZoneInfo = event.result.timeSeriesResponse.timeSeries.sourceInfo.timeZoneInfo;
+					if (sigLevelsArray != null && sigLevelsArray.action != null && sigLevelsArray.flood != null != 0 && sigLevelsArray.moderate != null && sigLevelsArray.major != null) {
+						if (forecastArray != null && forecastArray != new ArrayCollection() && forecastArray.length != 0 && int(siteNo) != 0 && sigLevelsArray != null) {
+							floodStages = new ArrayCollection([{date: hydrographArray.getItemAt(0).dateTime, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()},
+								{date: forecastArray.getItemAt(forecastArray.length-1).valid.value, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}]);
+						} else if (forecastArray != null && forecastArray != new ArrayCollection() && forecastArray.length != 0 && int(siteNo) != 0 && sigLevelsArray != null) {
+							floodStages = new ArrayCollection([{date: hydrographArray.getItemAt(0).valid.value, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()},
+								{date: forecastArray.getItemAt(forecastArray.length-1).valid.value, record: (sigLevelsArray.record-sigLevelsArray.major).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}]);
+						}
+					}
+				} else if (int(siteNo) == 0) {
+					// handler for NWS observed hydrograph
+					if (event.result.site.observed != null) {
+						hydrographArray = event.result.site.observed.datum;
+					} else {
+						hydrographArray = new ArrayCollection();
+					}
+				}
+				
+				if (forecastArray != null && hydrographArray != null && floodStages.length > 0 && top10HistoricFloodStages.length == 0 && allHistoricFloods.length > 0) {
+					top10HistoricFloodStages.addItemAt({date: top10HistoricFloods.getItemAt(0).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+					top10HistoricFloodStages.addItemAt({date: top10HistoricFloods.getItemAt(top10HistoricFloods.length-1).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+					
+					var dataSortField:SortField = new SortField();
+					dataSortField.name = "chrono";
+					dataSortField.numeric = true;
+					
+					var numericDataSort:Sort = new Sort();
+					numericDataSort.fields = [dataSortField];
+					
+					tempAllFloods.sort = numericDataSort;
+					tempAllFloods.refresh();
+					
+					allHistoricFloodStages.addItemAt({date: tempAllFloods.getItemAt(0).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+					allHistoricFloodStages.addItemAt({date: tempAllFloods.getItemAt(allHistoricFloods.length-1).date, record: (sigLevelsArray.record-sigLevelsArray.major+1).toString(), major: (sigLevelsArray.major-sigLevelsArray.moderate).toString(), moderate: (sigLevelsArray.moderate-sigLevelsArray.flood).toString(), flood: (sigLevelsArray.flood-sigLevelsArray.action).toString(), action: sigLevelsArray.action.value.toString()}, 0);
+					
+					snapToFlood();
+					
+				}
+				
+				if (forecastArray != null && forecastArray.length != 0) {
+					hydroYAxis.maximum = getMaxMin('max');
+					annotationAdds('full');
+				}
+				
+				function checkForNoData(array:ArrayCollection):ArrayCollection {
+					var updatedArray:ArrayCollection = new ArrayCollection();
+					
+					for (var i:int = 0; i < array.length; i++) {
+						if (array[i].value != "-999999") {
+							updatedArray.addItem(array[i]);
+						}
+					}
+					
+					return updatedArray;
+				}
+				
+			}
+			
+			private function floodBarCalc():void {
+				if (sigLevelsArray != null) {
+					
+					//get gage values with quick query
+					var gageValuesQuery:Query = new Query();
+					gageValuesQuery.returnGeometry = false;
+					gageValuesQuery.where = "USGSID = '" + siteNo + "'";
+					gageValuesQuery.outFields = ["STAGE"];
+						
+					var gageValuesQueryTask:QueryTask = new QueryTask();
+					gageValuesQueryTask.url = resourceManager.getString('urls', 'floodExtentsUrl');
+					gageValuesQueryTask.useAMF = false;
+					gageValuesQueryTask.showBusyCursor = true;
+					gageValuesQueryTask.disableClientCaching = true;
+					gageValuesQueryTask.execute(gageValuesQuery, new AsyncResponder(gvqResult, queryFault, {type: 'ghv'}));
+					
+					function gvqResult(featureSet:FeatureSet, token:Object = null):void {
+						var sigLevels:Object = sigLevelsArray;
+						var stageDiffs:ArrayCollection = floodStages;
+						var i:int;
+						var gageValuesQueryResults:Array = featureSet.features;
+						var gageValuesStages:Array = new Array();
+						
+						for each (var graphic:Graphic in featureSet.features) {
+							gageValuesStages.push({"stage": graphic.attributes.STAGE});
+						}
+						
+						gageValuesStages.sortOn("stage", Array.NUMERIC);
+						
+						if (data.TOP_CURVE != null) {
+							sigLevels["topcurve"] = {"value": Number(data.TOP_CURVE) };
+						} else {
+							sigLevels["topcurve"] = {"value": 10000 };
+						}
+						
+						var actionVal:Number = 0;
+						var floodVal:Number = 0;
+						var moderateVal:Number = 0;
+						var majorVal:Number = 0;
+						var topcurveVal:Number = 0;
+						
+						if (sigLevels.action != null && sigLevels.flood != null && sigLevels.moderate != null && sigLevels.major != null) {
+							actionVal = sigLevels.action.value;
+							floodVal = sigLevels.flood.value;
+							moderateVal = sigLevels.moderate.value;
+							majorVal = sigLevels.major.value;
+							topcurveVal = sigLevels.topcurve.value;
+						}
+						
+						function heightFractionGet(lowEnd:Number, highEnd:Number):Number {
+							var fraction:Number;
+							var values:Array = [lowEnd, highEnd];
+							var lowi:Number = -1;
+							var highi:Number = -1;
+							var lowSolved:Boolean = false;
+							var highSolved:Boolean = false;
+							
+							for each (var value:Number in values) {
+								if (lowSolved == false) {
+									lowi = -1;
+								} 
+								if (highSolved == false) {
+									highi = -1;
+								}
+								for (i=1; i<gageValuesStages.length; i++) {
+									if (lowSolved == false || highSolved == false) {
+										if (value == gageValuesStages[i-1].stage) {
+											if (value == lowEnd && lowSolved == false){
+												lowi = i-1;
+												lowSolved = true;
+											} else if (value == highEnd && highSolved == false) {
+												highi = i-1;
+												highSolved = true;
+											}
+										} else if (value > gageValuesStages[i-1].stage && value < gageValuesStages[i].stage) {
+											if (value == lowEnd && lowSolved == false){
+												lowi = i-0.5;
+												lowSolved = true;
+											} else if (value == highEnd && highSolved == false) {
+												highi = i-0.5;
+												highSolved = true;
+											}
+										} else if (value == gageValuesStages[i].stage) {
+											if (value == lowEnd && lowSolved == false){
+												lowi = i;
+												lowSolved = true;
+											} else if (value == highEnd && highSolved == false) {
+												highi = i;
+												highSolved = true;
+											}
+										}  else if (value < gageValuesStages[i-1].stage) {
+											if (value == lowEnd && lowSolved == false) {
+												lowi = 0;
+												lowSolved = true;
+											} else if (value == highEnd && highSolved == false) {
+												highi = 0;
+												highSolved = true;
+											}
+										} else if (value > gageValuesStages[i].stage && i == gageValuesStages.length-1) {
+											if (value == lowEnd && lowSolved == false) {
+												lowi = i;
+												lowSolved = true;
+												highSolved = true;
+											} else if (value == highEnd && highSolved == false) {
+												highi = i;
+												highSolved = true;
+											}
+										} 
+									}
+								}
+							}
+							
+							var iDiff:Number = highi - lowi;
+							fraction = iDiff/gageValuesQueryResults.length;
+							
+							if (fraction < 0) {
+								fraction = 0;
+							}
+							
+							return fraction;
+						}
+					}
+					
+				}
+				
+			}
+			
+			private function snapToFlood():void {
+				// add handling here for snapping slider to current stage if in flooding
+				// maybe add something to code where gageHeight is defined and check for gageValues and run same method.
+				// break out method and implement in both places
+				// FIX: issue with graphic not reflecting gageheight selected on slider
+				if (gageHeight != null) {
+					var myArray:Array = gageValues.toArray();
+					// this should be current stage
+					var myNum:Number = Number(gageHeight);
+					
+					var closestNum:Number = new Number();
+					var closestArrayItem:Number = new Number();
+					var tempNum:Number = new Number();
+					
+					for(var i:Number = 0;i<myArray.length;i++){
+						
+						tempNum = Math.abs(myArray[i].gageValue - myNum);
+						
+						if(tempNum < closestNum || i == 0){
+							closestNum = tempNum;
+							closestArrayItem = i;
+						}
+						
+					}
+					//floodSlider.value = closestArrayItem;
+					FlexGlobals.topLevelApplication.initFloodSliderValue = closestArrayItem;
+				}
+			}
+			
+			private function currentDateTimeString(offset:Number):String
+			{               
+				var zoneOffset:String;
+				var cdt:Date = new Date();
+				
+				var offsetMilliseconds:Number = cdt.getTimezoneOffset() * 60 * 1000;
+				cdt.setTime(cdt.getTime() + offsetMilliseconds);
+				
+				if (timeZoneInfo != null) {
+					if (timeZoneInfo.siteUsesDaylightSavingsTime == true) {
+						zoneOffset = timeZoneInfo.daylightSavingsTimeZone.zoneOffset;
+					} else {
+						zoneOffset = timeZoneInfo.defaultTimeZone.zoneOffset;
+					}
+					
+					var zoneOffsetArray:Array = zoneOffset.split(':');
+				
+					cdt.setTime(cdt.getTime() + zoneOffsetArray[0]*60*60*1000 + offset);
+				} else {
+					cdt.setTime(cdt.getTime() + offset);
+				}
+				
+				var DateTimeString:String = cdt.fullYear+'-'+(cdt.month+1)+'-'+cdt.date+'T'+cdt.hours+':'+cdt.minutes+':'+cdt.seconds+'.'+cdt.milliseconds;
+				
+				return DateTimeString;
+			}
+			
+			private function annotationAdds(type:String):void {
+				
+				var actionLabel:spark.components.Label = new spark.components.Label();
+				var floodLabel:spark.components.Label = new spark.components.Label();
+				var moderateLabel:spark.components.Label = new spark.components.Label();
+				var majorLabel:spark.components.Label = new spark.components.Label();
+				var sigLevels:Object = sigLevelsArray;
+				
+				if (type == 'full') {
+					
+					presentTimeData.removeAll();
+					presentTimeData.addItem({x: hydrographArray[hydrographArray.length-1].dateTime, y: hydroYAxis.maximum });
+					presentTimeData.refresh();
+					
+					var observedLabel:spark.components.Label = new spark.components.Label();
+					observedLabel.text = "Observed";
+					observedLabel.styleName = "italic";
+					areaLabels.addChild(observedLabel);
+					areaLabels.updateDataChild(observedLabel, null, getMaxMin('max'), currentDateTimeString(0), null);
+					
+					var predictedLabel:spark.components.Label = new spark.components.Label();
+					predictedLabel.text = "Predicted";
+					predictedLabel.styleName = "italic";
+					areaLabels.addChild(predictedLabel);
+					areaLabels.updateDataChild(predictedLabel, currentDateTimeString(4*60*60*1000), getMaxMin('max'));
+					
+					actionLabel.text = "Action stage";
+					areaLabels.addChild(actionLabel);
+					areaLabels.updateDataChild(actionLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (actionVal+.1).toString()); 
+					
+					/* var actionNumber:spark.components.Label = new spark.components.Label();
+					actionNumber.text = parseFloat(sigLevels.action.value).toString();
+					areaLabels.addChild(actionNumber);
+					areaLabels.updateDataChild(actionNumber, null, null, hydrographArray.getItemAt(0).dateTime, parseFloat(sigLevels.action.value).toString()); */
+					
+					floodLabel.text = "Flood stage";
+					areaLabels.addChild(floodLabel);
+					areaLabels.updateDataChild(floodLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (floodVal+.1).toString()); 
+					
+					moderateLabel.text = "Moderate stage";
+					areaLabels.addChild(moderateLabel);
+					areaLabels.updateDataChild(moderateLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (moderateVal+.1).toString()); 
+					
+					majorLabel.text = "Major stage";
+					areaLabels.addChild(majorLabel);
+					areaLabels.updateDataChild(majorLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (majorVal+.1).toString());  
+					
+					/* var recordLabel:spark.components.Label = new spark.components.Label();
+					recordLabel.text = "Record stage";
+					areaLabels.addChild(recordLabel);
+					areaLabels.updateDataChild(recordLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (parseFloat(sigLevels.record.value)+.1).toString()); */ 
+				} else if (type == 'part') {
+					
+					actionLabel.text = "Action stage";
+					areaLabels.addChild(actionLabel);
+					areaLabels.updateDataChild(actionLabel, null, null, hydrographArray.getItemAt(hydrographArray.length-1).dateTime, (actionVal+.1).toString()); 
+					
+					floodLabel.text = "Flood stage";
+					areaLabels.addChild(floodLabel);
+					areaLabels.updateDataChild(floodLabel, null, null, hydrographArray.getItemAt(hydrographArray.length-1).dateTime, (floodVal+.1).toString()); 
+					
+					moderateLabel.text = "Moderate stage";
+					areaLabels.addChild(moderateLabel);
+					areaLabels.updateDataChild(moderateLabel, null, null, hydrographArray.getItemAt(hydrographArray.length-1).dateTime, (moderateVal+.1).toString()); 
+					
+					majorLabel.text = "Major stage";
+					areaLabels.addChild(majorLabel);
+					areaLabels.updateDataChild(majorLabel, null, null, hydrographArray.getItemAt(hydrographArray.length-1).dateTime, (majorVal+.1).toString());  
+				}
+				
+			}
+			
+			private function getMaxMin(maxOrMin:String):Number {
+				var value:Number;
+				if (maxOrMin == "max" && forecastArray != null && hydrographArray != null) {
+					var foreMax:Number = max(forecastArray);
+					var hydroMax:Number = max(hydrographArray);
+					if (foreMax > hydroMax) { 
+						value = foreMax; 
+					} else { 
+						value = hydroMax; 
+					}
+					//Code to compare value for max of forecast and 
+					//hydrograph to action level plus factor to show action 
+					//label on graph. if less than action level use action 
+					//level plus factor, else use max of forecast and hyrdrograph
+					var testValue:Number = value+2;
+					if(sigLevelsArray != null) {
+						var actionValue:Number = sigLevelsArray.action+(sigLevelsArray.action-getMaxMin('min')-2)*0.10;
+					}
+					if (testValue > actionValue) {
+						value = testValue;
+					} else {
+						value = actionValue;
+					}
+				} else if (maxOrMin == "min") {
+					var foreMin:Number = min(forecastArray);
+					var hydroMin:Number = min(hydrographArray);
+					if (foreMin < hydroMin) { 
+						value = foreMin; 
+					} else { 
+						value = hydroMin; 
+					}
+				}
+				
+				function max(arrayColl:ArrayCollection):Number {
+					var maxValue:Number = 0;
+					var field:String;
+					if (arrayColl == forecastArray) { 
+						field = "primary"; 
+					} else if (arrayColl == hydrographArray && int(siteNo) != 0) { 
+						field = "value"; 
+					} else if (arrayColl == hydrographArray && int(siteNo) == 0) { 
+						field = "primary"; 
+					}
+					for (var i:int = 0; i < arrayColl.length-1; i++) {
+						if (arrayColl[i][field] > maxValue) {
+							maxValue = arrayColl[i][field];
+						}
+					}
+					return maxValue;
+				}
+				
+				function min(arrayColl:ArrayCollection):Number {
+					var minValue:Number = 999999;
+					var field:String;
+					if (arrayColl == forecastArray) { 
+						field = "primary";
+					} else if (arrayColl == hydrographArray && int(siteNo) != 0) { 
+						field = "value"; 
+					} else if (arrayColl == hydrographArray && int(siteNo) == 0) { 
+						field = "primary"; 
+					}
+					for (var i:int = 0; i < arrayColl.length-1; i++) {
+						if (arrayColl[i][field] < minValue) {
+							minValue = arrayColl[i][field];
+						}
+					}
+					return minValue;
+				}
+				
+				return value;
+			}
+			
+			private function hydroClick(event:ChartItemEvent):void {
+				if (event.hitData.element is LineSeries) {
+					var series:LineSeries = event.hitData.element as LineSeries;
+					var displayName:String = series.legendData[0].label;
+					var myArray:Array = gageValues.toArray();
+					var myNum:Number;
+					if (displayName == "NWS") {
+						myNum = event.hitData.item.primary.value
+					} else if (displayName == "USGS") {
+						myNum = event.hitData.item.value;
+					}
+					
+					var closestNum:Number = new Number();
+					var closestArrayItem:Number = new Number();
+					var tempNum:Number = new Number();
+					
+					for(var i:Number = 0;i<myArray.length;i++){
+						
+						tempNum = Math.abs(myArray[i].gageValue - myNum);
+						
+						if(tempNum < closestNum || i == 0){
+							closestNum = tempNum;
+							closestArrayItem = i;
+						}
+						
+					}
+					//floodSlider.value = closestArrayItem;
+				}
+			}
+			
+			private function historicFloodsClick(event:ChartItemEvent):void {
+				if (event.hitData.element is ColumnSeries) {
+					var series:ColumnSeries = event.hitData.element as ColumnSeries;
+					var displayName:String = series.legendData[0].label;
+					var myArray:Array = gageValues.toArray();
+					var myNum:Number;
+					if (displayName == "Top 10 Floods") {
+						myNum = event.hitData.item.gageHeight;
+					} else if (displayName == "All Historic Floods") {
+						myNum = event.hitData.item.gageHeight;
+					}
+					
+					var closestNum:Number = new Number();
+					var closestArrayItem:Number = new Number();
+					var tempNum:Number = new Number();
+					
+					for(var i:Number = 0;i<myArray.length;i++){
+						
+						tempNum = Math.abs(myArray[i].gageValue - myNum);
+						
+						if(tempNum < closestNum || i == 0){
+							closestNum = tempNum;
+							closestArrayItem = i;
+						}
+						
+					}
+					//floodSlider.value = closestArrayItem;
+				}
+			}
+			
+			private function dataTipFunction(hitData:HitData):String {
+				var dataTip:String = "";
+				var displayName:String = "";
+				var series:Series;
+				if (hitData.element is LineSeries) {
+					series = hitData.element as LineSeries;
+					displayName = series.legendData[0].label;
+				} else if (hitData.element is PlotSeries) {
+					series = hitData.element as PlotSeries;
+					displayName = series.legendData[0].label;
+				} else if (hitData.element is ColumnSeries) {
+					series = hitData.element as ColumnSeries;
+					displayName = series.legendData[0].label;
+				}
+				
+				var dateTime:String;
+				var dateTimeArray:Array;
+				var timeArray:Array;
+				var timeArray2:Array;
+				
+				if (displayName == "NWS" && series.id == "USGS") {
+					dateTime = hitData.item.valid.value;
+					dateTimeArray = dateTime.split('T');
+					timeArray = dateTimeArray[1].split('-');
+					timeArray2 = timeArray[0].split(':');
+					dataTip = "<b>" + displayName + " Observation for:</b><br/>" +
+						dateTimeArray[0] + " " + timeArray2[0] + ":" + timeArray2[1] + "<br/>" +
+						"Gage Height: " + hitData.item.primary.value; 
+				} else if (displayName == "NWS" && series.id == "NWS") {
+					dateTime = timeValueAdjust(hitData.item.valid.value);
+					dateTimeArray = dateTime.split('T');
+					timeArray = dateTimeArray[1].split('-');
+					timeArray2 = timeArray[0].split(':');
+					dataTip = "<b>" + displayName + " Prediction for:</b><br/>" +
+						dateTimeArray[0] + " " + timeArray2[0] + ":" + timeArray2[1] + "<br/>" +
+						"Gage Height: " + hitData.item.primary.value; 
+				} else if (displayName == "USGS") {
+					dateTime = hitData.item.dateTime;
+					dateTimeArray = dateTime.split('T');
+					timeArray = dateTimeArray[1].split('.');
+					timeArray2 = timeArray[0].split(':');
+					dataTip = "<b>" + displayName + " Observation at:</b><br/>" +
+						dateTimeArray[0] + " " + timeArray2[0] + ":" + timeArray2[1] + "<br/>" +
+						"Gage Height: " + hitData.item.value;
+				} else if (displayName == "All Historic Floods" && series.id == "allHistoricFloodsSeries") {
+					if (hitData.item.code != '' || hitData.item.gageHeight == '') {
+						dataTip = "<b>Gage Height: " + hitData.item.gageHeight + "*</b><br/><b>Date: " + hitData.item.date.split('T')[0] + "</b>";
+					} else {
+						dataTip = "<b>Gage Height: " + hitData.item.gageHeight + "</b><br/><b>Date: " + hitData.item.date.split('T')[0] + "</b>";
+					}
+				} else if (displayName == "Top 10 Floods" && series.id == "top10Floods") {
+					if (hitData.item.code != '') {
+						dataTip = "<b>Gage Height: " + hitData.item.gageHeight + "*</b><br/><b>Date: " + hitData.item.date + "</b>";
+					} else {
+						dataTip = "<b>Gage Height: " + hitData.item.gageHeight + "</b><br/><b>Date: " + hitData.item.date + "</b>";
+					}
+				}
+				
+				return dataTip;
+			}
+			
+			protected function forecast_changeHandler(evt:ItemClickEvent):void
+			{
+				var rbArray:Array = evt.label.split(':');
+				//Alert.show("Value is: " + rbArray[1]);
+			}
+			
+			protected function forecastDateParser(s:String):Date 
+			{
+				var newDateTime:Date = null;
+				
+				if (s != null) {
+					var a:Array = s.split("T");
+					var d:Array = a[0].split("-");
+					var t:Array = a[1].split(":");
+					newDateTime = new Date(d[0],d[1]-1,d[2],t[0],t[1]);
+					//code to adjust for time offset
+					var hoursOffset = int(t[2].split("-")[1]);
+					if (forecastArray != null && hoursOffset == 0 && hydrographArray != null) {
+						hoursOffset = int(hydrographArray[0].dateTime.split("T")[1].split(":")[2].split("-")[1]);
+					
+						newDateTime.setHours(newDateTime.hours - hoursOffset);
+					}
+					
+				}
+				
+				return newDateTime;
+			}
+			
+			private function timeValueAdjust(dateString:String):String {
+				var newDateString:String;
+				
+				var a:Array = dateString.split("T");
+				var d:Array = a[0].split("-");
+				var t:Array = a[1].split(":");
+				var newDateTime:Date = new Date(d[0],d[1]-1,d[2],t[0],t[1]);
+				
+				var hoursOffset = int(t[2].split("-")[1]);
+				if (forecastArray != null && hoursOffset == 0 && hydrographArray != null) {
+					hoursOffset = int(hydrographArray[0].dateTime.split("T")[1].split(":")[2].split("-")[1]);
+					
+					newDateTime.setHours(newDateTime.hours - hoursOffset);
+				}
+				
+				
+				//month
+				var month:String = checkLength((int(newDateTime.month)+1).toString());
+				//day
+				var day:String = checkLength(newDateTime.date.toString());
+				//hours
+				var hours:String = checkLength(newDateTime.hours.toString());
+				
+				
+				newDateString = newDateTime.fullYear + "-" + month + "-" + day + "T" + hours + ":" + t[1] + ":" + t[2];
+				
+				return newDateString;
+			}
+			
+			private function checkLength(s:String):String {
+				var newString:String;
+				
+				if (s.length < 2) {
+					newString = "0" + s;
+				} else {
+					newString = s;
+				}
+				
+				return newString;
+			}
+			
+			private function processConfig(configObject:Object, boxID:String):void {
+				var index:int;
+				if (boxID == "firstBox") { index = 0 } 
+				else if (boxID == "secondBox") { index = 1 } 
+				else if (boxID == "thirdBox") { index = 2 } 
+				else if (boxID == "fourthBox") { index = 3 } 
+				else if (boxID == "fifthBox") { index = 4 }
+				if (configObject.CQL_FILTER != "") {
+					FlexGlobals.topLevelApplication.hazus_cql = configObject.CQL_FILTER;
+				} 
+				if (configObject.LAYERS != "") {
+					FlexGlobals.topLevelApplication.hazus_layers = configObject.LAYERS;
+				}
+				if (configObject.SLD != "") {
+					FlexGlobals.topLevelApplication.hazus_sld = configObject.SLD;
+				}
+				var paramsLen:int = FlexGlobals.topLevelApplication.hazusWMSParams.length;
+				
+				if (paramsLen <= index) {
+					FlexGlobals.topLevelApplication.hazusWMSParams.addItemAt({"CQL_FILTER": configObject.CQL_FILTER, "LAYERS": configObject.LAYERS, "SLD": configObject.SLD}, index);
+				} else {
+					FlexGlobals.topLevelApplication.hazusWMSParams.setItemAt({"CQL_FILTER": configObject.CQL_FILTER, "LAYERS": configObject.LAYERS, "SLD": configObject.SLD}, index);
+				}
+				
+				if (index < paramsLen-1) {
+					for (var i:int = 1; i+index < paramsLen; i++) {
+						FlexGlobals.topLevelApplication.hazusWMSParams.setItemAt({"CQL_FILTER": "", "LAYERS": "", "SLD":""}, index+i);
+					}
+				}
+				
+				var localArrColl:ArrayCollection = FlexGlobals.topLevelApplication.hazusWMSParams;
+			}
+			
+			private function sortComboLists(listCollection:ArrayCollection):void {
+				var sort:Sort = new Sort();
+				sort.fields = [new SortField(null, true)];
+				listCollection.sort = sort;
+				listCollection.refresh();
+			}
+			
+			protected function zoomToFeatures(event:MouseEvent):void {
+				var siteLoc:MapPoint = new MapPoint(siteLng, siteLat, FlexGlobals.topLevelApplication.map.spatialReference);
+				var tempGraphic:Graphic = new Graphic();
+				tempGraphic.geometry = siteLoc;
+				var tempGraphicWM:Graphic = new Graphic();
+				tempGraphicWM.geometry = WebMercatorUtil.geographicToWebMercator(tempGraphic.geometry);
+				
+				FlexGlobals.topLevelApplication.map.centerAt(tempGraphicWM.geometry);
+				FlexGlobals.topLevelApplication.map.level = 13;
+			}
+			
+			private function queryFault(info:Object, token:Object = null) : void {
+				Alert.show(info.toString());
+			}
+			
+			private function collapseOrExpand():void {
+				if (floodTabs.visible == true) {
+					floodTabs.visible = false;
+					floodTabs.includeInLayout = false;
+					zoomToFeaturesOnMap.visible = false;
+					zoomToFeaturesOnMap.includeInLayout = false;
+				} else {
+					floodTabs.visible = true;
+					floodTabs.includeInLayout = true;
+					zoomToFeaturesOnMap.visible = true;
+					zoomToFeaturesOnMap.includeInLayout = true;
+				}
+			}
+			
+			protected function webCam_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function servicesAndData_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				if (data.REALTIME == 0) {
+					floodTabs.selectedIndex = floodTabs.getChildIndex(servicesAndData);
+				}
+			}
+			
+			protected function floodStagesCheck(value:Number):Number {
+				var val:Number;
+				
+				if (value < 0) {
+					val = 0;
+				} else {
+					val = value;
+				}
+				
+				return val;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:HBox id="siteBox" color="white" backgroundColor="0xDDDDDD" horizontalScrollPolicy="off" borderStyle="solid"
+			 paddingBottom="10" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<mx:VBox>
+			<mx:HBox paddingLeft="0" horizontalGap="0">
+				<mx:TabNavigator id="floodTabs" color="black" width="580" height="525" textFieldClass="tabTextWrap" paddingLeft="0" creationPolicy="all"> <!--tabHeight="50" -->
+					<mx:HBox id="floodToolsDeluxe" label="Hydrograph" width="100%" height="100%">
+						<mx:VBox id="floodSliderBoxDeluxe" height="{floodToolsDeluxe.height}" width="{floodToolsDeluxe.width}" includeInLayout="false" verticalAlign="middle" horizontalAlign="center" verticalGap="0">
+							<mx:Label id="siteDescription" text="{siteName}" fontWeight="bold" fontSize="16" />
+							<mx:Label id="siteStatus" text="Provisional and subject to revision" paddingBottom="2" fontWeight="bold" visible="false"/>
+							<mx:AreaChart id="hydrograph" width="95%" height="65%"
+										  showDataTips="true" itemClick="hydroClick(event)" dataTipFunction="dataTipFunction">
+								<mx:annotationElements>
+									<mx:CartesianDataCanvas id="areaLabels" includeInRanges="true" />
+								</mx:annotationElements>
+								<mx:verticalAxis>
+									<mx:LinearAxis id="hydroYAxis"  displayName="Gage height, feet" minimum="{(forecastArray != null &amp;&amp; hydrographArray != null) ? (getMaxMin('min')-2 &lt; 0) ? 0 : getMaxMin('min')-2 : null}" />
+								</mx:verticalAxis>
+								<mx:horizontalAxis>
+									<mx:DateTimeAxis id="dateTimeAxis" dataUnits="hours" parseFunction="forecastDateParser" />
+								</mx:horizontalAxis>
+								
+								<mx:horizontalAxisRenderers>
+									<mx:AxisRenderer axis="{dateTimeAxis}">
+										<mx:axisStroke>{xAxisStroke}</mx:axisStroke>
+										<mx:tickStroke>{xAxisTick}</mx:tickStroke>
+									</mx:AxisRenderer>
+								</mx:horizontalAxisRenderers>
+								<mx:verticalAxisRenderers>
+									<mx:AxisRenderer id="vertAxis" axis="{hydroYAxis}">
+										<mx:axisStroke>{yAxisStroke}</mx:axisStroke>
+										<mx:tickStroke>{yAxisTick}</mx:tickStroke>
+									</mx:AxisRenderer>
+								</mx:verticalAxisRenderers>
+								
+								<mx:series>
+									<mx:AreaSet type="stacked" dataProvider="{floodStages}" >
+										<mx:AreaSeries yField="action" xField="date" displayName="Normal Stage" filterData="false">
+											<mx:areaFill>
+												<mx:SolidColor color="white" alpha="1"/>
+											</mx:areaFill>
+										</mx:AreaSeries>
+										<mx:AreaSeries yField="flood" xField="date" displayName="Action Stage" filterData="false">
+											<mx:areaFill>
+												<mx:SolidColor color="0xFFFF00" alpha="1"/>
+											</mx:areaFill>
+										</mx:AreaSeries>
+										<mx:AreaSeries yField="moderate" xField="date" displayName="Flood Stage" filterData="false">
+											<mx:areaFill>
+												<mx:SolidColor color="0xFF9900" alpha="1"/>
+											</mx:areaFill>
+										</mx:AreaSeries>
+										<mx:AreaSeries yField="major" xField="date" displayName="Moderate Stage" filterData="false">
+											<mx:areaFill>
+												<mx:SolidColor color="0xFF0000" alpha="1"/>
+											</mx:areaFill>
+										</mx:AreaSeries>
+										<mx:AreaSeries yField="record" xField="date" displayName="Major Stage" filterData="false">
+											<mx:areaFill>
+												<mx:SolidColor color="0xCC33FF" alpha="1"/>
+											</mx:areaFill>
+										</mx:AreaSeries>
+									</mx:AreaSet>
+									<mx:PlotSeries id="presentLine" itemRenderer="renderers.DottedLineRenderer" dataProvider="{presentTimeData}" xField="x" yField="y" interactive="false" />
+									<!--<mx:LineSeries id="presentTime" xField="x" yField="y" form="vertical" dataProvider="{presentTimeData}" interactive="false" >
+										<mx:lineStroke>
+											<s:SolidColorStroke id="gray"
+												color="gray"
+												weight="2" 
+												alpha="0.8" />
+										</mx:lineStroke>
+									</mx:LineSeries>-->
+									<mx:LineSeries id="USGS" displayName="{(int(siteNo) == 0) ? 'NWS' : 'USGS'}" xField="{(int(siteNo) == 0) ? 'valid' : 'dateTime'}" yField="{(int(siteNo) == 0) ? 'primary' : 'value'}" form="curve" dataProvider="{hydrographArray}">
+										<mx:lineStroke>
+											<mx:SolidColorStroke 
+												color="black" 
+												weight="4"/>
+										</mx:lineStroke>
+									</mx:LineSeries>
+									<mx:LineSeries id="NWS" displayName="NWS" xField="valid" yField="primary" form="curve" dataProvider="{forecastArray}" >
+										<mx:lineStroke>
+											<mx:SolidColorStroke 
+												color="black" 
+												weight="2"/>
+										</mx:lineStroke>
+									</mx:LineSeries>
+									<mx:PlotSeries id="NWSpoints" displayName="NWSpoints" radius="4" itemRenderer="mx.charts.renderers.CircleItemRenderer" xField="valid" yField="primary" dataProvider="{forecastArray}" interactive="false">
+										<mx:fill>
+											<mx:SolidColor 
+												color="white" />
+										</mx:fill>
+										<mx:stroke>
+											<s:SolidColorStroke
+												color="black"
+												weight="1" />
+										</mx:stroke>
+									</mx:PlotSeries>
+								</mx:series>
+							</mx:AreaChart>
+							<mx:VBox width="95%" fontSize="12" paddingTop="10" verticalGap="0">
+								<!--<mx:HBox id="currentValueDeluxe" horizontalGap="0" textAlign="left" >
+									<mx:Label text="Gage Height: " fontWeight="bold" />
+									<mx:Label id="thumbLabelDeluxe" color="red" fontWeight="bold" text="{gageValues.getItemAt(floodSlider.value).gageValue}" />
+									<mx:Text text="feet" />
+								</mx:HBox>
+								<mx:HBox id="currentAltitudeDeluxe" horizontalGap="0" textAlign="left" >
+									<mx:Label text="NAVD88 Altitude: " fontWeight="bold" />
+									<mx:Label color="red" fontWeight="bold" text="{altitudeValues.getItemAt(floodSlider.value).altitudeValue}" />
+									<mx:Text text="feet" />
+								</mx:HBox>-->
+								<mx:HBox verticalGap="0" horizontalAlign="center"><mx:Text text="Current Gage Height: " fontWeight="bold" />
+									<mx:Text text="{(gageHeight == null) ? 'n/a': gageHeight + ' feet'}" />
+								</mx:HBox>
+								<!--<mx:HBox verticalGap="0" horizontalAlign="center"><mx:Text text="Current NAVD88 Altitude: " fontWeight="bold" />
+									<mx:Text text="{(navd88Alt == null) ? 'n/a': navd88Alt + ' feet'}" />
+								</mx:HBox>
+								--><mx:HBox verticalGap="0" horizontalAlign="center"><mx:Text text="Discharge: " fontWeight="bold" />
+									<mx:Text text="{(discharge == null) ? 'n/a': discharge + ' cfs'}" />
+								</mx:HBox>
+								<mx:VBox paddingTop="10" fontWeight="bold" verticalGap="0">
+									<mx:HBox horizontalGap="0">
+										<mx:Label text="USGS Site Number: "/>
+										<mx:Label text="{siteNo}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" click="navigateToURL(new URLRequest('http://waterdata.usgs.gov/nwis/uv?site_no='+siteNo))" />
+										<mx:Label text=" Provisional Data, Subject to Revision" />
+									</mx:HBox>
+									<!--<mx:HBox id="ahpsSiteLink" horizontalGap="0" visible="{ahpsID != 'NONE'}" includeInLayout="{ahpsSiteLink.visible}">
+										<mx:Label text="NWS Site ID: " />
+										<mx:Label text="{ahpsID.toUpperCase()}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" click="navigateToURL(new URLRequest('http://water.weather.gov/ahps2/hydrograph.php?gage='+ahpsID))" />
+										<mx:Label text=" Forecast Subject to Revision" />
+									</mx:HBox>-->
+								</mx:VBox>
+							</mx:VBox>
+						</mx:VBox>
+						<s:BorderContainer id="floodSliderMask" visible="{hydrographArray == null}" borderVisible="false"  borderWeight="0" height="{floodToolsDeluxe.height}" width="{floodToolsDeluxe.width}" includeInLayout="false" >
+							<s:layout> 
+								<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/> 
+							</s:layout> 
+							<s:Label text="... Loading ..." fontSize="16" color="blue" />
+						</s:BorderContainer>
+						<s:BorderContainer id="floodNoRTData" visible="{data.REALTIME == 0}" borderVisible="false"  borderWeight="0" height="{floodToolsDeluxe.height}" width="{floodToolsDeluxe.width}" includeInLayout="false" >
+							<s:layout> 
+								<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/> 
+							</s:layout> 
+							<s:Label text="There are no real-time data available for this site" fontSize="16" color="blue" />
+						</s:BorderContainer>
+					</mx:HBox>
+					<mx:Box id="historicalFloodingBox" label="Historical Flooding">
+						<mx:VBox id="historicalFloodingBoxDeluxe" height="{historicalFloodingBox.height}" width="{historicalFloodingBox.width}" x="{historicalFloodingBox.x}" y="{historicalFloodingBox.y}" includeInLayout="false" verticalAlign="middle" horizontalAlign="center" verticalGap="0">
+							<!-- New method for an interactive chart for historical flooding. -->
+							<mx:TabNavigator width="100%" height="100%" visible="{(historicPeakResultReturned == true &amp;&amp; historicPeakResultIWant == true) ? true : false}">
+								<mx:VBox id="top10Peaks" label="Top 10 Annual Flood Peaks" horizontalAlign="center">
+									<mx:Text text="Top 10 Annual Flood Peaks for {siteCommunity}" fontSize="16" fontWeight="normal" maxWidth="{top10Peaks.width-30}" />
+									<mx:AreaChart id="top10Chart" width="95%" height="65%"
+												  showDataTips="true"  itemClick="historicFloodsClick(event)" dataTipFunction="dataTipFunction">
+										<!--<mx:annotationElements>
+											<mx:CartesianDataCanvas id="areaLabels" includeInRanges="true" />
+										</mx:annotationElements>-->
+										<mx:verticalAxis>
+											<mx:LinearAxis id="top10YAxis" displayName="Gage height, feet" 
+														   minimum="0" 
+														   maximum="{(floodStages != null) ? (floodStagesCheck(Number(floodStages[0].action))+floodStagesCheck(Number(floodStages[0].flood))+floodStagesCheck(Number(floodStages[0].major))+floodStagesCheck(Number(floodStages[0].moderate))+floodStagesCheck(Number(floodStages[0].record))+1) : null}"  />
+										</mx:verticalAxis>
+										<mx:horizontalAxis>
+											<mx:CategoryAxis id="top10Dates" dataProvider="{top10HistoricFloods}" categoryField="date"  />
+										</mx:horizontalAxis>
+										
+										<mx:horizontalAxisRenderers>
+											<mx:AxisRenderer labelRotation="-45" axis="{top10Dates}" tickLength="0">
+												<mx:axisStroke>{xAxisStroke}</mx:axisStroke>
+												<mx:tickStroke>{top10xAxisTick}</mx:tickStroke>
+											</mx:AxisRenderer>
+										</mx:horizontalAxisRenderers>
+										<mx:verticalAxisRenderers>
+											<mx:AxisRenderer id="top10VertAxis" axis="{top10YAxis}">
+												<mx:axisStroke>{yAxisStroke}</mx:axisStroke>
+												<mx:tickStroke>{yAxisTick}</mx:tickStroke>
+											</mx:AxisRenderer>
+										</mx:verticalAxisRenderers>
+										
+										<mx:series>
+											<mx:AreaSet type="stacked" dataProvider="{top10HistoricFloodStages}" interactive="false" >
+												<mx:AreaSeries yField="action" xField="date" displayName="Normal Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="white" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+												<mx:AreaSeries yField="flood" xField="date" displayName="Action Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="0xFFFF00" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+												<mx:AreaSeries yField="moderate" xField="date" displayName="Flood Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="0xFF9900" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+												<mx:AreaSeries yField="major" xField="date" displayName="Moderate Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="0xFF0000" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+												<mx:AreaSeries yField="record" xField="date" displayName="Major Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="0xCC33FF" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+											</mx:AreaSet>
+											<mx:ColumnSeries 
+												id="top10Floods"
+												xField="date" 
+												yField="gageHeight"
+												displayName="Top 10 Floods"
+												dataProvider="{top10HistoricFloods}"
+												fill="{top10FloodsColumnFill}"/>
+											<mx:ColumnSeries 
+												xField="date" 
+												yField="gageHeight"
+												interactive="false"
+												displayName="All Historic Floods"
+												dataProvider="{top10HistoricFloods.getItemAt(1)}"
+												width="2"
+												fill="{currentTop10FloodsColumnFill}"/>
+										</mx:series>
+									</mx:AreaChart>
+									<mx:Text width="500" fontWeight="normal" htmlText="Click on an historical flood to see the estimated extent. Due to changes in the channel and urbanization over time, these areas are only an estimate using {siteInfo.getItemAt(0).study_date} modeled conditions. These numbers are provided for historical context only and are not reviewed inundation areas for the selected flood height." fontSize="12"/>
+									<mx:Text width="500" fontWeight="normal" htmlText="*Please visit the &lt;font color='#0000FF'&gt;&lt;a target=&quot;_blank&quot; href=&quot;http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&amp;site_no={siteNo}&quot;&gt;USGS NWIS Flood Peaks Page&lt;/a&gt;&lt;/font&gt; for more information on flagged peaks and the full flood peak record." fontSize="12"/>
+								</mx:VBox>
+								<mx:VBox id="annualPeaks" label="Annual Flood Peaks" horizontalAlign="center">
+									<mx:Text text="Annual Flood Peaks for {siteCommunity}" fontSize="16" fontWeight="normal" maxWidth="{annualPeaks.width-30}" />
+									<mx:AreaChart id="annualPeaksChart" width="95%" height="65%"
+												  showDataTips="true" itemClick="historicFloodsClick(event)" dataTipFunction="dataTipFunction" 
+												  creationComplete="adjustAllFloodStagesData(event)">
+										<!--<mx:annotationElements>
+										<mx:CartesianDataCanvas id="areaLabels" includeInRanges="true" />
+										</mx:annotationElements>-->
+										<mx:verticalAxis>
+											<mx:LinearAxis id="annualPeaksYAxis"  displayName="Gage height, feet" 
+														   minimum="0" 
+														   maximum="{(floodStages != null) ? (floodStagesCheck(Number(floodStages[0].action))+floodStagesCheck(Number(floodStages[0].flood))+floodStagesCheck(Number(floodStages[0].major))+floodStagesCheck(Number(floodStages[0].moderate))+floodStagesCheck(Number(floodStages[0].record))+1) : null}"  />
+										</mx:verticalAxis>
+										<mx:horizontalAxis>
+											<mx:DateTimeAxis id="annualPeaksDateTimeAxis" dataUnits="hours" parseFunction="forecastDateParser"  />
+										</mx:horizontalAxis>
+										
+										<mx:horizontalAxisRenderers>
+											<mx:AxisRenderer axis="{annualPeaksDateTimeAxis}">
+												<mx:axisStroke>{xAxisStroke}</mx:axisStroke>
+												<mx:tickStroke>{xAxisTick}</mx:tickStroke>
+											</mx:AxisRenderer>
+										</mx:horizontalAxisRenderers>
+										<mx:verticalAxisRenderers>
+											<mx:AxisRenderer id="annualPeaksVertAxis" axis="{annualPeaksYAxis}">
+												<mx:axisStroke>{yAxisStroke}</mx:axisStroke>
+												<mx:tickStroke>{yAxisTick}</mx:tickStroke>
+											</mx:AxisRenderer>
+										</mx:verticalAxisRenderers>
+										
+										<mx:series>
+											<mx:AreaSet type="stacked" dataProvider="{allHistoricFloodStages}" interactive="false">
+												<mx:AreaSeries yField="action" xField="date" displayName="Normal Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="white" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+												<mx:AreaSeries yField="flood" xField="date" displayName="Action Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="0xFFFF00" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+												<mx:AreaSeries yField="moderate" xField="date" displayName="Flood Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="0xFF9900" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+												<mx:AreaSeries yField="major" xField="date" displayName="Moderate Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="0xFF0000" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+												<mx:AreaSeries yField="record" xField="date" displayName="Major Stage" filterData="false">
+													<mx:areaFill>
+														<mx:SolidColor color="0xCC33FF" alpha="1"/>
+													</mx:areaFill>
+												</mx:AreaSeries>
+											</mx:AreaSet>
+											<mx:ColumnSeries 
+												id="allHistoricFloodsSeries"
+												xField="date" 
+												yField="gageHeight"
+												displayName="All Historic Floods"
+												dataProvider="{allHistoricFloods}"
+												fill="{allHistoricFloodsColumnFill}"
+												stroke="{allHistoricFloodsColumnStroke}" />
+											<mx:PlotSeries 
+												yField="gageHeight"
+												xField="date"
+												interactive="false"
+												displayName="All Historic Floods"
+												dataProvider="{allHistoricFloods}"
+												fill="{allHistoricFloodsFill}" 
+												radius="4"
+												itemRenderer="mx.charts.renderers.CircleItemRenderer"/>
+										</mx:series>
+									</mx:AreaChart>
+									<mx:Text width="500" fontWeight="normal" htmlText="Click on an historical flood to see the estimated extent. Due to changes in the channel and urbanization over time, these areas are only an estimate using {siteInfo.getItemAt(0).study_date} modeled conditions. These numbers are provided for historical context only and are not reviewed inundation areas for the selected flood height." fontSize="12"/>
+									<mx:Text width="500" fontWeight="normal" htmlText="*Please visit the &lt;font color='#0000FF'&gt;&lt;a target=&quot;_blank&quot; href=&quot;http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&amp;site_no={siteNo}&quot;&gt;USGS NWIS Flood Peaks Page&lt;/a&gt;&lt;/font&gt; for more information on flagged peaks and the full flood peak record." fontSize="12"/>
+								</mx:VBox>
+							</mx:TabNavigator>
+						</mx:VBox>
+						<!-- For sites with no peak result from nwis -->
+						<s:VGroup width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" visible="{(historicPeakResultReturned == true &amp;&amp; historicPeakResultIWant == false) ? true : false}" includeInLayout="{(historicPeakResultReturned == true &amp;&amp; historicPeakResultIWant == false) ? true : false}">
+							<mx:Text id="historicalChartText" width="500" htmlText="Please visit the full &lt;font color='#0000FF'&gt;&lt;a target=&quot;_blank&quot; href=&quot;http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&amp;site_no={siteNo}&quot;&gt;USGS NWIS Site page&lt;/a&gt;&lt;/font&gt; for full site information." fontSize="12"/>
+							<mx:Image id="historicalFloodingChart" width="95%" height="343" source="http://waterwatch.usgs.gov/wwapps/ftc.php?site_no={siteNo}&amp;width={historicalFloodingChart.width}&amp;height={historicalFloodingChart.height}" />
+						</s:VGroup>
+						<!-- Mask until result is returned -->
+						<s:BorderContainer id="historicFloodingMask" visible="{(historicPeakResultReturned == false) ? true : false}" top="{historicalFloodingBox.top}" left="{historicalFloodingBox.left}"  borderVisible="false"  borderWeight="0" height="{historicalFloodingBox.height}" width="{historicalFloodingBox.width}" includeInLayout="false">
+							<s:layout>
+								<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/> 
+							</s:layout> 
+							<s:Label text="There are no historical data available for this site" fontSize="16" fontWeight="bold" visible="{(int(siteNo) == 0) ? true : false}" includeInLayout="{(int(siteNo) == 0) ? true : false}" />
+							<s:Label text="... Loading ..." fontSize="16" fontWeight="normal" color="blue" visible="{(int(siteNo) != 0) ? true : false}" includeInLayout="{(int(siteNo) != 0) ? true : false}"  />
+						</s:BorderContainer>
+					</mx:Box>
+					<mx:VBox id="servicesAndData" label="Services and Data" paddingBottom="10" paddingLeft="10" paddingRight="10" horizontalAlign="left" styleName="siteContain" creationComplete="servicesAndData_creationCompleteHandler(event)" >
+						<mx:HBox width="100%" creationComplete="projInfoGet(event)">
+							<mx:VBox>
+								<mx:VBox verticalGap="0">
+									<mx:Text text="Sign up for WaterAlert for this site" fontSize="18" fontWeight="bold"/>
+									<mx:Text text="Water information texted directly to you..." fontSize="12" fontWeight="bold" />
+									<mx:Text htmlText="simply subscribe to &lt;a href=&quot;http://water.usgs.gov/wateralert/subscribe/?fim=1&amp;intro=1&amp;site_no={siteNo}&amp;agency_cd=USGS&amp;type_cd=st&amp;parms=00065&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;WaterAlert!&lt;/u&gt;&lt;/a&gt;" toolTip="Sign up for WaterAlert for this site" fontSize="12"  fontWeight="bold" />
+								</mx:VBox>
+								<mx:VBox>
+									<mx:Text paddingTop="15" text="Project Contacts for more information" fontSize="18" fontWeight="bold" />
+									<mx:VBox id="createdByBox" verticalGap="0" visible="false" includeInLayout="false">
+									</mx:VBox>
+									<mx:VBox id="reviewedByBox" visible="false" includeInLayout="false" verticalGap="0" paddingTop="15">
+									</mx:VBox>
+								</mx:VBox>
+							</mx:VBox>											
+							<mx:HBox horizontalAlign="right" width="100%">
+								<mx:Image source="./assets/images/IWRSSlogo.jpg" />
+							</mx:HBox>
+						</mx:HBox>					
+						<mx:HBox paddingTop="25">
+							<mx:VBox>
+								<mx:Text text="Data Downloads and Metadata" width="200" fontSize="18" fontWeight="bold" />
+								<mx:Text width="200" text="No downloads are currently available for this site" includeInLayout="{(siteInfo.getItemAt(0).data_link == 'NONE') ? true : false}" visible="{(siteInfo.getItemAt(0).data_link == 'NONE') ? true : false}" />
+								<mx:Text text="Download Data" visible="{(siteInfo.getItemAt(0).data_link != 'NONE') ? true : false}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Data Download" click="navigateToURL(new URLRequest(siteInfo.getItemAt(0).data_link))" />
+							</mx:VBox>
+							<mx:HBox>
+								<mx:Image id="repthumb" visible="{(siteInfo.getItemAt(0).report_link != 'NONE') ? true : false}" width="125" height="161" source="{siteInfo.getItemAt(0).report_link + 'images/' + siteInfo.getItemAt(0).rep_thumb}" />
+								<mx:VBox>
+									<mx:Text text="References" fontSize="18" fontWeight="bold"/>
+									<mx:Text width="200" text="Report not currently available for this site" includeInLayout="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" visible="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" />
+									<mx:Text text="Download Report" styleName="line" visible="{(siteInfo.getItemAt(0).report_title != 'NONE') ? true : false}" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Go to Report" click="navigateToURL(new URLRequest(siteInfo.getItemAt(0).report_link))" fontSize="12" fontWeight="bold" />
+								</mx:VBox>
+							</mx:HBox>
+						</mx:HBox>					
+						<mx:HBox verticalAlign="bottom" width="100%" paddingTop="12">
+							<mx:HBox id="coopLogoBox" horizontalAlign="left" width="50%">
+							</mx:HBox>
+							<mx:HBox horizontalAlign="right" width="50%" paddingRight="10">
+								<mx:Image source="./assets/images/noaaLogo.png" />
+								<mx:Image source="./assets/images/usgsGreen.gif" />
+							</mx:HBox>
+						</mx:HBox>
+						<mx:HBox horizontalAlign="right" width="100%" paddingRight="10">
+							<s:VGroup>
+								<s:Label text="Disclaimer" toolTip="Click for more information" styleName="line" buttonMode="true" height="12" left="3" top="10" right="5" verticalAlign="bottom" click="FlexGlobals.topLevelApplication.mainDisclaimer.visible = true;" />	
+								<s:Label text="NWS Feedback Form" styleName="line" buttonMode="true" height="12" left="3" top="10" right="5" verticalAlign="bottom" click="navigateToURL(new URLRequest('http://www.nws.noaa.gov/survey/nws-survey.php?code=inundate'))" />	
+							</s:VGroup>
+						</mx:HBox>
+					</mx:VBox>
+					<mx:VBox id="moreInfoTab" includeIn="info,hazusAndInfo" label="More Info" paddingBottom="10" paddingLeft="20" paddingRight="10" horizontalAlign="left" styleName="siteContain" >
+						<mx:HBox width="100%" height="100%" verticalAlign="top" paddingTop="20">
+							<mx:Text id="moreInfoText" text="{moreInfo}" width="80%" fontWeight="normal" />
+						</mx:HBox>
+					</mx:VBox>
+				</mx:TabNavigator>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+	<!--<mx:Image id="expandCollapseButton" source="{(floodTabs.visible) ? './assets/images/collapse_button.png' : './assets/images/expand_button.png'}" right="{(floodTabs.visible) ? 7 : 1}" top="{(floodTabs.visible) ? 40 : 20}" click="collapseOrExpand()" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="{(floodTabs.visible) ? 'Click to collapse' : 'Click to expand'}"  />-->
+</wim:WiMInfoWindow>

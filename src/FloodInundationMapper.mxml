@@ -1,0 +1,1079 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 03.18.15 - NE - Test comment. -->
+<!-- 07.25.13 - NE - Added services for three site libraries. -->
+<!-- 04.22.13 - NE - Added new legend behavior and legend for fimi sites. -->
+<!-- 04.15.13 - NE - Added legend for fimi sites. -->
+<!-- 04.01.13 - NE - Added beta print capability. -->
+<!-- 09.10.12 - NE - Added USGS header links. -->
+<!-- 08.14.12 - NE - Added legend for supplemental info. -->
+<!-- 08.14.12 - NE - Added layer for supplemental info such as levee locations and flood study area boundaries. -->
+<!-- 08.06.12 - NE - Added line to access header title from resource file. -->
+<!-- 07.13.12 - NE - Edited labels for AHPS layer toggles to match layer names on legend. -->
+<!-- 07.11.12 - NE - Added legend for AHPS sites. -->
+<!-- 07.11.12 - NE - Removed AHPS marker symbology and feature layers. Replaced with dynamic layer from same NWS service that will show all points and use NWS symbology. -->
+<!-- 07.09.12 - NE - Updated code to use resource file. -->
+<!-- 05.17.12 - NE - Reverted to original header with USGS logo. -->
+<!-- 04.23.12 - NE - Changed references to hazus-ws-staging to hazus-ws. -->
+<!-- 04.10.12 - NE - Changed behavior of more info box from disclaimer style to bordercontainer. -->
+<!-- 03.26.12 - NE - Changed header. -->
+<!-- 03.14.12 - NE - Updated water depth tooltip text. -->
+<!-- 03.12.12 - NE - Added new WimDisclaimer component to contain disclaimer text, plus background info, related etc. -->
+<!-- 02.22.12 - NE - Updated NWS AHPS site layer to work with changed services. -->
+<!-- 02.08.12 - NE - Small cleanup to code and fix to attribute error in flood_extents_multi_site query handling. -->
+<!-- 02.06.12 - NE - Added key combo to show tools for adjusting hydrograph for demo purposes. -->
+<!-- 01.06.12 - NE - Removed print button. -->
+<!-- 01.06.12 - NE - Fixed error in print button url. -->
+<!-- 12.08.11 - NE - Updated to use new model for Hazus WMS. -->
+<!-- 12.05.11 - NE - Updated disclaimer. -->
+<!-- 12.05.11 - NE - Major addition of Hazus mapping service and quick assessment tweaks. -->
+<!-- 10.27.11 - NE - Reordered AHPS sites in available layers list. -->
+<!-- 10.27.11 - NE - Updates to sites data. Adjusted AHPS layers for forecast rather than observed. Initial adding of WMS Layer. -->
+<!-- 10.19.11 - NE - Updated AHPS layers to handle opacity as group. -->
+<!-- 10.14.11 - NE - Removed FIMI sites layer toggle. -->
+<!-- 10.10.11 - NE - Updated FIMI site graphics to SimpleSymbol from png image. Added FIMI Site layer toggle. -->
+<!-- 10.10.11 - NE - Moved coordinate transformation as code to as file. -->
+<!-- 10.07.11 - NE - Updated AHPS site layer functionality. -->
+<!-- 08.17.11 - NE - Updated UI components for basemap selector and full screen option. -->
+<!-- 06.13.11 - NE - Updated disclaimer text. -->
+<!-- 04.27.11 - NE - Added multi site flood library capability.  Updated disclaimer to WiM component. Added wrapAround180 map property to true. Fixed lod bug for labels and imagery baselayer. Minor UI tweaks. -->
+<!-- 03.22.11 - NE - Set AHPS sites to be hidden on initial load. -->
+<!-- 03.17.11 - NE - Added disclaimer. -->
+<!-- 02.08.11 - DRM - Added libraries for coordinate transformations -->
+<!-- 12.02.10 - NE - Added print button. -->
+<!-- 12.02.10 - NE - Added new NEXRAD service with correct projection. -->
+<!-- 11.17.10 - NE - Added grid query capability. -->
+<!-- 11.15.10 - NE - Added flood task to return flood extent graphics -->
+<!-- 11.12.10 - NE - Updated symbology and initial extent.  -->
+<!-- 11.04.10 - NE - Addition and use of FloodToolsWindow.mxml for subclass component -->
+<!-- 10.26.10 - NE - Initial Check-in 2.0 version of mapper.  Based on code from previous version. -->
+<!-- End as template -->
+<!-- 06.28.10 - JB - Added new Wim LayerLegend component -->
+<!-- 05.25.10 - JB - Cleared FWS references from print template -->
+<!-- 03.26.10 - JB - Initial template creation. -->
+<mx:Application
+	xmlns:mx="library://ns.adobe.com/flex/mx" 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark"
+	xmlns:esri="http://www.esri.com/2008/ags"
+	xmlns:wim="gov.usgs.wim.controls.*"
+	xmlns:localControls="controls.*"
+	xmlns:navigationClasses="com.esri.ags.controls.navigationClasses.*"
+	pageTitle="USGS Flood Inundation Mapper" 
+	creationComplete="setUp()"
+	layout="absolute">
+	
+	<fx:Style source="assets/styles/main.css"/>
+	
+	<fx:Script>
+		<![CDATA[
+			protected function weather_faultHandler(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				Alert.show('weather error');
+				var testVar:String = "";
+			}
+		]]>
+	</fx:Script>
+	
+	
+	<fx:Script source="FloodInundationMapper.as" />
+
+	<fx:Declarations>
+		
+		<esri:NavigationTool id="navToolbar" map="{map}"/>
+		
+		
+		<esri:Locator id="locator"
+					  outSpatialReference="{map.spatialReference}"
+					  url="http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"/>
+		
+		<esri:SimpleFillSymbol id="aQuerySym" style="solid" color="0x0000FF" alpha="1.00">
+			<esri:outline>
+				<esri:SimpleLineSymbol style="solid" color="0x000000" width="2" />
+			</esri:outline>
+		</esri:SimpleFillSymbol>
+		
+		<esri:SimpleFillSymbol id="bQuerySym" style="solid" color="0x00FF00" alpha="1.00">
+			<esri:outline>
+				<esri:SimpleLineSymbol style="solid" color="0x000000" width="2" />
+			</esri:outline>
+		</esri:SimpleFillSymbol>
+		
+		<esri:SimpleMarkerSymbol
+			id="siteSym"
+			alpha="1" style="triangle"
+			color="black"
+			size="{(map.level &lt; 10) ? 12 : (map.level &gt; 13) ? 18 : 15}">
+			<esri:outline>
+				<esri:SimpleLineSymbol color="#000000" width="1" />
+			</esri:outline>
+		</esri:SimpleMarkerSymbol>
+		
+		<!-- site symbols that reflect flood condition -->
+		<esri:SimpleMarkerSymbol
+			id="siteSymMajor"
+			alpha="1" style="triangle"
+			color="black"
+			size="{(map.level &lt; 10) ? 12 : (map.level &gt; 13) ? 18 : 15}">
+			<esri:SimpleLineSymbol width="2"
+								   color="purple"
+								   style="solid" />
+		</esri:SimpleMarkerSymbol>
+		<esri:SimpleMarkerSymbol
+			id="siteSymModerate"
+			alpha="1" style="triangle"
+			color="black"
+			size="{(map.level &lt; 10) ? 12 : (map.level &gt; 13) ? 18 : 15}">
+			<esri:SimpleLineSymbol width="2"
+								   color="red"
+								   style="solid" />
+		</esri:SimpleMarkerSymbol>
+		<esri:SimpleMarkerSymbol
+			id="siteSymMinor"
+			alpha="1" style="triangle"
+			color="black"
+			size="{(map.level &lt; 10) ? 12 : (map.level &gt; 13) ? 18 : 15}">
+			<esri:SimpleLineSymbol width="2"
+								   color="0xFF6600"
+								   style="solid" />
+		</esri:SimpleMarkerSymbol>
+		<esri:SimpleMarkerSymbol
+			id="siteSymNear"
+			alpha="1" style="triangle"
+			color="black"
+			size="{(map.level &lt; 10) ? 12 : (map.level &gt; 13) ? 18 : 15}">
+			<esri:SimpleLineSymbol width="2"
+								   color="yellow"
+								   style="solid" />
+		</esri:SimpleMarkerSymbol>
+		<esri:SimpleMarkerSymbol
+			id="siteSymNo"
+			alpha="1" style="triangle"
+			color="black"
+			size="{(map.level &lt; 10) ? 12 : (map.level &gt; 13) ? 18 : 15}">
+			<esri:SimpleLineSymbol width="2"
+								   color="green"
+								   style="solid" />
+		</esri:SimpleMarkerSymbol>
+		<!-- end site symbols that reflect flood condition -->
+		
+		<esri:QueryTask id="siteTask" url="{resourceManager.getString('urls', 'fimiSitesUrl')}" disableClientCaching="true" useAMF="false" />
+		<esri:Query id="siteQuery" returnGeometry="true" outFields="*" where="Public = 1"/>
+		
+		<esri:QueryTask id="floodTask" useAMF="false" url="{resourceManager.getString('urls', 'floodExtentsUrl')}" disableClientCaching="true" />       
+		<esri:Query id="floodQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>STAGE</fx:String>
+				<fx:String>ELEV</fx:String>
+				<fx:String>USGSID</fx:String>
+				<fx:String>GRIDID</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		<!-- Simple query for getting library extent -->
+		<esri:Query id="libraryEnvQuery" returnGeometry="true" maxAllowableOffset="1000">
+		</esri:Query>
+		
+		<esri:QueryTask id="breachTask" useAMF="false" url="{resourceManager.getString('urls', 'breachUrl')}" disableClientCaching="true" />       
+		<esri:Query id="breachQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>STAGE</fx:String>
+				<fx:String>ELEV</fx:String>
+				<fx:String>USGSID</fx:String>
+				<fx:String>GRIDID</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:QueryTask id="floodMultiTask" useAMF="false" url="{resourceManager.getString('urls', 'floodExtentsMultiUrl')}" disableClientCaching="true" />       
+		<esri:Query id="floodMultiQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>STAGE_1</fx:String>
+				<fx:String>ELEV_1</fx:String>
+				<fx:String>USGSID_1</fx:String>
+				<fx:String>STAGE_2</fx:String>
+				<fx:String>ELEV_2</fx:String>
+				<fx:String>USGSID_2</fx:String>
+				<fx:String>GRIDID</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:QueryTask id="floodMultiThreeSiteTask" useAMF="false" url="{resourceManager.getString('urls', 'floodExtentsMultiUrl')}" disableClientCaching="true" />       
+		<esri:Query id="floodMultiThreeSiteQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>STAGE_1</fx:String>
+				<fx:String>ELEV_1</fx:String>
+				<fx:String>USGSID_1</fx:String>
+				<fx:String>STAGE_2</fx:String>
+				<fx:String>ELEV_2</fx:String>
+				<fx:String>USGSID_2</fx:String>
+				<fx:String>GRIDID</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:QueryTask id="floodMultiAllThreeSiteTask" useAMF="false" url="{resourceManager.getString('urls', 'floodExtentsThreeUrl')}" disableClientCaching="true" />       
+		<esri:Query id="floodMultiAllThreeSiteQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>STAGE_1</fx:String>
+				<fx:String>ELEV_1</fx:String>
+				<fx:String>USGSID_1</fx:String>
+				<fx:String>STAGE_2</fx:String>
+				<fx:String>ELEV_2</fx:String>
+				<fx:String>USGSID_2</fx:String>
+				<fx:String>STAGE_3</fx:String>
+				<fx:String>ELEV_3</fx:String>
+				<fx:String>USGSID_3</fx:String>
+				<fx:String>GRIDID</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:QueryTask id="breachMultiTask" useAMF="false" url="{resourceManager.getString('urls', 'floodBreachMultiUrl')}" disableClientCaching="true"/>       
+		<esri:Query id="breachMultiQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>STAGE_1</fx:String>
+				<fx:String>ELEV_1</fx:String>
+				<fx:String>USGSID_1</fx:String>
+				<fx:String>STAGE_2</fx:String>
+				<fx:String>ELEV_2</fx:String>
+				<fx:String>USGSID_2</fx:String>
+				<fx:String>GRIDID</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:IdentifyTask id="identifyTask"            
+						   concurrency="last"        
+						   showBusyCursor="true"    
+						   url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}"
+						   disableClientCaching="true"/>
+		
+		<esri:IdentifyTask id="ahpsIdentifyTask"            
+						   concurrency="last"        
+						   showBusyCursor="true"     
+						   url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}" 
+						   disableClientCaching="true"/>
+		
+		<esri:IdentifyTask id="nwisIdentifyTask"            
+						   concurrency="last"        
+						   showBusyCursor="true"     
+						   url="{resourceManager.getString('urls', 'nwisSites')}" 
+						   disableClientCaching="true"/>
+		
+		<mx:WipeLeft id="wipeShow" showTarget="true" />
+		<mx:WipeRight id="wipeHide" showTarget="false" />
+		
+		<s:RadioButtonGroup id="qpfOpt" />
+		
+		
+		<!-- Info Box Symbol for displaying layer query results -->
+		
+		<esri:InfoSymbol id="gridSym" containerStyleName="wetInfo" >
+			<esri:infoRenderer>
+				<fx:Component>
+					<mx:VBox styleName="infoBox" width="100%" >		   				
+						<fx:Style source="assets/styles/infoSymbolBox.css"/>
+						<fx:Script>
+							<![CDATA[
+								
+							]]>
+						</fx:Script>
+						<mx:VBox styleName="siteContain" width="100%" textAlign="center">
+							<mx:HBox horizontalGap="0">
+								<mx:Text text="Water Depth: " color="white" fontWeight="bold" />
+								<mx:Text color="white" text="{(data.value != 'NoData') ? data.value + ' ft' : '...'}" />
+								<s:HGroup paddingLeft="5" visible="{(data.currentRepLink != 'NONE') ? true : false}" includeInLayout="{(data.currentRepLink != 'NONE') ? true : false}">
+									<s:Group>
+										<s:Ellipse width="12" height="12" top="1">
+											<s:fill><s:SolidColor color="gray" /></s:fill>
+										</s:Ellipse>
+										<s:Label text="?" click="navigateToURL(new URLRequest(data.currentRepLink))" fontWeight="bold" 
+												 toolTip="Water depth is the elevation difference between the modeled water surface and the measured land surface.  A range is shown to reflect the accuracy of the modeling and measurements. Depth ranges in the channel area may reflect a higher level of inaccuracy due to challenges in estimating channel depths. Please click to see the full report for more information." 
+												 buttonMode="true" height="12" left="3" top="1" verticalAlign="bottom" />	
+									</s:Group>
+								</s:HGroup>
+							</mx:HBox>
+						</mx:VBox>
+					</mx:VBox>
+				</fx:Component>
+			</esri:infoRenderer>
+		</esri:InfoSymbol>
+		
+		<!-- InfoSymbol for AHPS Forecast site queries -->
+		<esri:InfoSymbol id="ahpsForecastSym" containerStyleName="queryInfoBox" >
+			<esri:infoRenderer>
+				<fx:Component>
+					<mx:VBox styleName="infoBox" width="100%">		   				
+						<fx:Style source="assets/styles/infoSymbolBox.css"/>
+						<fx:Script>
+							<![CDATA[
+								import mx.controls.Alert;
+								
+								private function infoClear():void
+								{
+									parent.parent.visible = false;
+								}
+								
+							]]>
+						</fx:Script>
+						<mx:HBox width="100%">
+							<mx:Label text="Flood Stage: {data.status}" color="black" fontWeight="bold" fontSize="12" />
+							<mx:HBox width="100%" horizontalGap="0" />
+							<mx:Button id="closeButton" styleName="InfoCloseButton" height="18" width="18" click="infoClear()"/>
+						</mx:HBox>
+						<mx:VBox styleName="poiContain" backgroundColor="black" width="100%" paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5" verticalGap="0">
+							<mx:VBox backgroundColor="0x000000"
+									 cornerRadius="5"
+									 borderColor="black"
+									 color="white"
+									 verticalGap="3">
+								<s:HGroup>
+									<s:Label text="Location: " fontWeight="bold" /><s:Label text="{data.location}" />
+								</s:HGroup>
+								<s:HGroup>
+									<s:Label text="Waterbody: " fontWeight="bold" /><s:Label text="{data.waterbody}" />
+								</s:HGroup>
+								<s:HGroup>
+									<s:Label text="Forecast: " fontWeight="bold" /><s:Label text="{data.forecast}" />
+								</s:HGroup>
+								<s:HGroup>
+									<s:Label text="Gage ID: " fontWeight="bold" /><s:Label text="{data.gaugelid}" />
+								</s:HGroup>
+								<s:HGroup>
+									<s:Label text="Date/Time: " fontWeight="bold" /><s:Label text="{data.fcsttime}" />
+								</s:HGroup>
+								<s:HGroup>
+									<s:Label text="URL: " fontWeight="bold" /><s:Label text="Click here for more info" useHandCursor="true" buttonMode="true" mouseChildren="false" click="navigateToURL(new URLRequest(data.url))" />
+								</s:HGroup>
+								<!--<mx:Text htmlText="&lt;b&gt;Location: &lt;/b&gt;{data.location}&lt;br&gt;&lt;b&gt;Waterbody: &lt;/b&gt;{data.waterbody}&lt;br&gt;&lt;b&gt;Forecast: &lt;/b&gt;{data.forecast}&lt;br&gt;&lt;b&gt;Gage ID: &lt;/b&gt;{data.gaugelid}&lt;br&gt;&lt;b&gt;Date/Time: &lt;/b&gt;{data.fcsttime}&lt;br&gt;&lt;a href=&quot;{data.url}&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;URL: &lt;/b&gt;Click here for more info&lt;/a&gt;" />
+							--></mx:VBox>
+						</mx:VBox>
+						
+					</mx:VBox>
+				</fx:Component>
+			</esri:infoRenderer>
+		</esri:InfoSymbol>
+		
+		<!-- WiM Disclaimer Text -->
+		<mx:Text id="disclaimerHtml" color="black">
+			<mx:htmlText>
+				<![CDATA[<font size='12' color='#000000'><p><bold><u><font size='13' color='#000000'>Disclaimer for Flood-Inundation Maps</font></u></bold><br/>Inundated areas shown should not be used for navigation, regulatory, permitting, or other legal purposes.  Although USGS intends to make this server available 24 hours a day, 7 days a week, timely delivery of data and products from this server through the Internet is not guaranteed.  The USGS provides these maps “as-is” for a quick reference, emergency planning tool but assumes no legal liability or responsibility resulting from the use of this information.</p><br/><p><b><u><font size='13' color='#000000'>Uncertainties and Limitations for Use of Flood-Inundation Maps</font></u></b><br/>Although the flood-inundation maps represent the boundaries of inundated areas with a distinct line, some uncertainty is associated with these maps.  The flood boundaries shown were estimated based on water stages (water-surface elevations) and streamflows at selected USGS streamgages.  Water-surface elevations along the stream reaches were estimated by steady-state hydraulic modeling, assuming unobstructed flow, and using streamflows and hydrologic conditions anticipated at the USGS streamgage(s).  Unique meteorological factors (timing and distribution of precipitation) may cause actual streamflows along the modeled reach to vary from those assumed during a flood, which may lead to deviations in the water-surface elevations and inundation boundaries shown.  Additional areas may be flooded due to unanticipated conditions such as: changes in the streambed elevation or roughness, backwater into major tributaries along a main stem river, or backwater from localized debris or ice jams.  The accuracy of the floodwater extent portrayed on these maps will vary with the accuracy of the digital elevation model used to simulate the land surface.  Additional uncertainties and limitations pertinent to this study are described in the document accompanying this set of flood inundation map plates.</p><br/><p>If this series of flood-inundation maps will be used in conjunction with National Weather Service (NWS) river forecasts, the user should be aware of additional uncertainties that may be inherent or factored into NWS forecast procedures.  The NWS uses forecast models to estimate the quantity and timing of water flowing through selected stream reaches in the United States.  These forecast models (1) estimate the amount of runoff generated by precipitation and snowmelt, (2) simulate the movement of floodwater as it proceeds downstream, and (3) predict the flow and stage (water-surface elevation) for the stream at a given location (AHPS forecast point) throughout the forecast period (every 6 hours and 3 to 5 days out in many locations).  For more information on AHPS forecasts, please see: <font color='#FFE303'><a href="http://water.weather.gov/ahps/pcpn_and_river_forecasting.pdf">http://water.weather.gov/ahps/pcpn_and_river_forecasting.pdf</a></font></p></font>]]>
+			</mx:htmlText>
+		</mx:Text>
+		
+		<!--USGS HeaderFooter Link Box -->
+		<s:BorderContainer 
+			id="headerFooterLinkBox" 
+			backgroundColor="white" 
+			cornerRadius="5" 
+			mouseOut="popUp_mouseOutHandler(event, 'headerFooterLinkBox')"
+			height="100%"
+			>						
+			
+			<s:VGroup width="100%">
+				
+				<mx:HBox backgroundColor="black" textAlign="center" cornerRadius="5" width="100%" paddingTop="5" paddingLeft="5" paddingBottom="5" paddingRight="5">
+					<mx:Text width="100%" color="white" fontSize="14" fontWeight="bold" text="{resourceManager.getString('ui.text', 'headerFooterLinks')}" />
+				</mx:HBox>
+				
+				<mx:VBox width="170" height="100%">
+					
+					<mx:Text width="100%" height="25" color="blue" textDecoration="underline" textAlign="left" condenseWhite="true" paddingTop="5" paddingLeft="5" paddingRight="5">
+						<mx:htmlText>
+							<![CDATA[						
+							<p><a target="_blank" href="http://www.usgs.gov/">USGS Home</a></p><br />				
+							]]>
+						</mx:htmlText>
+					</mx:Text>
+					<mx:Text width="100%" height="25" color="blue" textDecoration="underline" textAlign="left" condenseWhite="true" paddingLeft="5"  paddingRight="5">
+						<mx:htmlText>
+							<![CDATA[						
+							<p><a target="_blank" href="http://www.usgs.gov/ask/">Contact USGS</a></p><br />			
+							]]>
+						</mx:htmlText>
+					</mx:Text>
+					<mx:Text width="100%" height="25" color="blue" textDecoration="underline" textAlign="left" condenseWhite="true" paddingLeft="5" paddingBottom="5" paddingRight="5">
+						<mx:htmlText>
+							<![CDATA[						
+							<p><a target="_blank" href="http://search.usgs.gov/">Search USGS</a></p><br />						
+							]]>
+						</mx:htmlText>
+					</mx:Text>
+					<mx:Text width="100%" height="25" color="blue" textDecoration="underline" textAlign="left" condenseWhite="true" paddingLeft="5" paddingBottom="5" paddingRight="5">
+						<mx:htmlText>
+							<![CDATA[						
+							<p><a target="_blank" href="http://www.usgs.gov/laws/accessibility.html">Accessibility</a></p><br />						
+							]]>
+						</mx:htmlText>
+					</mx:Text>
+					<mx:Text width="100%" height="25" color="blue" textDecoration="underline" textAlign="left" condenseWhite="true" paddingLeft="5" paddingBottom="5" paddingRight="5">
+						<mx:htmlText>
+							<![CDATA[						
+							<p><a target="_blank" href="http://www.usgs.gov/foia/">FOIA</a></p><br />						
+							]]>
+						</mx:htmlText>
+					</mx:Text>
+					<mx:Text width="100%" height="25" color="blue" textDecoration="underline" textAlign="left" condenseWhite="true" paddingLeft="5" paddingBottom="5" paddingRight="5">
+						<mx:htmlText>
+							<![CDATA[						
+							<p><a target="_blank" href="http://www.usgs.gov/laws/privacy.html">Privacy</a></p><br />						
+							]]>
+						</mx:htmlText>
+					</mx:Text>
+					<mx:Text width="100%" height="25" color="blue" textDecoration="underline" textAlign="left" condenseWhite="true" paddingLeft="5" paddingBottom="5" paddingRight="5">
+						<mx:htmlText>
+							<![CDATA[						
+							<p><a target="_blank" href="http://www.usgs.gov/laws/policies_notices.html">Policies and Notices</a></p><br />						
+							]]>
+						</mx:htmlText>
+					</mx:Text>					
+				</mx:VBox>
+			</s:VGroup>			
+			
+		</s:BorderContainer>
+		<!--End USGS HeaderFooter Link Box-->
+		
+		
+		<!-- Test print stuff -->
+		<esri:PrintTask id="printTask"
+						fault="Alert.show(event.fault.faultString)"
+						executeComplete="printTask_executeCompleteHandler(event)"
+						getResultDataComplete="printTask_getResultDataCompleteHandler(event)"
+					    jobComplete="printTask_jobCompleteHandler(event)"
+						showBusyCursor="true" 
+						disableClientCaching="true"
+						url="{resourceManager.getString('urls', 'printUrl')}"/>
+		<esri:PrintParameters id="printParameters"
+							  map="{testMap}"
+							  format="PDF"
+							  layoutTemplate="FIMpage2design">
+			<esri:customParameters>
+				<fx:Object Map_Info="SITE_NAME_APP|SITE_NO_APP|STAGE_APP|SIM_NO_APP" />
+			</esri:customParameters>
+		</esri:PrintParameters>
+		
+		
+	</fx:Declarations>
+	
+	<!-- Main Map -->
+	
+	<esri:Map id="map" styleName="mapStyle" load="mapLoad()" wrapAround180="true" extentChange="onExtentChange(event)" openHandCursorVisible="false" mouseMove="mouseMove(event)" logoVisible="false" navigationClass="gov.usgs.wim.controls.WiMNavigation" mapClick="onMapClick(event)">
+		<esri:extent>
+			<esri:Extent id="initExtent" xmin="-16867511.90574546" ymin="1697513.524160258" xmax="-4422340.708469514" ymax="7636364.873803733">                
+				<!-- Had to change the SR because NWS is using ArcGIS Server 9.3 but it is really the same thing -->
+				<esri:SpatialReference wkid="102100"/>
+			</esri:Extent>
+		</esri:extent>		
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Streets'}"     
+			show="baseSwitch(event)"    
+			updateEnd="basemapUpdate()"
+			url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Imagery/Labels'}"            
+			show="baseSwitch(event)"       
+			updateEnd="basemapUpdate()"       
+			url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Imagery/Labels'}"            
+			show="baseSwitch(event)"       
+			updateEnd="basemapUpdate()"       
+			url="http://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Topo'}"            
+			show="baseSwitch(event)"      
+			updateEnd="basemapUpdate()"        
+			url="http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Gray'}"            
+			show="baseSwitch(event)"      
+			updateEnd="basemapUpdate()"        
+			url="http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Gray'}"            
+			show="baseSwitch(event)"      
+			updateEnd="basemapUpdate()"        
+			url="http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'The National Map'}"            
+			show="baseSwitch(event)"      
+			updateEnd="basemapUpdate()"        
+			url="http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer" />
+		<!--<esri:ArcGISDynamicMapServiceLayer
+			id="nwis_sw_sites"
+			alpha="1.0"
+			url="http://137.227.233.147/ArcGIS/rest/services/NWIS/nwis_sw_sites/MapServer" />-->
+		<esri:ArcGISDynamicMapServiceLayer
+			id="fimi_grids"
+			alpha="0.35"
+			visible="false" 
+			load="gridsLayerComp()"
+			url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}" />
+		<esri:WMSLayer id="hazusWMS" skipGetCapabilities="true" version="1.1.1" alpha="0.8" visible="false" imageFormat="png"
+					   url="http://ec2-107-21-245-18.compute-1.amazonaws.com/geoserver-gfp/fim/gwc/service/wms?CQL_FILTER=stage={gageValues.getItemAt(sliderValue).gageValue}{hazus_cql}&amp;SLD=http://ec2-107-21-245-18.compute-1.amazonaws.com/hazus-ws-staging/hazus.py?execute=sld_fim%26layername=fim:{ahpsID}{(ahpsID == 'iowi4') ? 'l2' : ''}{hazus_layers}%26sldtpl=sld_fim.tpl%26sldrules={ahpsID}{(ahpsID == 'iowi4') ? 'l2' : ''}_rules{encodeURIComponent(hazus_sld)}" >
+				<esri:visibleLayers>
+					<s:ArrayList>
+						<fx:String>fim:{ahpsID}{(ahpsID == 'iowi4') ? 'l2' : ''}{hazus_layers}</fx:String>
+					</s:ArrayList>
+				</esri:visibleLayers>
+		</esri:WMSLayer>
+		<esri:ArcGISDynamicMapServiceLayer
+			id="qpf"
+			visible="{qpfToggle.selected}"
+			alpha="0.7"
+			url="{resourceManager.getString('urls.nonWim', 'qpfUrl')}">
+			<esri:visibleLayers>                
+				<mx:ArrayCollection id="qpfVis">                    
+					<fx:Number>0</fx:Number>                
+				</mx:ArrayCollection>            
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer><esri:ArcGISDynamicMapServiceLayer
+			 id="warningsTest"
+			 alpha="0.35" 
+			 initialize="warningsTest_init(event)"
+			 visible="{warningsToggle.selected}"
+			 creationComplete="{ warningsToggle.selected=false; }"
+			 fault="weather_faultHandler(event)"
+			 url="http://gis.srh.noaa.gov/ArcGIS/rest/services/watchWarn/MapServer" >
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer
+			id="weather"
+			visible="{weatherToggle.selected}"
+			creationComplete="{ weatherToggle.selected=true; }"
+			alpha="0.65"
+		    fault="weather_faultHandler(event)"
+			url="http://gis.srh.noaa.gov/ArcGIS/rest/services/RIDGERadar/MapServer" >
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:GraphicsLayer id="queryGraphicsLayer" alpha="0.35"/>
+		<esri:ArcGISDynamicMapServiceLayer 
+			id="floodExtentsDyn"
+			alpha="0.35"
+			url="{resourceManager.getString('urls', 'floodExtentsDynUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+			<esri:layerDefinitions>
+				<esri:LayerDefinition layerId="0" definition="OBJECTID = -1"/>
+			</esri:layerDefinitions>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer 
+			id="floodBreachDyn"
+			alpha="0.35"
+			url="{resourceManager.getString('urls', 'floodBreachDynUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+			<esri:layerDefinitions>
+				<esri:LayerDefinition layerId="0" definition="OBJECTID = -1"/>
+			</esri:layerDefinitions>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer 
+			id="floodMultiSitesDyn"
+			alpha="0.35"
+			url="{resourceManager.getString('urls', 'floodExtentsMultiLayerUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+			<esri:layerDefinitions>
+				<esri:LayerDefinition layerId="0" definition="OBJECTID = -1"/>
+			</esri:layerDefinitions>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer 
+			id="floodMultiSitesDyn2"
+			alpha="{floodMultiSitesDyn.alpha}"
+			url="{resourceManager.getString('urls', 'floodExtentsMultiLayerUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+			<esri:layerDefinitions>
+				<esri:LayerDefinition layerId="0" definition="OBJECTID = -1"/>
+			</esri:layerDefinitions>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer 
+			id="floodThreeSitesDyn"
+			alpha="{floodMultiSitesDyn.alpha}"
+			url="{resourceManager.getString('urls', 'floodExtentsThreeDynUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+			<esri:layerDefinitions>
+				<esri:LayerDefinition layerId="0" definition="OBJECTID = -1"/>
+			</esri:layerDefinitions>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer 
+			id="floodBreachMultiDyn"
+			alpha="0.35"
+			url="{resourceManager.getString('urls', 'floodBreachMultiDynUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+			<esri:layerDefinitions>
+				<esri:LayerDefinition layerId="0" definition="OBJECTID = -1"/>
+			</esri:layerDefinitions>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:GraphicsLayer id="breachGraphicsLayer" alpha="0.35"/>
+		<esri:ArcGISDynamicMapServiceLayer
+			id="supplementalLayers" 
+			visible="false"
+			alpha="0.8"
+		   url="{resourceManager.getString('urls', 'suppLayersUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+					<fx:Number>1</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer
+			id="ahpsForecast"
+			initialize="ahpsForecastInit(event)"
+			visible="false"
+			fault="weather_faultHandler(event)"
+			url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>1</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer
+			id="nwisSites"
+			visible="{nwisToggle.selected}"
+			creationComplete="{ nwisToggle.selected=true; }"
+			url="{resourceManager.getString('urls', 'nwisSites')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>{(map.scale > 1000000) ? '0' : '1'}</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:GraphicsLayer
+			id="siteLayer" 
+			visible="true"
+			alpha="0.8"
+		    autoMoveGraphicsToTop="true">
+			<esri:renderer>
+				<esri:UniqueValueRenderer field="floodCondition" defaultSymbol="{siteSym}">
+					<esri:UniqueValueInfo symbol="{siteSymMajor}" value="major" />
+					<esri:UniqueValueInfo symbol="{siteSymModerate}" value="moderate" />
+					<esri:UniqueValueInfo symbol="{siteSymMinor}" value="minor" />
+					<esri:UniqueValueInfo symbol="{siteSymNear}" value="action" />
+					<esri:UniqueValueInfo symbol="{siteSymNo}" value="normal" />
+					<esri:UniqueValueInfo symbol="{siteSymNo}" value="no_flooding" />
+				</esri:UniqueValueRenderer>
+			</esri:renderer>
+		</esri:GraphicsLayer>
+		
+		<esri:ArcGISDynamicMapServiceLayer
+			id="sitesLegendLayer"
+			visible="true"
+			alpha="0"
+			url="{resourceManager.getString('urls', 'fimiSitesLegendUrl')}">
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer>
+		
+		<esri:GraphicsLayer id="infoGraphicsLayer" visible="{queryGraphicsLayer.graphicProvider.length &gt; 0}" />
+		<esri:GraphicsLayer id="ahpsInfoLayer" />
+	</esri:Map>
+	
+	<!-- End Main Map -->
+	
+	
+	<!-- Header -->
+	
+	<!-- 05.17.12 - NE - Possible basis for future header. reverted to original for now. -->
+	<!--<mx:Canvas>
+		<mx:VBox id="header" color="white" backgroundColor="black" borderStyle="solid" borderColor="black" cornerRadius="5" top="5" left="5">
+			<mx:HBox width="100%">
+				<mx:VBox backgroundColor="black" height="45" paddingLeft="10" paddingRight="20" verticalGap="0" textAlign="center" >
+					<mx:Label text="Federal Flood Inundation Mapper" width="100%" color="white" paddingTop="10" fontFamily="Arial, Helvetica, sans-serif" fontWeight="bold" fontSize="24"/>
+				</mx:VBox>
+				<s:Group>
+					<s:Ellipse width="12" height="12" top="10" right="5">
+						<s:fill><s:SolidColor color="gray" /></s:fill>
+					</s:Ellipse>
+					<s:Label text="?" toolTip="Click for more information" buttonMode="true" height="12" left="3" top="10" right="5" verticalAlign="bottom" click="moreInfo.visible = true;" />	
+				</s:Group>
+			</mx:HBox>
+			<mx:Image id="headerLogo" source="./assets/images/FIMI_horiz_4logos_edit.png" left="10" useHandCursor="true" buttonMode="true" mouseChildren="false" />
+		</mx:VBox>
+	</mx:Canvas>-->
+	<!-- End possible future header -->
+	
+	<mx:Canvas>
+		<mx:HBox id="header" color="white" backgroundColor="black" borderStyle="solid" borderColor="black" cornerRadius="5" top="5" left="5" paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5"> 
+			<mx:Image id="headerLogo" source="assets/images/usgsLogoSm.jpg" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="{resourceManager.getString('ui.text', 'headerFooterLinks')}" click="showUSGSPopUpBox(event, 'headerFooterLinkBox')"/>
+			<mx:VBox backgroundColor="black" width="100%" paddingLeft="5" paddingRight="10" paddingTop="-3" verticalGap="0" fontWeight="bold" fontFamily="Arial, Helvetica, sans-serif" >
+				<mx:Label text="{resourceManager.getString('ui.text', 'mainTitle')}" color="white" fontSize="22"/>			
+				<mx:Label text="{resourceManager.getString('ui.text', 'subTitle')}" color="0xDDDDDD" fontSize="18"/>
+			</mx:VBox>
+			<s:Group top="5" right="5">
+				<s:Ellipse width="12" height="12">
+					<s:fill><s:SolidColor color="gray" /></s:fill>
+				</s:Ellipse>
+				<s:Label text="?" toolTip="Click for more information" buttonMode="true" height="12" left="3" verticalAlign="bottom" click="moreInfo.visible = true;" />	
+			</s:Group>
+		</mx:HBox>
+	</mx:Canvas>
+	
+	<!-- End Header --> 
+	
+	<!-- Mapper Info -->
+	
+	<s:BorderContainer 
+		id="moreInfo" 
+		backgroundColor="white" 
+		cornerRadius="5"
+		visible="false"
+		left="{FlexGlobals.topLevelApplication.width/2-moreInfo.width/2}"
+		top="{FlexGlobals.topLevelApplication.height/2-moreInfo.height/2}"
+		>						
+		
+		<s:VGroup width="100%">
+			
+			<mx:HBox backgroundColor="black" textAlign="center" cornerRadius="5" width="100%" paddingTop="5" paddingLeft="5" paddingBottom="5" paddingRight="5">
+				<mx:Text width="100%" color="white" fontSize="14" fontWeight="bold" text="Mapper Information" />
+				<s:Group left="4">
+					<s:Ellipse width="16" height="16" top="2">
+						<s:fill><s:SolidColor color="gray" /></s:fill>
+					</s:Ellipse>
+					<s:Label text="X" color="white" toolTip="Close" fontSize="12" buttonMode="true" height="16" left="4" bottom="1" click="moreInfo.visible = false" verticalAlign="bottom" />	
+				</s:Group>	
+			</mx:HBox>
+			
+			<mx:VBox width="600" maxHeight="550" verticalGap="0" paddingTop="5" paddingLeft="10" paddingRight="10">
+				
+				<mx:Text width="100%" textAlign="left" condenseWhite="true">
+					<mx:htmlText>
+						<![CDATA[<font size='12' color='#000000'><p><bold><u><font size='13' color='#000000'>
+						Disclaimer for Flood-Inundation Maps</font></u></bold><br/>Inundated areas shown should not be used for navigation, 
+						regulatory, permitting, or other legal purposes.  Although USGS intends to make this server available 24 hours a day, 
+						7 days a week, timely delivery of data and products from this server through the Internet is not guaranteed.  
+						The USGS provides these maps “as-is” for a quick reference, emergency planning tool but assumes no legal liability 
+						or responsibility resulting from the use of this information.</p><br/>
+						
+						<p><b><u><font size='13' color='#000000'>
+						Uncertainties and Limitations for Use of Flood-Inundation Maps</font></u></b><br/>Although the flood-inundation 
+						maps represent the boundaries of inundated areas with a distinct line, some uncertainty is associated with these 
+						maps.  The flood boundaries shown were estimated based on water stages (water-surface elevations) and streamflows 
+						at selected USGS streamgages.  Water-surface elevations along the stream reaches were estimated by steady-state 
+						hydraulic modeling, assuming unobstructed flow, and using streamflows and hydrologic conditions anticipated at 
+						the USGS streamgage(s).  Unique meteorological factors (timing and distribution of precipitation) may cause actual 
+						streamflows along the modeled reach to vary from those assumed during a flood, which may lead to deviations in the 
+						water-surface elevations and inundation boundaries shown.  Additional areas may be flooded due to unanticipated
+						conditions such as: changes in the streambed elevation or roughness, backwater into major tributaries along a main 
+						stem river, or backwater from localized debris or ice jams.  The accuracy of the floodwater extent portrayed on 
+						these maps will vary with the accuracy of the digital elevation model used to simulate the land surface.  
+						Additional uncertainties and limitations pertinent to this study are described in the document accompanying this 
+						set of flood inundation map plates.</p><br/>
+						
+						<p>If this series of flood-inundation maps will be used in conjunction 
+						with National Weather Service (NWS) river forecasts, the user should be aware of additional uncertainties that may 
+						be inherent or factored into NWS forecast procedures.  The NWS uses forecast models to estimate the quantity and 
+						timing of water flowing through selected stream reaches in the United States.  These forecast models (1) estimate 
+						the amount of runoff generated by precipitation and snowmelt, (2) simulate the movement of floodwater as it 
+						proceeds downstream, and (3) predict the flow and stage (water-surface elevation) for the stream at a given 
+						location (AHPS forecast point) throughout the forecast period (every 6 hours and 3 to 5 days out in many locations).  
+						For more information on AHPS forecasts, please see: 
+						<font color='#0000FF'><a href="http://water.weather.gov/ahps/pcpn_and_river_forecasting.pdf">http://water.weather.gov/ahps/pcpn_and_river_forecasting.pdf</a></font></p></font><br/>
+						
+						<p>Map produced by Wisconsin Internet Mapping (WiM) team.</p><br/>
+						
+						<p>Additional information about WiM is available at <font  color="#0000FF"><a target="_blank" href="http://wim.usgs.gov">http://wim.usgs.gov</a></font></p>
+						
+						]]>
+					</mx:htmlText>
+				</mx:Text>	
+				<mx:Image source="./assets/images/WiM_logo_sm.gif" scaleX="0.5" scaleY="0.5" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Wisconsin Internet Mapping" click="navigateToURL(new URLRequest('http://wi.water.usgs.gov/wim/index.html'))" />					
+			</mx:VBox>
+		</s:VGroup>			
+		
+	</s:BorderContainer>
+	
+	<!-- End Mapper Info -->
+	
+	
+	<!-- Controls -->
+	
+	<wim:FullScreenButton styleName="controlBoxTrans" top="5" right="5" />
+	
+	<wim:ExtentNavigator targetMap="{map}" mini="true" targetNavigation="{navToolbar}" id="navigation" styleName="controlBox" />
+	
+	<mx:Image id="hazusTest" top="95" left="550" />
+	
+	<!-- Contains button to start print and download data. Need to adjust nav bar and position of print button if active -->	
+	<mx:HBox id="printButton" visible="{printTask.url != null}" includeInLayout="{printTask.url != null}" enabled="{queryGraphicsLayer.graphicProvider.length > 0}" toolTip="{(printButton.enabled) ? 'Click to print a map of the selected site and flood inundation areas' : 'Please select a FIM site to view libraries and enable the print function'}" color="white" top="5" right="177" borderColor="0x000000" backgroundColor="0x000000" borderStyle="solid" cornerRadius="5" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<!--<mx:Button label="Print Map" click="navigateToURL(new URLRequest('http://wim.usgs.gov/download/fimi/FIMI_template_11_10_10.pdf'))" />-->
+		<mx:Button label="Print Map" click="printBtn_clickHandler(event)" />
+	</mx:HBox>
+	
+	
+	<wim:CollapsingSearch id="geocoder" styleName="controlBoxTrans" top="45" right="5" searchHint="{resourceManager.getString('ui.text', 'geocodeSearchHintText')}" searchButtonText="{resourceManager.getString('ui.text', 'geocodeSearchButtonText')}" searchFunction="{geoCode}" />
+	
+	<!-- possible start to drop down site list for selecting and zooming. -->
+	<!--<wim:CollapsingBox id="pickList" top="85" right="5" startCollapsed="true" boxTitle="Pick List">
+		
+	</wim:CollapsingBox>-->
+	
+	<!-- End Controls -->
+	
+	<!-- Custom legend/layer toggling -->
+	<wim:CollapsingBox id="controlLayers" 
+					   top="85" 
+					   right="5"	
+					   startCollapsed="false"	
+					   boxTitle="Available Layers">
+		<wim:contentGroup>
+			<s:VGroup
+				width="270">
+				<s:Group width="100%" bottom="20">
+					<s:Rect width="100%" height="100%">
+						<s:fill><s:SolidColor color="black" /></s:fill>
+					</s:Rect>
+					<s:VGroup paddingTop="5" paddingLeft="5" paddingBottom="10">
+						<s:VGroup id="layerToggles" paddingTop="5" paddingLeft="10">
+							<wim:LayerToggle id="weatherToggle" layerID="0" serviceLayerID="weather" layerTitle="National Weather Service Radar" selected="{weather.visible}" />
+							<wim:LayerToggle id="warningsToggle" layerID="0" serviceLayerID="warningsTest" layerTitle="Flood Watches/Warnings" selected="{warningsTest.visible}" />
+							<wim:LayerToggle id="nwisToggle" layerID="0" serviceLayerID="nwisSites" layerTitle="NWIS gages" selected="{nwisSites.visible}" />
+							<s:HGroup>
+								<s:HGroup paddingTop="2">
+									<wim:OpacityControl opacityElement="{ahpsForecast}" />
+								</s:HGroup>
+								<s:CheckBox id="ahpsSitesToggle" click="onAHPSSitesToggle(event)" selected="true" />
+								<s:Label text="AHPS Forecast Sites" paddingTop="4" />
+							</s:HGroup>
+							<s:VGroup paddingLeft="20">
+								<wim:LayerToggle id="ahpsForecastMajorToggle" serviceLayerID="ahpsForecastMajor" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(majorCount)) ? 'Major flooding' : 'Major flooding ('+majorCount+')'}" selected="false" adjustOpacity="false" />
+								<wim:LayerToggle id="ahpsForecastModerateToggle" serviceLayerID="ahpsForecastModerate" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(moderateCount)) ? 'Moderate flooding' : 'Moderate flooding ('+moderateCount+')'}" selected="false" adjustOpacity="false" />
+								<wim:LayerToggle id="ahpsForecastMinorToggle" serviceLayerID="ahpsForecastMinor" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(minorCount)) ? 'Minor flooding' : 'Minor flooding ('+minorCount+')'}" selected="false" adjustOpacity="false" />
+								<wim:LayerToggle id="ahpsForecastActionToggle" serviceLayerID="ahpsForecastAction" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(actionCount)) ? 'Action stage' : 'Action stage ('+actionCount+')'}" selected="false" adjustOpacity="false" />
+								<wim:LayerToggle id="ahpsForecastNormalToggle" serviceLayerID="ahpsForecastNormal" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(normalCount)) ? 'No flooding' : 'No flooding ('+normalCount+')'}" selected="false" adjustOpacity="false" />
+								<wim:LayerToggle id="ahpsForecastOldToggle" serviceLayerID="ahpsForecastOld" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(oldCount)) ? 'Observation > 24 hrs old' : 'Observation > 24 hrs old ('+oldCount+')'}" selected="false" adjustOpacity="false" />
+							</s:VGroup>
+							<wim:LayerToggle id="qpfToggle" adjustOpacity="true" serviceLayerID="qpf" layerTitle="Quantitative Precipitation Forecast" selected="{qpf.visible}" creationComplete="{qpfToggle.selected = false}" />
+							<s:VGroup paddingLeft="40">
+								<s:RadioButton group="{qpfOpt}"
+											   id="day1"
+											   selected="true"
+											   label="Day 1" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(0); qpf.refresh();}"
+											   value="emulsion"/>
+								<s:RadioButton group="{qpfOpt}"
+											   id="day2"
+											   selected="false"
+											   label="Day 2" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(1); qpf.refresh();}"
+											   value="emulsion"/>
+								<s:RadioButton group="{qpfOpt}"
+											   id="day3"
+											   selected="false"
+											   label="Day 3" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(2); qpf.refresh();}"
+											   value="emulsion"/>
+								<s:RadioButton group="{qpfOpt}"
+											   id="day4"
+											   selected="false"
+											   label="Day 4" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(3); qpf.refresh();}"
+											   value="emulsion"/>
+								<s:RadioButton group="{qpfOpt}"
+											   id="day5"
+											   selected="false"
+											   label="Day 5" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(4); qpf.refresh();}"
+											   value="emulsion"/>
+							</s:VGroup>
+						</s:VGroup>
+					</s:VGroup>
+				</s:Group>
+				<mx:Box id="legendContainer" backgroundColor="black" width="100%" bottom="20" visible="{ahpsForecastLegend.visible || supplementalLayers.visible || sitesLegend.visible}" includeInLayout="{ahpsForecastLegend.visible || supplementalLayers.visible || sitesLegend.visible}" maxHeight="{FlexGlobals.topLevelApplication.height-layerToggles.height-180}" verticalScrollPolicy="{(legendContainer.height == legendContainer.maxHeight) ? 'on' : 'off'}" >
+					<s:VGroup paddingTop="5" paddingLeft="5" paddingBottom="10" gap="0">
+						<localControls:MapServiceLegend id="floodExtentLegend" map="{map}" legendTitle="Flood-inundation area" serviceLayer="{floodExtentsDyn}" needsUpdates="false" visible="false" includeInLayout="{floodExtentLegend.visible}" legendWidth="260" />
+						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty due to levee (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
+						<localControls:MapServiceLegend id="sitesLegend" map="{map}" legendTitle="USGS FIM sites (NWS forecast category)" serviceLayer="{sitesLegendLayer}" needsUpdates="false" visible="true" includeInLayout="true" legendWidth="260" />
+						<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
+						<localControls:MapServiceLegend id="ahpsForecastLegend" map="{map}" serviceLayer="{ahpsForecast}" needsUpdates="false" visible="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" includeInLayout="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" legendWidth="260" />
+						<localControls:MapServiceLegend id="supplementalLayersLegend" map="{map}" serviceLayer="{supplementalLayers}" needsUpdates="false" visible="{supplementalLayers.visible}" includeInLayout="{supplementalLayersLegend.visible}" legendWidth="260" />
+						<localControls:MapServiceLegend id="qpfLegend" map="{map}" legendTitle="QPF" serviceLayer="{qpf}" legendWidth="260" needsUpdates="true"/>
+					</s:VGroup>
+				</mx:Box>
+			</s:VGroup>
+		</wim:contentGroup>
+	</wim:CollapsingBox>
+	
+	<localControls:BaseMapGallery id="baseLayers" top="5" right="60" creationComplete="{baseLayers.selectedLayer = 'Topo';}" />
+	
+	
+	<!-- End Custom legend/layer toggling -->
+	
+	<!--<mx:Box right="15" bottom="15" scaleX="0.5" scaleY="0.5" borderColor="black" borderThickness="0" borderStyle="solid" >
+		<mx:Image id="wimLogo" source="./assets/images/WiM_logo_sm.gif" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Wisconsin Internet Mapping Group" click="navigateToURL(new URLRequest('http://wi.water.usgs.gov/wim/index.html'))" />
+	</mx:Box>-->
+	
+	<!-- help link that can be copied and used in various places on the mapper -->
+	<!--<mx:Text id="help1" text="Help" useHandCursor="true" buttonMode="true" mouseChildren="false" right="15" top="90" textDecoration="underline" horizontalCenter="right" color="0xFFFFFF" fontWeight="bold" fontSize="10" click="navigateToURL(new URLRequest(''))" />
+	-->
+	
+	<!-- Custom Tooltip for showing zoom level of a particular set of features or map layer -->
+	<!--<mx:HBox id="wetlandLabel" alpha="0" visible="true" color="white" backgroundColor="black" borderColor="black" borderStyle="solid" cornerRadius="8" paddingLeft="5" paddingRight="5" top="220" left="35" >
+	<mx:Text id="wetLabelText" alpha="0" visible="false" text="Wetlands" />
+	</mx:HBox> -->
+	
+	<mx:HBox id="coordsScale" alpha="{genAlpha}" bottom="10" width="100%" horizontalAlign="center">
+		<mx:HBox id="scale" color="white" backgroundColor="0x000000" borderStyle="solid" borderColor="white" cornerRadius="5" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" >
+			<mx:Label id="scaleVal" text="Map Scale: 1:{map.scale.toFixed(0).toString()}"/>
+		</mx:HBox>
+		<mx:HBox id="coords" color="white" backgroundColor="0x000000" borderStyle="solid" borderColor="white" cornerRadius="5" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" >
+			<mx:ComboBox id="coordsType" alternatingItemColors="[black,black]" labelField="label" dataProvider="{coordsVals}" width="150" />
+			<mx:Label id="coordsValGeo" visible="{coordsType.selectedIndex==0}" width="{(coordsType.selectedIndex==0) ? NaN : 0}" color="white" text="Lat: {mapY.toFixed(4)}, Lng: {mapX.toFixed(4)}" />
+			<mx:Label id="coordsValUSNG" visible="{coordsType.selectedIndex==1}" width="{(coordsType.selectedIndex==1) ? NaN : 0}" color="white" text="USNG: {mgrs}" />
+		</mx:HBox>
+	</mx:HBox>
+	
+	<wim:BasicLoadingScreen id="printLoadingScreen" loadingScreenText="Creating flood map document... Process may take up to 2 minutes" color="0xFFFFFF" height="100" width="350" top="20" right="375" alpha="0.9" creationComplete="{printLoadingScreen.visible = false;}" />
+	
+	<!-- PDF declarations -->
+	
+	<!-- Header for printed map.  Must be customized to specific mapper -->
+	<mx:Canvas id="pdfHeader" visible="false">
+		<mx:VBox color="white" backgroundColor="white" borderStyle="solid" borderColor="black" cornerRadius="5" width="693" height="99">
+			<mx:HBox>
+				<mx:VBox>
+					<mx:Box backgroundColor="white" width="100%" height="5" />
+					<mx:Box backgroundColor="black" width="100%">
+						<mx:Label text="Header subtitle" color="white" fontFamily="Arial, Helvetica, sans-serif" fontWeight="bold" paddingLeft="120" paddingTop="5" paddingBottom="-2" fontSize="18"/>
+					</mx:Box>
+					<mx:Box backgroundColor="white" width="100%">
+						<mx:Label text="Header Title" color="0x462300" paddingRight="175" paddingTop="-10" paddingBottom="-14" paddingLeft="120" fontFamily="Arial Narrow, Helvetica, sans-serif" fontWeight="bold" fontSize="35"/>
+					</mx:Box>
+					<mx:Box backgroundColor="0x330000" width="100%" height="20" />
+				</mx:VBox>
+			</mx:HBox>
+			<mx:Canvas backgroundColor="0xFF0000" width="100" height="100" />
+		</mx:VBox>
+		<mx:Image id="pdfLogo" source="" top="5" left="25" />
+	</mx:Canvas>
+	
+	<!-- Legends declarations for printed map.  Customized to specific mapper -->
+	<!--mx:Canvas id="pdfLegend" visible="false">
+	<mx:Image id="cityPrintExp" source="./assets/images/city_legend.gif"  visible="{(censusDataOpt.selectedValue == 'citeis') &amp;&amp; censusDataCB.selected}"  />
+	<mx:Image id="riverPrintExp" source="./assets/images/river_legend.gif" visible="{(censusDataOpt.selectedValue == 'rivers') &amp;&amp; censusDataCB.selected}" />	 
+	</mx:Canvas-->
+	
+	<!-- End PDF Declarations -->
+	
+	<!-- Print PDF form -->
+	<!--wim:PdfFormComponent 
+	id="printFormBox" 
+	map="{map}" 
+	headerContainer="{pdfHeader}" 
+	legendContainer="{legendBox}" 
+	submit="printFormClose()" 
+	cancel="printFormClose()" 
+	pdfUrl="http://137.227.242.82/wetland/Default.aspx" 
+	footnote="This map is for general reference only. The US Fish and Wildlife Service is not responsible for the accuracy or currentness of the  base data shown on this map. All wetlands related data should be used in accordance with the layer metadata found on the Wetlands Mapper web site." 
+	/-->
+	
+	<!-- End of print PDF form -->
+	
+	<wim:WimDisclaimer id="mainDisclaimer" map="{map}" disclaimerHtmlText="{disclaimerHtml}" />
+	
+	<esri:Map id="testMap" visible="false" includeInLayout="false">
+		<!-- Basemaps -->
+		<!--<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Streets'}"     
+			show="baseSwitch(event)"    
+			updateEnd="basemapUpdate()"
+			url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer" />-->
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="true"            
+			url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="true"            
+			url="http://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer" />
+		<!--<esri:ArcGISTiledMapServiceLayer            
+			url="http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Gray'}"            
+			show="baseSwitch(event)"      
+			updateEnd="basemapUpdate()"        
+			url="http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer" />
+		<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'Gray'}"            
+			show="baseSwitch(event)"      
+			updateEnd="basemapUpdate()"        
+			url="http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer" />-->
+		<!--<esri:ArcGISTiledMapServiceLayer            
+			visible="{baseLayers.selectedLayer == 'The National Map'}"            
+			show="baseSwitch(event)"      
+			updateEnd="basemapUpdate()"        
+			url="http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer" />-->
+		<!-- End Basemaps -->
+		<!-- Operational layers -->
+		<esri:ArcGISDynamicMapServiceLayer
+			id="floodExtentPrint"
+			visible="{floodExtentsDyn.visible}"
+			alpha="0.65" 
+			url="{resourceManager.getString('urls', 'floodExtentsDynUrl')}">
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer
+			id="floodBreachPrint"
+			visible="{floodBreachDyn.visible}"
+			alpha="0.65" 
+			url="{resourceManager.getString('urls', 'floodBreachDynUrl')}">
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer
+			id="floodExtentMultiPrint"
+			visible="{floodMultiSitesDyn.visible}"
+			alpha="0.65" 
+			url="{resourceManager.getString('urls', 'floodExtentsMultiDynUrl')}">
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer
+			id="floodBreachMultiPrint"
+			visible="{floodBreachMultiDyn.visible}"
+			alpha="0.65" 
+			url="{resourceManager.getString('urls', 'floodBreachMultiDynUrl')}">
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<!--<esri:ArcGISDynamicMapServiceLayer
+			id="floodSitesMultiPrint"
+			visible="{breachGraphicsLayer.graphicProvider.length > 0}"
+			alpha="1" 
+			url="{resourceManager.getString('urls', 'floodSitesDynUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer>-->
+		<esri:ArcGISDynamicMapServiceLayer
+			id="supplementalLayersPrint" 
+			visible="{supplementalLayers.visible}"
+			alpha="0.8"
+			url="{resourceManager.getString('urls', 'suppLayersUrl')}" >
+		</esri:ArcGISDynamicMapServiceLayer>
+		<!-- End operational layers -->
+	</esri:Map>
+	
+</mx:Application>

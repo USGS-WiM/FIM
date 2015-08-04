@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 04.10.12 - NE - Changed link and text for disclaimer in services and data tab. -->
+<!-- 03.26.12 - NE - Adjusted visibility to hide window when disclaimer is still showing in the case of opening and zooming to a site using the url parameter siteno. -->
+<!-- 03.06.12 - NE - Removed NWS radio buttons. -->
+<!-- 02.16.12 - NE - Updated webcam functionality. -->
+<!-- 02.08.12 - NE - Fixed to handle null values for AHPS IDs. -->
+<!-- 02.06.12 - NE - Updated project info related records query responder. -->
+<!-- 02.06.12 - NE - Updated to show report thumbnails correctly. -->
+<!-- 11.16.11 - NE - Added ability to populate unique project creator and reviewer info for each site. -->
+<!-- 11.01.11 - NE - Updated loading screen background color for NWIS chart. -->
+<!-- 11.01.11 - NE - Added NWIS presentation quality graphs and NWISGraphImage component from controls. -->
+<!-- 10.27.11 - NE - Adjustments for grid query. -->
+<!-- 10.19.11 - NE - Added breach data functionality to FloodToolsWindowMultiSites only. -->
+<!-- 10.07.11 - NE - Fixed bug with NWS forecast request handling. -->
+<!-- 10.06.11 - NE - Updates to download links and close functionality. -->
+<!-- 08.17.11 - NE - Updated layout of services and data tab. -->
+<!-- 04.29.11 - NE - Change to httpProxy location. -->
+<!-- 04.27.11 - NE - Reworked single site tools window for multiple sites. -->
+<!-- 03.18.11 - NE - Added opacity slider to flood tools tab. -->
+<!-- 01.21.10 - NE - Added NWS 24hr forecast and forecast time. -->
+<!-- 12.13.10 - NE - Updated to exclude maximize button on window. -->
+<!-- 11.17.10 - NE - Updated for grid query capability. Added functionality to zoom to extent of flood graphics for site. Added loading message while flood graphics are returned to map.  -->
+<!-- 11.15.10 - NE - Updated FloodToolsWindow styles.  Updated floodSlideChange event. -->
+<!-- 11.9.10 - NE - Moved much of flood tools functionality to FloodToolsWindow component mxml file. -->
+<!-- 11.4.10 - NE - Initial creation of FloodToolsWindow component -->
+<wim:WiMInfoWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" 
+				   xmlns:esri="http://www.esri.com/2008/ags"
+				   xmlns:wim="gov.usgs.wim.controls.*" 
+				   xmlns:localControls="controls.*"
+				   xmlns:flexiframe="http://code.google.com/p/flex-iframe/"
+				   title="Site Numbers: {siteNo + ' &amp; ' + siteNo_2}"
+				   visible="{FlexGlobals.topLevelApplication.mainDisclaimer.visible != true}"
+				   creationComplete="componentLoad()" >
+	
+	<fx:Style source="assets/styles/main.css"/>
+	
+	<wim:states>
+		<s:State name="normal" />
+		<s:State name="info" />
+	</wim:states>
+	
+	<fx:Declarations>
+		<s:Transition id="show">
+			<s:Wipe id="wipeShow" duration="1000" direction="left" />
+		</s:Transition>
+		<s:Transition id="hide">
+			<s:Wipe id="wipeHide" duration="1000" direction="right" />
+		</s:Transition>
+		
+		<esri:QueryTask id="siteTask" url="{resourceManager.getString('urls', 'fimiSitesUrl')}" disableClientCaching="true" />       
+		<esri:Query id="siteQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>REPORT</fx:String>
+				<fx:String>REP_LINK</fx:String>
+				<fx:String>DATA_LINK</fx:String>
+				<fx:String>REP_THUMB</fx:String>
+				<fx:String>AHPS_ID</fx:String>
+				<fx:String>MULTI_SITE</fx:String>
+				<fx:String>HAS_BREACH</fx:String>
+				<fx:String>HAS_WEBCAM</fx:String>
+				<fx:String>WEBCAM_INFO</fx:String>
+				<fx:String>STATE</fx:String>
+				<fx:String>COMMUNITY</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:QueryTask id="moreInfoTask" disableClientCaching="true" url="{resourceManager.getString('urls', 'fimiMoreInfoUrl')}" useAMF="false" />
+		<esri:Query id="moreInfoQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>ADD_INFO</fx:String>
+			</esri:outFields>
+		</esri:Query>
+		
+		<esri:RelationshipQuery id="projectInfoQuery"
+								returnGeometry="false" 
+								relationshipId="0">
+			<esri:outFields>
+				<fx:String>ENTITY</fx:String>
+				<fx:String>URL</fx:String>
+				<fx:String>TYPE</fx:String>
+			</esri:outFields>
+		</esri:RelationshipQuery>
+		
+		<esri:QueryTask id="nwsTask" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/1" disableClientCaching="true" />
+		<esri:QueryTask id="nwsTask2" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/1" disableClientCaching="true" />
+		<esri:Query id="nwsQuery" returnGeometry="false">
+			<esri:outFields>
+				<fx:String>forecast</fx:String>
+				<fx:String>fcstTime</fx:String>
+			</esri:outFields>
+		</esri:Query>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			import com.esri.ags.FeatureSet;
+			import com.esri.ags.Graphic;
+			import com.esri.ags.geometry.Extent;
+			import com.esri.ags.utils.GraphicUtil;
+			
+			import flash.net.*;
+			
+			import mx.charts.DateTimeAxis;
+			import mx.charts.series.LineSeries;
+			import mx.collections.ArrayCollection;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			import mx.collections.XMLListCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.CollectionEvent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.SliderEvent;
+			import mx.rpc.AsyncResponder;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
+			import mx.utils.ArrayUtil;
+			import mx.utils.ObjectUtil;
+			
+			[Bindable]
+			private var siteFID:String = FlexGlobals.topLevelApplication.siteFID;
+			[Bindable]
+			private var siteNo:String = FlexGlobals.topLevelApplication.siteNo;
+			[Bindable]
+			private var siteNo_2:String = FlexGlobals.topLevelApplication.siteNo_2;
+			[Bindable]
+			private var ahpsID:String;
+			[Bindable]
+			private var ahpsID_2:String;
+			[Bindable]
+			private var siteInfo:ArrayCollection;
+			[Bindable]
+			private var siteInfo2:ArrayCollection;
+			[Bindable]
+			private var forecastArray:ArrayCollection;
+			[Bindable]
+			private var forecastArray2:ArrayCollection;
+			[Bindable]
+			private var forecastData:ArrayCollection;
+			[Bindable]
+			private var gageHeight:String;
+			[Bindable]
+			private var discharge:String;
+			[Bindable]
+			private var gageHeight2:String;
+			[Bindable]
+			private var discharge2:String;
+			[Bindable]
+			private var gageValues:ArrayCollection = FlexGlobals.topLevelApplication.gageValues;
+			[Bindable]
+			private var altitudeValues:ArrayCollection = FlexGlobals.topLevelApplication.altitudeValues;
+			[Bindable]
+			private var gageValues2:ArrayCollection = FlexGlobals.topLevelApplication.gageValues2;
+			[Bindable]
+			private var altitudeValues2:ArrayCollection = FlexGlobals.topLevelApplication.altitudeValues2;
+			[Bindable]
+			private var gagePairs:ArrayCollection = FlexGlobals.topLevelApplication.gagePairs;
+			
+			[Bindable]
+			private var hasBreach:int;
+			
+			[Bindable]
+			private var moreInfo:String = '';
+			private var hasMoreInfo:Boolean;
+			
+			private var breachExisting:Object = new Object();
+			
+			protected function componentLoad():void
+			{
+				if (siteNo) {
+					
+					if (siteNo.length == 7) { siteNo = '0' + siteNo; }
+					
+					var infoRequest:HTTPService = new HTTPService();
+					infoRequest.method = "GET";
+					infoRequest.url = resourceManager.getString('urls.proxies', 'httpProxy')+"site_no="+siteNo+"&dataTest=true"; //"http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=04103500";
+					infoRequest.addEventListener(ResultEvent.RESULT, reqResult);
+					infoRequest.send();
+					
+					siteQuery.geometry = FlexGlobals.topLevelApplication.initMapExtent;
+					siteQuery.where = "SITE_NO = '" + siteNo + "'";
+					siteTask.execute(siteQuery,new AsyncResponder(siteResult, infoFault, {type: "siteNo"}));
+					
+					maximizeButton.visible = false;
+					maximizeButton.includeInLayout = false;
+					minimizeButton.right = 24;
+					
+					zoomToFeaturesOnMap.addEventListener(MouseEvent.CLICK, zoomToFeatures);
+				
+					FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, function():void {
+						if (FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider.length > 0 && floodTabs.visible == true) {
+							zoomToFeaturesOnMap.visible = true;
+							zoomToFeaturesOnMap.includeInLayout = true;
+						}
+					});
+					
+					zoomToFeaturesOnMap.visible = true;
+					zoomToFeaturesOnMap.includeInLayout = true;
+				}
+				
+				if (siteNo_2) {
+					if (siteNo_2.length == 7) { siteNo_2 = '0' + siteNo_2; }
+				
+					var infoRequest2:HTTPService = new HTTPService();
+					infoRequest2.method = "GET";
+					infoRequest2.url = resourceManager.getString('urls.proxies', 'httpProxy')+"site_no="+siteNo_2+"&dataTest=true"; //"http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=04103500";
+					infoRequest2.addEventListener(ResultEvent.RESULT, reqResult);
+					infoRequest2.send();
+					
+					siteQuery.geometry = FlexGlobals.topLevelApplication.initMapExtent;
+					siteQuery.where = "SITE_NO = '" + siteNo_2 + "'";
+					siteTask.execute(siteQuery,new AsyncResponder(site2Result, infoFault, {type: "siteNo_2"}));
+					
+					maximizeButton.visible = false;
+					maximizeButton.includeInLayout = false;
+					minimizeButton.right = 24;
+				}
+				
+				
+				
+			}
+			
+			protected function siteResult(featureSet:FeatureSet, token:Object = null):void
+			{
+				siteInfo = new ArrayCollection();
+				if (featureSet && featureSet.features.length != 0) {
+					siteInfo.addItem({report_title: featureSet.features[0].attributes.REPORT, 
+						report_link: featureSet.features[0].attributes.REP_LINK, 
+						data_link: featureSet.features[0].attributes.DATA_LINK, 
+						rep_thumb: featureSet.features[0].attributes.REP_THUMB, 
+						has_webcam: featureSet.features[0].attributes.HAS_WEBCAM,
+						has_breach: featureSet.features[0].attributes.HAS_BREACH,
+						webcam_info: featureSet.features[0].attributes.WEBCAM_INFO,
+						state: featureSet.features[0].attributes.STATE, 
+						community: featureSet.features[0].attributes.COMMUNITY
+					});
+					
+					if (featureSet.features[0].attributes.HAS_BREACH == 0) {
+						breachToggleGroup.visible = false;
+						breachToggleGroup.includeInLayout = false;
+					}
+					
+					nwsTask.executeLastResult = null;
+					ahpsID = featureSet.features[0].attributes.AHPS_ID;
+					if (ahpsID != null && ahpsID != "NONE") {
+						nwsQuery.where = "GaugeLID = '" + featureSet.features[0].attributes.AHPS_ID.toUpperCase() + "'";
+						nwsTask.useAMF = false;
+						nwsTask.execute(nwsQuery);
+						
+						var forecastService:HTTPService = new HTTPService();
+						forecastService.method = "GET";
+						forecastService.url = resourceManager.getString('urls.proxies', 'httpProxy')+"ahpsID="+ahpsID; //"http://water.weather.gov/ahps2/hydrograph_to_xml.php?gage="+ahpsID+"&amp;output=xml";
+						forecastService.addEventListener(ResultEvent.RESULT, forecastRequest);
+						forecastService.send();
+					} else {
+						forecastVals.visible = false;
+					}
+					
+					moreInfoQuery.where = "USGSID = '" + siteNo + "'"; 
+					moreInfoTask.execute(moreInfoQuery, new AsyncResponder(moreInfoResult, infoFault, {type: 'moreInfoTask'}));
+					
+					function moreInfoResult(result:Object, token:Object = null):void {
+						if (result.features.length > 0) {
+							hasMoreInfo = true;
+							moreInfo = result.attributes[0].ADD_INFO;
+							stateCheck();
+							if (siteNo == '03150500') {
+								floodTabs.selectedIndex = floodTabs.getChildIndex(moreInfoTab);
+							}
+						} else {
+							trace('no more info for site');
+							stateCheck();
+						}
+					}
+					
+				}
+			}
+			
+			protected function site2Result(featureSet:FeatureSet, token:Object = null):void
+			{
+				siteInfo2 = new ArrayCollection();
+				if (featureSet && featureSet.features.length != 0) {
+					siteInfo2.addItem({report_title: featureSet.features[0].attributes.REPORT, 
+						report_link: featureSet.features[0].attributes.REP_LINK, 
+						data_link: featureSet.features[0].attributes.DATA_LINK, 
+						rep_thumb: featureSet.features[0].attributes.REP_THUMB, 
+						has_webcam: featureSet.features[0].attributes.HAS_WEBCAM,
+						has_breach: featureSet.features[0].attributes.HAS_BREACH, 
+						webcam_info: featureSet.features[0].attributes.WEBCAM_INFO,
+						state: featureSet.features[0].attributes.STATE, 
+						community: featureSet.features[0].attributes.COMMUNITY
+					});
+					nwsTask2.executeLastResult = null;
+					ahpsID_2 = featureSet.features[0].attributes.AHPS_ID;
+					if (ahpsID_2 != null && ahpsID_2 != "NONE") {
+						nwsQuery.where = "GaugeLID = '" + featureSet.features[0].attributes.AHPS_ID.toUpperCase() + "'";
+						nwsTask2.useAMF = false;
+						nwsTask2.execute(nwsQuery);
+						
+						var forecastService2:HTTPService = new HTTPService();
+						forecastService2.method = "GET";
+						forecastService2.url = resourceManager.getString('urls.proxies', 'httpProxy')+"ahpsID="+ahpsID_2; //"http://water.weather.gov/ahps2/hydrograph_to_xml.php?gage="+ahpsID+"&amp;output=xml";
+						forecastService2.addEventListener(ResultEvent.RESULT, forecastRequest2);
+						forecastService2.send();
+					} else {
+						forecastVals2.visible = false;
+					}
+					
+					moreInfoQuery.where = "USGSID = '" + siteNo_2 + "'"; 
+					moreInfoTask.execute(moreInfoQuery, new AsyncResponder(moreInfoResult, infoFault, {type: 'moreInfoTask'}));
+					
+					function moreInfoResult(result:Object, token:Object = null):void {
+						if (result.features.length > 0) {
+							hasMoreInfo = true;
+							moreInfo = result.attributes[0].ADD_INFO;
+							stateCheck();
+						} else {
+							trace('no more info for site');
+							stateCheck();
+						}
+					}
+				}
+			}
+			
+			private function stateCheck():void {
+				if (hasMoreInfo == true) {
+					currentState = "info";
+				} else {
+					currentState = "normal";
+				}
+			}
+			
+			protected function projInfoGet(event:FlexEvent):void {
+				projectInfoQuery.objectIds = [int(siteFID)];
+				// Will have to add responder as soon as sites with multiple creaters and reviewers are added to the db.
+				siteTask.executeRelationshipQuery(projectInfoQuery, new AsyncResponder(projInfoResult, infoFault, {type: "projInfoGet"}));
+			}
+			
+			protected function projInfoResult(result:Object, token:Object = null):void {
+				var featureSet:FeatureSet = result[siteFID];
+				if (featureSet is FeatureSet) {
+					var i:int;
+					var createdTitle:Text = new Text();
+					createdTitle.text = "Maps created by";
+					createdByBox.addChild(createdTitle);
+					var reviewedTitle:Text = new Text();
+					reviewedTitle.text = "Maps reviewed by";
+					reviewedByBox.addChild(reviewedTitle);
+					for (i=0;i<featureSet.attributes.length;i++) {
+						// code to add each entry for created by and reviewed by
+						/*<mx:Text text="No info." visible="{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY == null}" includeInLayout="{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY == null}" />
+						<mx:Text visible="{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY != null}" includeInLayout="{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY != null}" htmlText="Maps created by &lt;a href=&quot;{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATE_URL}&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;{siteTask.executeRelationshipQueryLastResult[1].attributes[0].CREATED_BY}&lt;/u&gt;&lt;/a&gt;" fontSize="12" fontWeight="bold" />
+						*/
+						if (featureSet.attributes[i].TYPE == "C") {
+							var creator:Text = new Text();
+							creator.text = featureSet.attributes[i].ENTITY;
+							var createUrl:String = featureSet.attributes[i].URL;
+							creator.toolTip = createUrl;
+							if (createUrl != 'NONE') {
+								creator.styleName = "line";
+								creator.buttonMode = true;
+								creator.useHandCursor = true;
+								creator.mouseChildren = false;
+								creator.addEventListener(MouseEvent.CLICK, function click(event:MouseEvent):void {
+									navigateToURL(new URLRequest(event.currentTarget.toolTip));
+								});
+							}
+							createdByBox.addChild(creator);
+							createdByBox.visible = true;
+							createdByBox.includeInLayout = true;
+						}
+						if (featureSet.attributes[i].TYPE == "R") {
+							var reviewer:Text = new Text();
+							reviewer.text = featureSet.attributes[i].ENTITY;
+							var reviewUrl:String = featureSet.attributes[i].URL;
+							reviewer.toolTip = reviewUrl;
+							if (reviewUrl != 'NONE') {
+								reviewer.styleName = "line";
+								reviewer.buttonMode = true;
+								reviewer.useHandCursor = true;
+								reviewer.mouseChildren = false;
+								reviewer.addEventListener(MouseEvent.CLICK, function click(event:MouseEvent):void {
+									navigateToURL(new URLRequest(event.currentTarget.toolTip));
+								});
+							}
+							reviewedByBox.addChild(reviewer);
+							reviewedByBox.visible = true;
+							reviewedByBox.includeInLayout = true;
+						}
+						if (featureSet.attributes[i].TYPE == "L") {
+							var logo:Image = new Image();
+							logo.source = "https://s3.amazonaws.com/wimcloud.usgs.gov/FIM/logos/" + featureSet.attributes[i].ENTITY;
+							var logoLinkUrl:String = featureSet.attributes[i].URL;
+							//logo.toolTip = logoLinkUrl;
+							if (logoLinkUrl != 'NONE') {
+								/* logo.addEventListener(MouseEvent.CLICK, function click(event:MouseEvent):void {
+								navigateToURL(new URLRequest(event.currentTarget.toolTip));
+								}); */
+							}
+							coopLogoBox.addChild(logo);
+							coopLogoBox.visible = true;
+							coopLogoBox.includeInLayout = true;
+						}
+					}
+				}
+			}
+			
+			protected function infoFault(info:Object, token:Object = null):void
+			{
+				Alert.show(token.type + ": " + info.toString());
+			} 
+			
+			protected function reqResult(event:ResultEvent):void
+			{
+				var resultObj:Object = com.esri.ags.utils.JSON.decode(event.result as String);
+				var resultSite:String = resultObj.value.timeSeries[0].sourceInfo.siteCode[0].value;
+				var paramCode:String;
+				var paramValue:String;
+				
+				for (var i:int = 0; i < resultObj.value.timeSeries.length; i++) {
+					if (resultSite == siteNo) {
+						paramCode = resultObj.value.timeSeries[i].variable.variableCode[0].value;
+						paramValue = resultObj.value.timeSeries[i].values[0].value[0].value;
+						if (paramCode == "00060") {
+							discharge = paramValue;
+						} else if (paramCode == "00065") {
+							gageHeight = paramValue;
+						}
+					} else if (resultSite == siteNo_2) {
+						paramCode = resultObj.value.timeSeries[i].variable.variableCode[0].value;
+						paramValue = resultObj.value.timeSeries[i].values[0].value[0].value;
+						if (paramCode == "00060") {
+							discharge2 = paramValue;
+						} else if (paramCode == "00065") {
+							gageHeight2 = paramValue;
+						}
+					}
+				}
+			}
+			
+			protected function forecastRequest(event:ResultEvent):void
+			{
+				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame') {
+					forecastArray = event.result.site.forecast.datum;
+				}
+			}
+			
+			protected function forecastRequest2(event:ResultEvent):void
+			{
+				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame') {
+					forecastArray2 = event.result.site.forecast.datum;
+				}
+			}
+
+			protected function forecast_changeHandler(evt:ItemClickEvent):void
+			{
+				var rbArray:Array = evt.label.split(':');
+				//Alert.show("Value is: " + rbArray[1]);
+			}
+			
+			protected function forecastDateParser(s:String):Date 
+			{
+				var a:Array = s.split("T");
+				var d:Array = a[0].split("-");
+				var t:Array = a[1].split(":");
+				var newDateTime:Date = new Date(d[0],d[1]-1,d[2],t[0],t[1]);
+				return newDateTime;
+			}
+
+			protected function floodSlideChange(event:SliderEvent):void {
+				
+				if (FlexGlobals.topLevelApplication.infoBoxGraphic) {
+					FlexGlobals.topLevelApplication.infoBoxGraphic.visible = false;
+				}
+				
+				//Code to determine accepted values of other slider and adjust value.
+				var tempPairValue:ArrayCollection = new ArrayCollection();
+				var sortField:SortField = new SortField();
+				var numericSort:Sort = new Sort();
+				
+				if (event.target.id == "floodSlider1") {
+					for each (var obj:Object in gagePairs) {
+						if (obj.STAGE_1 == gageValues[floodSlider1.value].gageValue) {
+							tempPairValue.addItem({pairStage: parseFloat(obj.STAGE_2)});
+						}
+					}
+					sortField.name = "pairStage";
+					sortField.numeric = true;
+					
+					numericSort.fields = [sortField];
+					
+					tempPairValue.sort = numericSort;
+					tempPairValue.refresh();
+					
+					var currentSlider2Value:Number = parseFloat(gageValues2[floodSlider2.value].gageValue);
+					if (currentSlider2Value < parseFloat(tempPairValue[0].pairStage)) {
+						var i:int;
+						for (i=0;i<gageValues2.length;i++) {
+							if (gageValues2[i].gageValue == parseFloat(tempPairValue[0].pairStage)) {
+								floodSlider2.value = i;
+								break;
+							}
+						}
+					} else if (currentSlider2Value > parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
+						for (i=0;i<gageValues2.length;i++) {
+							if (gageValues2[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
+								floodSlider2.value = i;
+								break;
+							}
+						}
+					}
+					
+				} else if (event.target.id == "floodSlider2") {
+					for each (obj in gagePairs) {
+						if (obj.STAGE_2 == gageValues2[floodSlider2.value].gageValue) {
+							tempPairValue.addItem({pairStage: parseFloat(obj.STAGE_1)});
+						}
+					}
+					
+					sortField.name = "pairStage";
+					sortField.numeric = true;
+					
+					numericSort.fields = [sortField];
+					
+					tempPairValue.sort = numericSort;
+					tempPairValue.refresh();
+					
+					var currentSlider1Value:Number = parseFloat(gageValues[floodSlider1.value].gageValue);
+					if (currentSlider1Value < parseFloat(tempPairValue[0].pairStage)) {
+						for (i=0;i<gageValues.length;i++) {
+							if (gageValues[i].gageValue == parseFloat(tempPairValue[0].pairStage)) {
+								floodSlider1.value = i;
+								break;
+							}
+						}
+					} else if (currentSlider1Value > parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
+						for (i=0;i<gageValues.length;i++) {
+							if (gageValues[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
+								floodSlider1.value = i;
+								break;
+							}
+						}
+					}
+					
+				}
+				
+				/* for each (var floodGraphic:Graphic in  FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider)
+				{	
+					var graphicID:String = floodGraphic.id;
+					var index:int = event.target.value;
+					var tempValue:Number;
+					var tempValue2:Number;
+					if (event.target.id == "floodSlider1") {
+						tempValue = gageValues.getItemAt(index).gageValue;
+						tempValue2 = gageValues2[floodSlider2.value].gageValue;
+					} else if (event.target.id == "floodSlider2") {
+						tempValue = gageValues[floodSlider1.value].gageValue;
+						tempValue2 = gageValues2.getItemAt(index).gageValue;
+					}
+					var id:String = siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2);
+					if (graphicID.match(siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2)) != null) {
+						floodGraphic.visible = true;
+					} else {
+						floodGraphic.visible = false;
+					}
+				}
+				
+				for each (var breachGraphic:Graphic in  FlexGlobals.topLevelApplication.breachGraphicsLayer.graphicProvider)
+				{	
+					var graphicID:String = breachGraphic.id;
+					var index:int = event.target.value;
+					var tempValue:Number;
+					var tempValue2:Number;
+					if (event.target.id == "floodSlider1") {
+						tempValue = gageValues.getItemAt(index).gageValue;
+						tempValue2 = gageValues2[floodSlider2.value].gageValue;
+					} else if (event.target.id == "floodSlider2") {
+						tempValue = gageValues[floodSlider1.value].gageValue;
+						tempValue2 = gageValues2.getItemAt(index).gageValue;
+					}
+					var id:String = 'b' + siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2);
+					if (graphicID == id) {
+						breachGraphic.visible = true;
+					} else {
+						breachGraphic.visible = false;
+					}
+				} */
+				
+				FlexGlobals.topLevelApplication.sliderValue = floodSlider1.value;
+				FlexGlobals.topLevelApplication.sliderValue_2 = floodSlider2.value;
+				
+				FlexGlobals.topLevelApplication.floodMultiSitesDyn.layerDefinitions = [
+					"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[floodSlider1.value].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[floodSlider2.value].gageValue + ")"
+				];
+				FlexGlobals.topLevelApplication.floodMultiSitesDyn.refresh();
+				
+				FlexGlobals.topLevelApplication.floodBreachMultiDyn.layerDefinitions = [
+					"(SITE_NO_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[floodSlider1.value].gageValue + " AND SITE_NO_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[floodSlider2.value].gageValue + ")"
+				];
+				FlexGlobals.topLevelApplication.floodBreachMultiDyn.refresh();
+				
+			}
+			
+			private function breachMultiQueryFunction(event:MouseEvent):void {
+				if (breachToggle.selected && FlexGlobals.topLevelApplication.breachGraphicsLayer.graphicProvider.length == 0) {
+					FlexGlobals.topLevelApplication.breachMultiQuery.geometry = FlexGlobals.topLevelApplication.map.extent;
+					FlexGlobals.topLevelApplication.breachMultiQuery.where = "USGSID_1 = '" + siteNo + "'";
+					FlexGlobals.topLevelApplication.breachMultiTask.execute(FlexGlobals.topLevelApplication.breachMultiQuery,new AsyncResponder(breachMultiResult, infoFault, {type: "breachMultiQuery"}));
+				} else if (breachToggle.selected && FlexGlobals.topLevelApplication.breachGraphicsLayer.graphicProvider.length > 0) {
+					FlexGlobals.topLevelApplication.breachGraphicsLayer.visible = true;
+				} else {
+					FlexGlobals.topLevelApplication.breachGraphicsLayer.visible = false;
+				}
+			}
+			
+			private function breachVisFunction(event:MouseEvent):void {
+				if (breachToggle.selected == false && FlexGlobals.topLevelApplication.floodBreachMultiDyn.visible == true) {
+					FlexGlobals.topLevelApplication.floodBreachMultiDyn.visible = false
+				} else if (breachToggle.selected == true && FlexGlobals.topLevelApplication.floodBreachMultiDyn.visible == false) {
+					FlexGlobals.topLevelApplication.floodBreachMultiDyn.visible = true
+				}
+			}
+			
+			private function breachMultiResult(featureSet:FeatureSet, token:Object = null):void
+			{
+				breachExisting = new Object();
+				//getGridInfo();
+				siteNo = featureSet.features[0].attributes.USGSID_1;
+				siteNo_2 = featureSet.features[0].attributes.USGSID_2;
+				
+				for each (var breachGraphic:Graphic in featureSet.features)
+				{	
+					var graphicID:String = "b" + siteNo + breachGraphic.attributes.STAGE_1.toFixed(2) + breachGraphic.attributes.STAGE_2.toFixed(2);
+					
+					if (!breachExisting[graphicID])
+					{
+						breachExisting[graphicID] = 1;
+						breachGraphic.symbol = FlexGlobals.topLevelApplication.bQuerySym;
+						if (graphicID == "b" + siteNo + FlexGlobals.topLevelApplication.gageValues[floodSlider1.value].gageValue + FlexGlobals.topLevelApplication.gageValues2[floodSlider2.value].gageValue) {
+							breachGraphic.visible = true;
+						} else {
+							breachGraphic.visible = false;
+						}
+						
+						breachGraphic.id = graphicID;
+						FlexGlobals.topLevelApplication.breachGraphicsLayer.add(breachGraphic);
+					}
+					
+				}
+				
+				FlexGlobals.topLevelApplication.breachGraphicsLayer.visible = true;
+			}
+			
+			/* protected function zoomToFeatures():void {
+				var graphicProvider:ArrayCollection = FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider as ArrayCollection;
+				var graphicsExtent:Extent = GraphicUtil.getGraphicsExtent(graphicProvider.toArray());
+				FlexGlobals.topLevelApplication.map.extent = graphicsExtent.expand(2.1);
+			} */
+			
+			protected function zoomToFeatures(event:MouseEvent):void {
+				var graphicProvider:ArrayCollection = FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider as ArrayCollection;
+				var graphics4Zoom:ArrayCollection = new ArrayCollection();
+				for each (var graphic:Graphic in graphicProvider) {
+					if (graphic.geometry != null) {
+						graphics4Zoom.addItem(graphic);
+						break;
+					}
+				}
+				var graphicsExtent:Extent = GraphicUtil.getGraphicsExtent(graphics4Zoom.toArray());
+				
+				if (graphicsExtent != null) {
+					FlexGlobals.topLevelApplication.map.extent = graphicsExtent.expand(2.1);
+				} else {
+					//zoomToFeaturesOnMap.toolTip = '... loading ...'
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:HBox id="siteBox" color="white" backgroundColor="0xBBBBBB" horizontalScrollPolicy="off" borderStyle="solid"
+			 paddingBottom="10" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<mx:VBox>
+			<mx:TabNavigator id="floodTabs" color="black" width="650" height="525">
+				<!-- <mx:Box label="Site Info">
+					<mx:HBox>
+						<mx:VBox styleName="siteContain" width="100%" textAlign="center">
+							<mx:Label text="Real-Time Water Data for USGS {siteNo}:" fontSize="16" fontWeight="bold" />
+							<mx:HBox horizontalGap="0"><mx:Text text="Gage Height: " fontWeight="bold" /><mx:Text text="{(gageHeight == null) ? '': gageHeight + ' feet'}" /></mx:HBox>
+							<mx:HBox horizontalGap="0"><mx:Text text="Discharge: " fontWeight="bold" /><mx:Text text="{(discharge == null) ? '': discharge + ' cubic feet per second'}" /></mx:HBox>
+							<mx:Text text="NWIS Site Page" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="NWIS website link for site" click="navigateToURL(new URLRequest('http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&amp;site_no='+siteNo))" />
+							<mx:HBox horizontalGap="0"><mx:Text text="NWS 24hr Gage Height Forecast: " fontWeight="bold" /><mx:Text text="{(nwsTask.executeLastResult.features[0].attributes.Forecast == null) ? '': nwsTask.executeLastResult.features[0].attributes.Forecast + ' feet, ' + nwsTask.executeLastResult.features[0].attributes.FcstTime}" /></mx:HBox>
+						</mx:VBox>
+					</mx:HBox>
+				</mx:Box> -->
+				<mx:HBox id="floodTools" label="Flood Tools" >
+					<!-- Flood Slider Control -->
+					<mx:VBox verticalGap="0" height="{floodTools.height}" width="{floodTools.width}">
+						<mx:Box includeInLayout="false" height="{floodTools.height}" width="{floodTools.width}">
+							<s:HGroup>
+								<mx:VBox paddingLeft="50" paddingTop="25" paddingBottom="0">
+									<s:HGroup>
+										<wim:OpacityControl opacityElement="{FlexGlobals.topLevelApplication.floodMultiSitesDyn}" />
+										<s:Label text="Opacity Control"/>
+									</s:HGroup>
+									<s:Button id="zoomToFeaturesButton"  label="Zoom To Flood Study Area" click="zoomToFeatures(event)" />
+								</mx:VBox>
+								<s:HGroup id="breachToggleGroup" paddingLeft="50" paddingTop="25" visible="{(siteInfo.getItemAt(0).has_breach == 1) ? true : false}" includeInLayout="{(siteInfo.getItemAt(0).has_breach == 1) ? true : false}">
+									<s:CheckBox id="breachToggle" selected="true" click="breachVisFunction(event)"/>
+									<s:Label  text="Include area of uncertainty due to levee"/>
+								</s:HGroup>
+							</s:HGroup>
+							<mx:HBox horizontalGap="0">
+								<mx:VBox id="floodSliderBox" verticalAlign="middle" horizontalAlign="center" verticalGap="0">
+									<!-- Opacity Slider for flood graphics -->
+									<mx:HBox id="floodBox" paddingTop="25" paddingLeft="20" horizontalScrollPolicy="off" >
+										<mx:VBox>
+											<mx:HBox>
+												<mx:VSlider id="floodSlider1" name="floodSlider1" value="0" tickColor="0x000000" tickInterval="1" minimum="0" maximum="{gageValues.length-1}" snapInterval="1" showDataTip="false" labels="{new Array(gageValues.getItemAt(0).gageValue,gageValues.getItemAt(gageValues.length-1).gageValue)}" change="floodSlideChange(event)" liveDragging="false"/>
+											</mx:HBox>
+										</mx:VBox>
+										<mx:VBox horizontalAlign="center" verticalAlign="top" >
+											<mx:Text text="Site No: {siteNo}" fontSize="14" fontWeight="bold"/>
+											<mx:Text text="Selected Values" fontSize="10" fontWeight="bold" paddingTop="5" />
+											<mx:HBox id="currentValue" horizontalGap="0" >
+												<mx:Label text="Gage Height: " fontWeight="bold" />
+												<mx:Label id="thumbLabel" color="red" fontWeight="bold" text="{gageValues.getItemAt(floodSlider1.value).gageValue}" />
+												<mx:Text text="feet" />
+											</mx:HBox>
+											<mx:HBox id="currentAltitude" horizontalGap="0" >
+												<mx:Label text="NAVD88 Altitude: " fontWeight="bold" />
+												<mx:Label color="red" fontWeight="bold" text="{altitudeValues.getItemAt(floodSlider1.value).altitudeValue}" />
+												<mx:Text text="feet" />
+											</mx:HBox>
+											<mx:HRule />
+											<mx:Text text="Current Values" fontSize="10" fontWeight="bold" paddingTop="5" />
+											<mx:HBox horizontalGap="0"><mx:Text text="Gage Height: " fontWeight="bold" /><mx:Text text="{(gageHeight == null) ? '': gageHeight + ' feet'}" /></mx:HBox>
+											<mx:HBox horizontalGap="0"><mx:Text text="Discharge: " fontWeight="bold" /><mx:Text text="{(discharge == null) ? '': discharge + ' cfs'}" /></mx:HBox>
+											<mx:Text text="NWIS Site Page" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="NWIS website link for site" click="navigateToURL(new URLRequest('http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&amp;site_no='+siteNo))" />
+											<mx:HRule />
+											<mx:VBox id="forecastVals" visible="{nwsTask.executeLastResult.features[0].attributes.forecast != null &amp;&amp; nwsTask.executeLastResult.features[0].attributes.forecast != '-999'}" verticalAlign="middle" horizontalAlign="center" >
+												<mx:Text text="Forecast Values" fontSize="10" fontWeight="bold" paddingTop="5" textAlign="center" />
+												<mx:Text text="NWS 24hr Gage Height: " fontWeight="bold" textAlign="center" />
+												<mx:Text textAlign="center" text="{(nwsTask.executeLastResult.features[0].attributes.forecast == null) ? '': nwsTask.executeLastResult.features[0].attributes.forecast + ' feet, ' + nwsTask.executeLastResult.features[0].attributes.fcsttime}" />
+											</mx:VBox>
+										</mx:VBox>
+									</mx:HBox>
+								</mx:VBox>
+								<mx:VBox id="floodSliderBox2" verticalAlign="middle" horizontalAlign="center" verticalGap="0">
+									<!-- Opacity Slider for flood graphics -->
+									<mx:HBox id="floodBox2" paddingTop="25" paddingLeft="20" horizontalScrollPolicy="off" >
+										<mx:VBox>
+											<mx:HBox>
+												<mx:VSlider id="floodSlider2" name="floodSlider2" value="0" tickColor="0x000000" tickInterval="1" minimum="0" maximum="{gageValues2.length-1}" snapInterval="1" showDataTip="false" labels="{new Array(gageValues2.getItemAt(0).gageValue,gageValues2.getItemAt(gageValues2.length-1).gageValue)}" change="floodSlideChange(event)" liveDragging="false"/>
+											</mx:HBox>
+											<!--<s:HGroup>
+											<wim:OpacityControl opacityElement="{FlexGlobals.topLevelApplication.queryGraphicsLayer}" />
+											<s:Label text="Opacity Control"/>
+											</s:HGroup>-->
+											<!--<s:Button id="zoomToFeaturesButton"  label="Zoom To Flood Extent" click="zoomToFeatures()" />-->								
+										</mx:VBox>
+										<mx:VBox horizontalAlign="center" verticalAlign="middle" >
+											<mx:Text text="Site No: {siteNo_2}" fontSize="14" fontWeight="bold"/>
+											<mx:Text text="Selected Values" fontSize="10" fontWeight="bold" paddingTop="5" />
+											<mx:HBox id="currentValue2" horizontalGap="0" >
+												<mx:Label text="Gage Height: " fontWeight="bold" />
+												<mx:Label id="thumbLabel2" color="red" fontWeight="bold" text="{gageValues2.getItemAt(floodSlider2.value).gageValue}" />
+												<mx:Text text="feet" />
+											</mx:HBox>
+											<mx:HBox id="currentAltitude2" horizontalGap="0" >
+												<mx:Label text="NAVD88 Altitude: " fontWeight="bold" />
+												<mx:Label color="red" fontWeight="bold" text="{altitudeValues2.getItemAt(floodSlider2.value).altitudeValue}" />
+												<mx:Text text="feet" />
+											</mx:HBox>
+											<mx:HRule />
+											<mx:Text text="Current Values" fontSize="10" fontWeight="bold" paddingTop="5" />
+											<mx:HBox horizontalGap="0"><mx:Text text="Gage Height: " fontWeight="bold" /><mx:Text text="{(gageHeight2 == null) ? '': gageHeight2 + ' feet'}" /></mx:HBox>
+											<mx:HBox horizontalGap="0"><mx:Text text="Discharge: " fontWeight="bold" /><mx:Text text="{(discharge2 == null) ? '': discharge2 + ' cfs'}" /></mx:HBox>
+											<mx:Text text="NWIS Site Page" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="NWIS website link for site" click="navigateToURL(new URLRequest('http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&amp;site_no='+siteNo_2))" />
+											<mx:HRule />
+											<mx:VBox id="forecastVals2" visible="{nwsTask2.executeLastResult.features[0].attributes.forecast != null &amp;&amp; nwsTask2.executeLastResult.features[0].attributes.forecast != '-999'}" verticalAlign="middle" horizontalAlign="center" >
+												<mx:Text text="Forecast Values" fontSize="10" fontWeight="bold" paddingTop="5" textAlign="center" />
+												<mx:Text text="NWS 24hr Gage Height: " fontWeight="bold" textAlign="center" />
+												<mx:Text textAlign="center" text="{(nwsTask2.executeLastResult.features[0].attributes.forecast == null) ? '': nwsTask2.executeLastResult.features[0].attributes.forecast + ' feet, ' + nwsTask2.executeLastResult.features[0].attributes.fcsttime}" />
+											</mx:VBox>
+										</mx:VBox>
+									</mx:HBox>
+								</mx:VBox>
+							</mx:HBox>
+						</mx:Box>
+						
+						<s:BorderContainer id="floodSliderMask" visible="{gageValues.length == 0}" borderVisible="false"  borderWeight="0" top="{floodTools.top}" left="{floodTools.left}" height="{floodTools.height}" width="{floodTools.width}" includeInLayout="false" >
+							<s:layout> 
+								<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/> 
+							</s:layout> 
+							<s:Label text="... Loading ..." fontSize="16" color="blue" />
+						</s:BorderContainer>
+					</mx:VBox>
+					<!-- End Flood Slider Control -->
+				</mx:HBox>
+				<mx:Box id="siteChartBox" label="USGS Hydrograph" styleName="siteContain" >
+					<mx:Text htmlText="This graph shows the previous 7 days of water levels at this gage.&lt;br&gt;Please visit the full &lt;u&gt;&lt;a href=&quot;http://waterdata.usgs.gov/nwis/uv?site_no={siteNo}&quot; target=&quot;_blank&quot;&gt;USGS NWIS site page&lt;/a&gt; &lt;/u&gt;for full site information." fontSize="12" toolTip="NWIS waterdata for this site" />
+					<localControls:NWISGraphImage id="nwisGraph" siteNumber="{siteNo}" daysPreviousToCurrent="7" chartParam="00065" graphType="2" loadingScreenColor="0xFFFFFF" />
+					<!--<mx:Image id="siteChart" source="http://waterwatch.usgs.gov/wwapps/ww_chart.php?i=nwis&amp;vt=uv&amp;site_no={siteNo}" />
+					<mx:Image id="siteChart" width="515" height="343" source="http://waterwatch.usgs.gov/wwapps/zchart.php?vt=uv&amp;site_no={siteNo}" />-->
+					<mx:HRule />
+					<mx:Text htmlText="This graph shows the previous 7 days of water levels at this gage.&lt;br&gt;Please visit the full &lt;u&gt;&lt;a href=&quot;http://waterdata.usgs.gov/nwis/uv?site_no={siteNo_2}&quot; target=&quot;_blank&quot;&gt;USGS NWIS site page&lt;/a&gt; &lt;/u&gt;for full site information." fontSize="12" toolTip="NWIS waterdata for this site" />
+					<localControls:NWISGraphImage id="nwisGraph2" siteNumber="{siteNo_2}" daysPreviousToCurrent="7" chartParam="00065" graphType="2" loadingScreenColor="0xFFFFFF" />
+					<!--<mx:Image id="siteChart" source="http://waterwatch.usgs.gov/wwapps/ww_chart.php?i=nwis&amp;vt=uv&amp;site_no={siteNo_2}" />
+					<mx:Image id="siteChart2" width="515" height="343" source="http://waterwatch.usgs.gov/wwapps/zchart.php?vt=uv&amp;site_no={siteNo_2}" />-->
+				</mx:Box>
+				<mx:Box id="nwsChartBox" label="NWS Predictions" styleName="siteContain" >
+					<mx:Box visible="{ahpsID != null &amp;&amp; ahpsID != 'NONE'}" includeInLayout="{ahpsID != null &amp;&amp; ahpsID != 'NONE'}" >
+						<mx:Text text="AHPS Gage: {ahpsID}" fontSize="16" fontWeight="bold" />
+						<mx:HRule />
+						<mx:Text htmlText="This graph shows both USGS real-time data and NWS predicted data.&lt;br&gt;Please visit the full &lt;u&gt;&lt;a href=&quot;http://water.weather.gov/ahps2/hydrograph.php?gage={ahpsID}&quot; target=&quot;_blank&quot;&gt;NWS AHPS site page&lt;/a&gt; &lt;/u&gt;for full site information." fontSize="12" toolTip="NWS AHPS Water for this site" />
+						<mx:Image id="nwsChart" width="515" height="400" source="http://water.weather.gov/resources/hydrographs/{ahpsID}_hg.png" />
+						<mx:HRule />
+					</mx:Box>
+					<mx:Box visible="{ahpsID_2 != null &amp;&amp; ahpsID_2 != 'NONE'}" includeInLayout="{ahpsID_2 != null &amp;&amp; ahpsID_2 != 'NONE'}" >
+						<mx:Text paddingTop="20" text="AHPS Gage: {ahpsID_2}" fontSize="16" fontWeight="bold" />
+						<mx:HRule />
+						<mx:Text htmlText="This graph shows both USGS real-time data and NWS predicted data.&lt;br&gt;Please visit the full &lt;u&gt;&lt;a href=&quot;http://water.weather.gov/ahps2/hydrograph.php?gage={ahpsID}&quot; target=&quot;_blank&quot;&gt;NWS AHPS site page&lt;/a&gt; &lt;/u&gt;for full site information." fontSize="12" toolTip="NWS AHPS Water for this site" />
+						<mx:Image id="nwsChart2" width="515" height="400" source="http://water.weather.gov/resources/hydrographs/{ahpsID_2}_hg.png" />
+					</mx:Box>
+				</mx:Box>
+				<mx:VBox label="HAZUS" styleName="siteContain">
+					<mx:Text text="Hazus Data" fontSize="18"  fontWeight="bold"/>
+					<mx:Text text="No resources are currently available for this site" />
+					<!-- <mx:Text text="Download Shapefiles, Grids and Metadata" visible="{(siteInfo.getItemAt(0).report_title != 'NONE') ? true : false}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Shapefile and Grid Data" click="navigateToURL(new URLRequest('http://wim.usgs.gov/download/fimi/'+siteInfo.getItemAt(0).report_title+'DATA.zip'))" />
+					<mx:Text text="Download Report" styleName="line" visible="{(siteInfo.getItemAt(0).report_title != 'NONE') ? true : false}" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Report" click="navigateToURL(new URLRequest(siteInfo.getItemAt(0).report_link))" />
+					<mx:Text text="Download KML" styleName="line" visible="{(siteInfo.getItemAt(0).report_link != 'NONE') ? true : false}" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="KML Files" click="navigateToURL(new URLRequest('http://wim.usgs.gov/download/fimi/'+siteInfo.getItemAt(0).report_title+'KML.zip'))" /> -->
+				</mx:VBox>
+				<mx:VBox id="webCam" label="Web Cam" styleName="siteContain" >
+					<!--<mx:Text id="webCamText" text="Web Cam for Site No. {siteNo}" fontSize="18" />-->
+					<mx:Text text="No web cam available for this site" includeInLayout="{(siteInfo.getItemAt(0).has_webcam == 1) ? false : true}" visible="{(siteInfo.getItemAt(0).has_webcam == 1) ? false : true}"/>
+					<flexiframe:IFrame id="webCamIFrame" x="{0.01*(this.x)+(this.width/2-webCamIFrame.width/2)}" y="{0.01*(this.y)+50}" label="web cam" source="{(siteInfo.getItemAt(0).has_webcam == 1) ? resourceManager.getString('urls.proxies', 'webCamProxy')+encodeURIComponent(siteInfo.getItemAt(0).webcam_info) : ''}" width="80%" height="80%" includeInLayout="{(siteInfo.getItemAt(0).has_webcam == 1) ? true : false}" visible="{(siteInfo.getItemAt(0).has_webcam == 1) ? true : false}" />
+					</mx:VBox>
+				<mx:VBox id="webCam2" label="Web Cam 2" styleName="siteContain" >
+					<mx:Text id="webCamText2" text="Web Cam for Site No. {siteNo_2}" fontSize="18" />
+					<mx:Text text="No web cam available for this site" includeInLayout="{(siteInfo2.getItemAt(0).has_webcam == 1) ? false : true}" visible="{(siteInfo2.getItemAt(0).has_webcam == 1) ? false : true}"/>
+					<flexiframe:IFrame id="webCamIFrame2" x="{0.01*(this.x)+(this.width/2-webCamIFrame.width/2)}" y="{0.01*(this.y)+50}" label="web cam" source="{(siteInfo2.getItemAt(0).has_webcam == 1) ? resourceManager.getString('urls.proxies', 'webCamProxy')+encodeURIComponent(siteInfo2.getItemAt(0).webcam_info) : ''}" width="80%" height="80%" includeInLayout="{(siteInfo.getItemAt(0).has_webcam == 1) ? true : false}" visible="{(siteInfo2.getItemAt(0).has_webcam == 1) ? true : false}" />
+				</mx:VBox>
+				<mx:VBox label="Services and Data" paddingBottom="10" paddingLeft="10" paddingRight="10" horizontalAlign="left" styleName="siteContain" >
+					<mx:HBox width="100%" creationComplete="projInfoGet(event)">
+						<mx:VBox>
+							<mx:VBox verticalGap="0">
+								<mx:Text text="Sign up for WaterAlert for this site" fontSize="18" fontWeight="bold"/>
+								<mx:Text text="Water information texted directly to you..." fontSize="12" fontWeight="bold" />
+								<mx:Text htmlText="simply subscribe to WaterAlert! for &lt;a href=&quot;http://water.usgs.gov/wateralert/subscribe/?fim=1&amp;intro=1&amp;site_no={siteNo}&amp;agency_cd=USGS&amp;type_cd=st&amp;parms=00065:{gageValues.getItemAt(floodSlider1.value).gageValue}&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;{siteNo}&lt;/u&gt;&lt;/a&gt; or &lt;a href=&quot;http://water.usgs.gov/wateralert/subscribe/?fim=1&amp;intro=1&amp;site_no={siteNo_2}&amp;agency_cd=USGS&amp;type_cd=st&amp;parms=00065:{gageValues2.getItemAt(floodSlider2.value).gageValue}&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;{siteNo_2}&lt;/u&gt;&lt;/a&gt;" toolTip="Sign up for WaterAlert for this site" fontSize="12"  fontWeight="bold" />
+							</mx:VBox>
+							<mx:VBox>
+								<mx:Text paddingTop="15" text="Project Contacts for more information" fontSize="18" fontWeight="bold" />
+								<mx:VBox id="createdByBox" verticalGap="0" visible="false" includeInLayout="false">
+								</mx:VBox>
+								<mx:VBox id="reviewedByBox" visible="false" includeInLayout="false" verticalGap="0" paddingTop="15">
+								</mx:VBox>
+							</mx:VBox>
+						</mx:VBox>											
+						<mx:HBox horizontalAlign="right" width="100%">
+							<mx:Image source="./assets/images/IWRSSLogo.jpg" />
+						</mx:HBox>
+					</mx:HBox>					
+					<mx:HBox paddingTop="25">
+						<mx:VBox>
+							<mx:Text text="Data Downloads and Metadata" width="200" fontSize="18" fontWeight="bold"/>
+							<mx:Text width="200" text="No downloads are currently available for this site" includeInLayout="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" visible="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" />
+							<mx:Text text="Download Data" visible="{(siteInfo.getItemAt(0).data_link != 'NONE') ? true : false}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Data Download" click="navigateToURL(new URLRequest(siteInfo.getItemAt(0).data_link))" />
+							<!--<mx:Text text="Download Shapefiles, Grids and Metadata" visible="{(siteInfo.getItemAt(0).report_title != 'NONE') ? true : false}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Shapefile and Grid Data" click="navigateToURL(new URLRequest('http://wim.usgs.gov/download/fimi/'+siteInfo.getItemAt(0).report_title+'DATA.zip'))" />
+							<mx:Text text="Download KML" styleName="line" visible="{(siteInfo.getItemAt(0).report_link != 'NONE') ? true : false}" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="KML Files" click="navigateToURL(new URLRequest('http://wim.usgs.gov/download/fimi/'+siteInfo.getItemAt(0).report_title+'KML.zip'))" />
+						--></mx:VBox>
+						<mx:HBox>
+							<mx:Image id="repthumb" visible="{(siteInfo.getItemAt(0).report_link != 'NONE') ? true : false}" width="125" height="161" source="{siteInfo.getItemAt(0).rep_thumb}" />
+							<mx:VBox>
+								<mx:Text text="References" fontSize="18" fontWeight="bold"/>
+								<mx:Text width="200" text="Report not currently available for this site" includeInLayout="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" visible="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" />
+								<mx:Text text="Download Report" styleName="line" visible="{(siteInfo.getItemAt(0).report_title != 'NONE') ? true : false}" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Go to Report" click="navigateToURL(new URLRequest(siteInfo.getItemAt(0).report_link))" fontSize="12" fontWeight="bold" />
+							</mx:VBox>
+						</mx:HBox>
+					</mx:HBox>					
+					<mx:HBox verticalAlign="bottom" width="100%" paddingTop="12">
+						<mx:HBox id="coopLogoBox" horizontalAlign="left" width="50%">
+						</mx:HBox>
+						<mx:HBox horizontalAlign="right" width="50%" paddingRight="10">
+							<mx:Image source="./assets/images/noaaLogo.png" />
+							<mx:Image source="./assets/images/usgsGreen.gif" />
+						</mx:HBox>
+					</mx:HBox>
+					<mx:HBox horizontalAlign="right" width="100%" paddingRight="10">
+						<s:VGroup>
+							<s:Label text="Disclaimer" toolTip="Click for more information" styleName="line" buttonMode="true" height="12" left="3" top="10" right="5" verticalAlign="bottom" click="FlexGlobals.topLevelApplication.mainDisclaimer.visible = true;" />	
+							<s:Label text="NWS Feedback Form" styleName="line" buttonMode="true" height="12" left="3" top="10" right="5" verticalAlign="bottom" click="navigateToURL(new URLRequest('http://www.nws.noaa.gov/survey/nws-survey.php?code=inundate'))" />	
+						</s:VGroup>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox id="moreInfoTab" includeIn="info" label="More Info" paddingBottom="10" paddingLeft="20" paddingRight="10" horizontalAlign="left" styleName="siteContain" >
+					<mx:HBox width="100%" height="100%" verticalAlign="top" paddingTop="20">
+						<mx:Text id="moreInfoText" text="{moreInfo}" width="80%" fontWeight="normal" />
+					</mx:HBox>
+				</mx:VBox>
+				<!-- <mx:Box label="Forecast" styleName="siteContain" >
+					<mx:Text text="National Weather Service Forecasted Gage Height Values" fontSize="16" />
+					<mx:LineChart id="forecastChart" showDataTips="true" dataProvider="{forecastArray}" height="90%" width="90%">
+						<mx:horizontalAxis>
+							<mx:DateTimeAxis dataUnits="days" parseFunction="forecastDateParser" />
+						</mx:horizontalAxis>
+						<mx:series>
+							<mx:LineSeries xField="valid" yField="primary" form="curve" />
+						</mx:series>
+					</mx:LineChart>
+				</mx:Box> -->
+			</mx:TabNavigator>
+		</mx:VBox>
+	</mx:HBox>
+	
+</wim:WiMInfoWindow>

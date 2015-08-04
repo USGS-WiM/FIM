@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 05.31.13 - NE - Created -->
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"		
+		xmlns:wim="gov.usgs.wim.controls.*" initialize="initializeHandler(event)">
+	<!-- host component -->
+	<fx:Metadata>
+		[HostComponent("controls.BaseMapGallery")]
+	</fx:Metadata>
+	
+	<fx:Style source="../assets/styles/controlStyles.css" />
+	<fx:Script>
+		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import mx.containers.GridItem;
+			import mx.containers.GridRow;
+			import mx.containers.VBox;
+			import mx.controls.Image;
+			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
+			
+			import spark.components.Image;
+					
+			/* 
+			* Embed a font by location. 
+			*/
+			[Embed(source='../assets/fonts/arial.ttf', 
+			        fontName='myMyriadFont', 
+			        embedAsCFF='false'
+			     )] 
+			// You do not use this variable directly. It exists so that 
+			// the compiler will link in the font.
+			private var font1:Class;
+			
+			/* Image based on file from Wikimedia Commons and is licensed under https://secure.wikimedia.org/wikipedia/en/wiki/en:GNU_Free_Documentation_License */
+			[Bindable]
+			[Embed(source='../assets/images/basemapGallery/streets_120px.jpg')] 
+			public static var streetsIcon:Class;
+			/* Image based on file from Wikimedia Commons and is licensed under https://secure.wikimedia.org/wikipedia/en/wiki/en:GNU_Free_Documentation_License */
+			[Bindable]
+			[Embed(source='../assets/images/basemapGallery/imagery_with_labels_ne_usa_120px.png')] 
+			public static var satelliteIcon:Class;
+			/* Image based on file from Wikimedia Commons and is licensed under https://secure.wikimedia.org/wikipedia/en/wiki/en:GNU_Free_Documentation_License */
+			[Bindable]
+			[Embed(source='../assets/images/basemapGallery/topo_120px.jpg')] 
+			public static var mountainIcon:Class; 
+			[Bindable]
+			[Embed(source='../assets/images/basemapGallery/gray_120px.jpg')] 
+			public static var grayIcon:Class; 
+			[Bindable]
+			[Embed(source='../assets/images/basemapGallery/tnm_120px.png')] 
+			public static var tnmIcon:Class; 
+			
+			
+			
+			protected function initializeHandler(event:FlexEvent):void
+			{	
+				
+				//hide basemap icons on load
+				button.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+				
+				// Start of work for creating Grid version
+				var i:int = 0;
+				var rowIndex:Number = 0;
+				var firstGridRow:GridRow = new GridRow();
+				firstGridRow.id = "row_0";
+				firstGridRow.name = "row_0";
+				baseMapSelectGrid.addChild(firstGridRow);
+				for each (var item:Object in baseMapArray) {
+					
+					var startRowIndex:Number = rowIndex;
+					
+					if (i % 3 == 0) {
+						rowIndex++;
+					}
+					
+					var row:GridRow = new GridRow();
+					var newGridItem:GridItem = new GridItem();
+					var baseMapBox:VGroup = new VGroup();
+					var baseMapImage:spark.components.Image = new spark.components.Image();
+					var baseMapLabel:Label = new Label();
+					
+					if (rowIndex != startRowIndex) {
+						row.id = "row_"+rowIndex;
+						row.name = "row_"+rowIndex;
+						baseMapSelectGrid.addChild(row);
+						newGridItem.name = item.label;
+						baseMapBox.paddingBottom = 2;
+						baseMapBox.paddingTop = 2;
+						baseMapBox.paddingLeft = 2;
+						baseMapBox.paddingRight = 2;
+						baseMapBox.verticalAlign = "middle";
+						baseMapImage.source = item.className as Class;
+						baseMapImage.id = item.label;
+						baseMapBox.addElement(baseMapImage);
+						baseMapLabel.text = item.label;
+						baseMapBox.addElement(baseMapLabel);
+						newGridItem.addChild(baseMapBox);
+						
+						row.addChild(newGridItem);
+						
+						newGridItem.addEventListener(MouseEvent.MOUSE_OVER, function(event:MouseEvent):void {
+							event.currentTarget.setStyle("color", "0x000000");
+							event.currentTarget.setStyle("backgroundColor", "0xFFFFFF");
+						});
+						
+						newGridItem.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):void {
+							if (event.currentTarget.name != hostComponent.selectedLayer) {
+								event.currentTarget.setStyle("color", "0xFFFFFF");
+								event.currentTarget.setStyle("backgroundColor", "0x000000");
+							}
+						}); 
+					} else {
+						row = baseMapSelectGrid.getChildByName("row_"+rowIndex) as GridRow;
+						newGridItem.name = item.label;
+						baseMapBox.paddingBottom = 2;
+						baseMapBox.paddingTop = 2;
+						baseMapBox.paddingLeft = 2;
+						baseMapBox.paddingRight = 2;
+						baseMapBox.verticalAlign = "middle";
+						baseMapImage.source = item.className as Class;
+						baseMapImage.id = item.label;
+						baseMapBox.addElement(baseMapImage);
+						baseMapLabel.text = item.label;
+						baseMapBox.addElement(baseMapLabel);
+						newGridItem.addChild(baseMapBox);
+						
+						row.addChild(newGridItem);
+						
+						newGridItem.addEventListener(MouseEvent.MOUSE_OVER, function(event:MouseEvent):void {
+							event.currentTarget.setStyle("color", "0x000000");
+							event.currentTarget.setStyle("backgroundColor", "0xFFFFFF");
+						});
+						
+						newGridItem.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):void {
+							if (event.currentTarget.name != hostComponent.selectedLayer) {
+								event.currentTarget.setStyle("color", "0xFFFFFF");
+								event.currentTarget.setStyle("backgroundColor", "0x000000");
+							}
+						}); 
+					}
+					
+					i++;
+					
+				}
+				
+				// FIX: Not sure this is working right yet. could be to do with poor loading on Topo map
+				baseMapHighlight();
+				
+			}
+			
+			//hide/show basemap icons
+			private function iconHideShow(event:MouseEvent):void {
+				
+				if (baseLayers.alpha > 0) {
+					
+					alphaAnimation.fromValue = 1.0;
+					alphaAnimation.toValue = 0.0;
+					
+					alphaSequence.play();
+					baseLayers.visible = false;
+					
+				} else {
+					
+					alphaAnimation.fromValue = 0.0;
+					alphaAnimation.toValue = 1.0;
+					
+					alphaSequence.play();
+					baseLayers.visible = true;
+					
+				}
+				
+			}
+
+			protected function baseMapSelectGrid_clickHandler(event:MouseEvent):void
+			{
+				if (event.target.hasOwnProperty('text')) {
+					hostComponent.selectedLayer = event.target.text;
+				} else if (event.target.hasOwnProperty('hostComponent')) {
+					var baseMapLayerID:String = event.target.hostComponent.id;
+					if (baseMapLayerID == "Streets") {
+						hostComponent.selectedLayer = "Streets";
+					} else if (baseMapLayerID == "Topo") {
+						hostComponent.selectedLayer = "Topo";
+					} else if (baseMapLayerID == "Imagery/Labels") {
+						hostComponent.selectedLayer = "Imagery/Labels";
+					} else if (baseMapLayerID == "Gray") {
+						hostComponent.selectedLayer = "Gray";
+					} else if (baseMapLayerID == "The National Map") {
+						hostComponent.selectedLayer = "The National Map";
+					}
+				}
+				
+				baseMapHighlight();
+				iconHideShow(event);
+				
+			}
+			
+			// For highlighting the initial basemap in the gallery as well as a newly selected basemap
+			private function baseMapHighlight():void {
+				for (var i:int = 0; i < baseMapSelectGrid.numChildren; i++) {
+					var gridRow:GridRow = baseMapSelectGrid.getChildAt(i) as GridRow;
+					for (var j:int = 0; j < gridRow.numChildren; j++) {
+						var gridItem:GridItem = gridRow.getChildAt(j) as GridItem;
+						if (gridItem.name == hostComponent.selectedLayer) {
+							gridItem.setStyle("color", "0x000000");
+							gridItem.setStyle("backgroundColor", "0xFFFFFF");
+						} else {
+							gridItem.setStyle("color", "0xFFFFFF");
+							gridItem.setStyle("backgroundColor", "0x000000");
+						}
+					}
+					
+				}
+			}
+			
+		]]>
+	</fx:Script>
+			
+	<fx:Declarations>
+		<!-- For use with the basemapGrid -->
+		<fx:Array id="baseMapArray">
+			<fx:Object>
+				<fx:label>Streets</fx:label>
+				<fx:className>{streetsIcon}</fx:className>
+			</fx:Object>
+			<fx:Object>
+				<fx:label>Imagery/Labels</fx:label>
+				<fx:className>{satelliteIcon}</fx:className>
+			</fx:Object>
+			<fx:Object>
+				<fx:label>Topo</fx:label>
+				<fx:className>{mountainIcon}</fx:className>
+			</fx:Object>
+			<fx:Object>
+				<fx:label>Gray</fx:label>
+				<fx:className>{grayIcon}</fx:className>
+			</fx:Object>
+			<fx:Object>
+				<fx:label>The National Map</fx:label>
+				<fx:className>{tnmIcon}</fx:className>
+			</fx:Object>
+		</fx:Array>
+		
+		<s:Sequence id="scaleSequenceShow" 
+					targets="{baseLayers}" 
+					duration="500" >
+			<s:children>
+				<mx:AnimateProperty id="scaleXAnimation" property="scaleX" />
+				<mx:AnimateProperty id="scaleYAnimation" property="scaleY" />
+			</s:children>
+		</s:Sequence>	
+		
+		<s:Sequence id="alphaSequence" 
+					targets="{baseLayers}" 
+					duration="500" >
+			<s:children>
+				<!--<mx:AnimateProperty id="scaleXAnimation" property="scaleX" />
+				<mx:AnimateProperty id="scaleYAnimation" property="scaleY" />-->
+				<mx:AnimateProperty id="alphaAnimation" property="alpha" />
+			</s:children>
+		</s:Sequence>	
+		
+		<s:Sequence id="scaleSequenceHide" 
+					targets="{baseLayers}" 
+					duration="500" >
+			<s:children>
+				<mx:AnimateProperty id="scaleYAnimationHide" property="scaleY" />
+				<mx:AnimateProperty id="scaleXAnimationHide" property="scaleX" />
+			</s:children>
+		</s:Sequence>	
+	</fx:Declarations>
+		
+	<!-- states -->
+	<s:states>
+		<s:State name="normal" />
+	</s:states>
+	
+	<s:VGroup gap="0" horizontalAlign="right">
+		<s:BorderContainer
+			id="button"
+			backgroundColor="0x222222" 
+			cornerRadius="5"
+			height="35" 
+			borderColor="1"
+			right="0" click="iconHideShow(event)">
+			<s:HGroup paddingTop="5" paddingLeft="5" paddingRight="5" paddingBottom="5" verticalAlign="middle">
+				<s:Image source="@Embed(source='controls/assets/images/basemapGallery/basemapGalleryIconSmallFinal.png')" />
+				<s:Label text="Basemaps" fontSize="14" color="white" />
+			</s:HGroup>
+		</s:BorderContainer>
+		<mx:VBox id="baseLayers" includeInLayout="true" styleName="controlBox" borderColor="white" borderStyle="solid" cornerRadius="5">
+			<mx:Grid
+				id="baseMapSelectGrid"
+				click="baseMapSelectGrid_clickHandler(event)" />
+		</mx:VBox>
+	</s:VGroup>
+
+</s:Skin>

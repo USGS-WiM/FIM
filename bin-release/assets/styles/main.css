@@ -1,0 +1,148 @@
+/* Fix naviagation zoom bar layout */
+/* CSS file */
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+.controlBox {
+	color: White;
+	background-color:"0x000000";
+	border-color: Black;
+	border-style: Solid;
+	corner-radius: 5px;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px; 
+}
+
+.controlBoxTrans {
+	color: White;
+	background-color:"0x000000";
+	background-alpha:0.7;
+	border-color: Black;
+	border-style: Solid;
+	corner-radius: 5px;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px; 
+}
+
+.mapStyle
+{
+    navigation-style-name: navStyle;
+}
+
+.navStyle
+{
+    top: 155;
+    left: 10;
+    navigation-slider-style-name: navSlider;
+}
+
+#navigation {
+	top: 85;
+	left: 10;
+}
+
+.Pop
+{
+	textRollOverColor: "0x000000";
+	backgroundColor: "0x000000";
+}
+
+.infoStyle
+{
+	backgroundColor: "0x000000";
+	color: White;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+}
+
+.wetInfo
+{
+	backgroundColor: "0x000000";
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+}
+
+.infoBox
+{
+	padding-top: 5px;
+}
+
+.poiContain
+{
+	backgroundColor: "0xBBBBBB";
+	color: "0x000000";
+	borderStyle: solid;
+	cornerRadius: 5;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+}
+
+.siteContain
+{
+	color: black;
+	horizontal-align: center;
+	vertical-align: middle;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.noline
+{
+	text-decoration: none;
+}
+
+.line
+{
+	color: blue;
+	text-decoration: underline;
+}
+
+mx|Alert
+{
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.InfoCloseButton {                        
+   	disabledSkin: Embed(source="./assets/skins.swf", symbol="Callout_closeButtonDisabledSkin");                        
+   	downSkin: Embed(source="./assets/skins.swf", symbol="Callout_closeButtonDownSkin");                        
+   	overSkin: Embed(source="./assets/skins.swf", symbol="Callout_closeButtonOverSkin");                        
+   	upSkin: Embed(source="./assets/skins.swf", symbol="Callout_closeButtonUpSkin");        
+}
+
+.navSlider
+{
+	dataTipPlacement: "top";
+    /*showScaleInDataTip: true;
+    tickColor: #FFFFFF;
+    tickLength: 10;
+    tickOffset: 13;
+    tickThickness: 3;
+    borderColor: #FFFFFF;
+    themeColor: haloSilver;
+    invertThumbDirection:true;
+    showTrackHighlight:true;*/
+}
+
+.floodLevelLabels
+{
+	font-weight: bold;
+	font-size: 20;
+	top: null;
+	left: null;
+	right: 5;
+	bottom: 5;
+}
+
+.italic
+{
+	font-style: italic;
+}
