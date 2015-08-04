@@ -1,6 +1,6 @@
 bin-debug
-bin-release\srcview\FIM.zip
-bin-release\web.config
+bin-release/srcview/FIM.zip
+bin-release/web.config
 .project
 .flexProperties
 .actionScriptProperties
