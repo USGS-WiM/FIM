@@ -417,6 +417,15 @@
 			siteTask.execute(siteQuery,new AsyncResponder(siteResult, infoFault, {type: 'siteTask'}));
 		}
 		
+		var nwisSitesAlpha = map.level * 0.1;
+		if (nwisSitesAlpha < 0.5) {
+			nwisSitesAlpha = 0.5;
+		} else if (nwisSitesAlpha > 1) {
+			nwisSitesAlpha = 1;
+		}
+		
+		nwisSites.alpha = nwisSitesAlpha;
+		
 		//testMap.extent = map.extent;
 		//testMap.scale = map.scale;
 	}
@@ -680,6 +689,7 @@
 			
 		}
 		
+		//dev only
 		if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
