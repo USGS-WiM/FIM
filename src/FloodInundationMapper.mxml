@@ -511,6 +511,7 @@
 					</s:ArrayList>
 				</esri:visibleLayers>
 		</esri:WMSLayer>
+		<!-- dev only -->
 		<esri:ArcGISDynamicMapServiceLayer
 			id="qpf"
 			visible="{qpfToggle.selected}"
@@ -521,7 +522,8 @@
 					<fx:Number>0</fx:Number>                
 				</mx:ArrayCollection>            
 			</esri:visibleLayers>
-		</esri:ArcGISDynamicMapServiceLayer><esri:ArcGISDynamicMapServiceLayer
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer
 			 id="warningsTest"
 			 alpha="0.35" 
 			 initialize="warningsTest_init(event)"
@@ -642,9 +644,11 @@
 				</s:ArrayCollection>
 			</esri:visibleLayers>
 		</esri:ArcGISDynamicMapServiceLayer>
+		<!-- dev only -->
 		<esri:ArcGISDynamicMapServiceLayer
 			id="nwisSites"
 			visible="{nwisToggle.selected}"
+			alpha="0.5"
 			creationComplete="{ nwisToggle.selected=true; }"
 			url="{resourceManager.getString('urls', 'nwisSites')}" >
 			<esri:visibleLayers>
@@ -844,6 +848,7 @@
 						<s:VGroup id="layerToggles" paddingTop="5" paddingLeft="10">
 							<wim:LayerToggle id="weatherToggle" layerID="0" serviceLayerID="weather" layerTitle="National Weather Service Radars" selected="{weather.visible}" />
 							<wim:LayerToggle id="warningsToggle" layerID="0" serviceLayerID="warningsTest" layerTitle="Flood Watches/Warnings" selected="{warningsTest.visible}" />
+							<!-- dev only -->
 							<wim:LayerToggle id="nwisToggle" layerID="0" serviceLayerID="nwisSites" layerTitle="NWIS gages" selected="{nwisSites.visible}" />
 							<s:HGroup>
 								<s:HGroup paddingTop="2">
@@ -860,6 +865,7 @@
 								<wim:LayerToggle id="ahpsForecastNormalToggle" serviceLayerID="ahpsForecastNormal" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(normalCount)) ? 'No flooding' : 'No flooding ('+normalCount+')'}" selected="false" adjustOpacity="false" />
 								<wim:LayerToggle id="ahpsForecastOldToggle" serviceLayerID="ahpsForecastOld" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(oldCount)) ? 'Observation > 24 hrs old' : 'Observation > 24 hrs old ('+oldCount+')'}" selected="false" adjustOpacity="false" />
 							</s:VGroup>
+							<!-- dev only -->
 							<wim:LayerToggle id="qpfToggle" adjustOpacity="true" serviceLayerID="qpf" layerTitle="Quantitative Precipitation Forecast" selected="{qpf.visible}" creationComplete="{qpfToggle.selected = false}" />
 							<s:VGroup paddingLeft="40">
 								<s:RadioButton group="{qpfOpt}"
@@ -901,9 +907,11 @@
 						<localControls:MapServiceLegend id="floodExtentLegend" map="{map}" legendTitle="Flood-inundation area" serviceLayer="{floodExtentsDyn}" needsUpdates="false" visible="false" includeInLayout="{floodExtentLegend.visible}" legendWidth="260" />
 						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty due to levee (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
 						<localControls:MapServiceLegend id="sitesLegend" map="{map}" legendTitle="USGS FIM sites (NWS forecast category)" serviceLayer="{sitesLegendLayer}" needsUpdates="false" visible="true" includeInLayout="true" legendWidth="260" />
+						<!-- dev only -->
 						<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
 						<localControls:MapServiceLegend id="ahpsForecastLegend" map="{map}" serviceLayer="{ahpsForecast}" needsUpdates="false" visible="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" includeInLayout="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" legendWidth="260" />
 						<localControls:MapServiceLegend id="supplementalLayersLegend" map="{map}" serviceLayer="{supplementalLayers}" needsUpdates="false" visible="{supplementalLayers.visible}" includeInLayout="{supplementalLayersLegend.visible}" legendWidth="260" />
+						<!-- dev only -->
 						<localControls:MapServiceLegend id="qpfLegend" map="{map}" legendTitle="QPF" serviceLayer="{qpf}" legendWidth="260" needsUpdates="true"/>
 					</s:VGroup>
 				</mx:Box>
