@@ -424,6 +424,7 @@
 			nwisSitesAlpha = 1;
 		}
 		
+		//dev only
 		nwisSites.alpha = nwisSitesAlpha;
 		
 		//testMap.extent = map.extent;

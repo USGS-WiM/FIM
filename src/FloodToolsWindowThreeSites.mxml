@@ -128,6 +128,12 @@
 			[Bindable]
 			private var siteNo_3:String = FlexGlobals.topLevelApplication.siteNo_3;
 			[Bindable]
+			private var siteComm:String;
+			[Bindable]
+			private var siteComm_2:String;
+			[Bindable]
+			private var siteComm_3:String;
+			[Bindable]
 			private var ahpsID:String;
 			[Bindable]
 			private var ahpsID_2:String;
@@ -236,12 +242,15 @@
 						if (featureSet.features[i].attributes.SITE_NO == siteNo) {
 							siteInfoBuild(siteInfo, featureSet.features[i]);
 							ahpsID = featureSet.features[i].attributes.AHPS_ID;
+							siteComm = featureSet.features[i].attributes.COMMUNITY;
 						} else if (featureSet.features[i].attributes.SITE_NO == siteNo_2) {
 							siteInfoBuild(siteInfo2, featureSet.features[i]);
 							ahpsID_2 = featureSet.features[i].attributes.AHPS_ID;
+							siteComm_2 = featureSet.features[i].attributes.COMMUNITY;
 						} else if (featureSet.features[i].attributes.SITE_NO == siteNo_3) {
 							siteInfoBuild(siteInfo3, featureSet.features[i]);
 							ahpsID_3 = featureSet.features[i].attributes.AHPS_ID;
+							siteComm_3 = featureSet.features[i].attributes.COMMUNITY;
 						}
 						trace('after ahpsIDs');
 						//For Breach later if needed
@@ -1013,6 +1022,7 @@
 											</mx:HBox>
 										</mx:VBox>
 										<mx:VBox horizontalAlign="center" verticalAlign="top" >
+											<mx:Text text="{siteComm}" fontSize="14" fontWeight="bold" width="175" textAlign="center"/>
 											<mx:Text text="Site No: {siteNo}" fontSize="14" fontWeight="bold"/>
 											<mx:Text text="Selected Values" fontSize="10" fontWeight="bold" paddingTop="5" />
 											<mx:HBox id="currentValue" horizontalGap="0" >
@@ -1053,6 +1063,7 @@
 											<!--<s:Button id="zoomToFeaturesButton"  label="Zoom To Flood Extent" click="zoomToFeatures()" />-->								
 										</mx:VBox>
 										<mx:VBox horizontalAlign="center" verticalAlign="middle" >
+											<mx:Text text="{siteComm_2}" fontSize="14" fontWeight="bold" width="175" textAlign="center"/>
 											<mx:Text text="Site No: {siteNo_2}" fontSize="14" fontWeight="bold"/>
 											<mx:Text text="Selected Values" fontSize="10" fontWeight="bold" paddingTop="5" />
 											<mx:HBox id="currentValue2" horizontalGap="0" >
@@ -1093,6 +1104,7 @@
 											<!--<s:Button id="zoomToFeaturesButton"  label="Zoom To Flood Extent" click="zoomToFeatures()" />-->								
 										</mx:VBox>
 										<mx:VBox horizontalAlign="center" verticalAlign="middle" >
+											<mx:Text text="{siteComm_3}" fontSize="14" fontWeight="bold" width="175" textAlign="center"/>
 											<mx:Text text="Site No: {siteNo_3}" fontSize="14" fontWeight="bold"/>
 											<mx:Text text="Selected Values" fontSize="10" fontWeight="bold" paddingTop="5" />
 											<mx:HBox id="currentValue3" horizontalGap="0" >
