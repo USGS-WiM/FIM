@@ -757,7 +757,7 @@
 					//For use in all mappers modes to get historical data
 					for (var i:int = 0; i < usStates.length; i++) {
 						if (foundState == false) {
-							if (usStates[i].name == siteState) {
+							if (usStates[i].name.toLowerCase() == siteState.toLowerCase()) {
 								stateCode = usStates[i].abbreviation;
 								foundState = true;
 							}
