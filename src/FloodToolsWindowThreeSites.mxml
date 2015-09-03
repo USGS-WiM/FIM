@@ -1199,7 +1199,7 @@
 						<mx:VBox>
 							<mx:VBox verticalGap="0">
 								<mx:Text text="Sign up for WaterAlert for this site" fontSize="18" fontWeight="bold"/>
-								<mx:Text text="Water information texted directly to you..." fontSize="12" fontWeight="bold" />
+								<mx:Text text="Water information texted directly to you" fontSize="12" fontWeight="bold" />
 								<mx:Text htmlText="simply subscribe to WaterAlert! for &lt;a href=&quot;http://water.usgs.gov/wateralert/subscribe/?fim=1&amp;intro=1&amp;site_no={siteNo}&amp;agency_cd=USGS&amp;type_cd=st&amp;parms=00065:{gageValues.getItemAt(floodSlider1.value).gageValue}&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;{siteNo}&lt;/u&gt;&lt;/a&gt; or &lt;a href=&quot;http://water.usgs.gov/wateralert/subscribe/?fim=1&amp;intro=1&amp;site_no={siteNo_2}&amp;agency_cd=USGS&amp;type_cd=st&amp;parms=00065:{gageValues2.getItemAt(floodSlider2.value).gageValue}&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;{siteNo_2}&lt;/u&gt;&lt;/a&gt;" toolTip="Sign up for WaterAlert for this site" fontSize="12"  fontWeight="bold" />
 							</mx:VBox>
 							<mx:VBox>
@@ -1216,7 +1216,7 @@
 					</mx:HBox>					
 					<mx:HBox paddingTop="25">
 						<mx:VBox>
-							<mx:Text text="Data Downloads andd Metadata" width="200" fontSize="18" fontWeight="bold"/>
+							<mx:Text text="Data Downloads and Metadata" width="200" fontSize="18" fontWeight="bold"/>
 							<mx:Text width="200" text="No downloads are currently available for this site" includeInLayout="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" visible="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" />
 							<mx:Text text="Download Data" visible="{(siteInfo.getItemAt(0).data_link != 'NONE') ? true : false}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Data Download" click="navigateToURL(new URLRequest(siteInfo.getItemAt(0).data_link))" />
 							<!--<mx:Text text="Download Shapefiles, Grids and Metadata" visible="{(siteInfo.getItemAt(0).report_title != 'NONE') ? true : false}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Shapefile and Grid Data" click="navigateToURL(new URLRequest('http://wim.usgs.gov/download/fimi/'+siteInfo.getItemAt(0).report_title+'DATA.zip'))" />
