@@ -240,15 +240,15 @@
 					for (var i:int=0; i < featureSet.features.length; i++) {
 						
 						if (featureSet.features[i].attributes.SITE_NO == siteNo) {
-							siteInfoBuild(siteInfo, featureSet.features[i]);
+							siteInfo = siteInfoBuild(featureSet.features[i]);
 							ahpsID = featureSet.features[i].attributes.AHPS_ID;
 							siteComm = featureSet.features[i].attributes.COMMUNITY;
 						} else if (featureSet.features[i].attributes.SITE_NO == siteNo_2) {
-							siteInfoBuild(siteInfo2, featureSet.features[i]);
+							siteInfo2 = siteInfoBuild(featureSet.features[i]);
 							ahpsID_2 = featureSet.features[i].attributes.AHPS_ID;
 							siteComm_2 = featureSet.features[i].attributes.COMMUNITY;
 						} else if (featureSet.features[i].attributes.SITE_NO == siteNo_3) {
-							siteInfoBuild(siteInfo3, featureSet.features[i]);
+							siteInfo3 = siteInfoBuild(featureSet.features[i]);
 							ahpsID_3 = featureSet.features[i].attributes.AHPS_ID;
 							siteComm_3 = featureSet.features[i].attributes.COMMUNITY;
 						}
@@ -268,10 +268,10 @@
 					
 				}
 				
-				function siteInfoBuild(siteInfo:Object, feature:Object):void {
-					siteInfo = new ArrayCollection();
+				function siteInfoBuild(feature:Object):Object {
+					var siteInfoTemp = new ArrayCollection();
 					
-					siteInfo.addItem({
+					siteInfoTemp.addItem({
 						site_no: feature.attributes.SITE_NO,
 						report_title: feature.attributes.REPORT, 
 						report_link: feature.attributes.REP_LINK, 
@@ -282,6 +282,8 @@
 						state: feature.attributes.STATE, 
 						community: feature.attributes.COMMUNITY
 					});
+					
+					return siteInfoTemp;
 				}
 			}
 			
@@ -394,6 +396,20 @@
 							reviewedByBox.addChild(reviewer);
 							reviewedByBox.visible = true;
 							reviewedByBox.includeInLayout = true;
+						}
+						if (featureSet.attributes[i].TYPE == "L") {
+							var logo:Image = new Image();
+							logo.source = "https://s3.amazonaws.com/wimcloud.usgs.gov/FIM/logos/" + featureSet.attributes[i].ENTITY;
+							var logoLinkUrl:String = featureSet.attributes[i].URL;
+							//logo.toolTip = logoLinkUrl;
+							if (logoLinkUrl != 'NONE') {
+								/* logo.addEventListener(MouseEvent.CLICK, function click(event:MouseEvent):void {
+								navigateToURL(new URLRequest(event.currentTarget.toolTip));
+								}); */
+							}
+							coopLogoBox.addChild(logo);
+							coopLogoBox.visible = true;
+							coopLogoBox.includeInLayout = true;
 						}
 					}
 				}
@@ -1211,7 +1227,7 @@
 							</mx:VBox>
 						</mx:VBox>											
 						<mx:HBox horizontalAlign="right" width="100%">
-							<mx:Image source="./assets/images/IWRSSLogo.jpg" />
+							<mx:Image source="./assets/images/IWRSSlogo.jpg" />
 						</mx:HBox>
 					</mx:HBox>					
 					<mx:HBox paddingTop="25">
@@ -1232,8 +1248,7 @@
 						</mx:HBox>
 					</mx:HBox>					
 					<mx:HBox verticalAlign="bottom" width="100%" paddingTop="12">
-						<mx:HBox horizontalAlign="left" width="50%">
-							<!--<mx:Image source="./assets/images/COOPERATORLogo.jpg" />-->
+						<mx:HBox id="coopLogoBox" horizontalAlign="left" width="50%">
 						</mx:HBox>
 						<mx:HBox horizontalAlign="right" width="50%" paddingRight="10">
 							<mx:Image source="./assets/images/noaaLogo.png" />

@@ -1181,21 +1181,21 @@
 					forecastArray = event.result.site.forecast.datum as ArrayCollection;
 					sigLevelsArray = event.result.site.sigstages;
 					
-					/* if (sigLevels.action != null) {
-						actionVal = sigLevels.action.value;
+					if (sigLevelsArray.action != null) {
+						actionVal = sigLevelsArray.action.value;
 					}
-					if (sigLevels.flood != null) {
-						floodVal = sigLevels.flood.value;
+					if (sigLevelsArray.flood != null) {
+						floodVal = sigLevelsArray.flood.value;
 					}
-					if (sigLevels.moderate != null) {
-						moderateVal = sigLevels.moderate.value;
+					if (sigLevelsArray.moderate != null) {
+						moderateVal = sigLevelsArray.moderate.value;
 					}
-					if (sigLevels.major != null) {
-						majorVal = sigLevels.major.value;
+					if (sigLevelsArray.major != null) {
+						majorVal = sigLevelsArray.major.value;
 					}
-					if (sigLevels.topcurve != null) {
-						topcurveVal = sigLevels.topcurve.value;
-					} */
+					if (sigLevelsArray.topcurve != null) {
+						topcurveVal = sigLevelsArray.topcurve.value;
+					} 
 					
 					floodBarCalc();
 					
@@ -1212,21 +1212,21 @@
 					forecastArray = new ArrayCollection();
 					sigLevelsArray = event.result.site.sigstages;
 					
-					/* if (sigLevels.action != null) {
-						actionVal = sigLevels.action.value;
+					if (sigLevelsArray.action != null) {
+						actionVal = sigLevelsArray.action.value;
 					}
-					if (sigLevels.flood != null) {
-						floodVal = sigLevels.flood.value;
+					if (sigLevelsArray.flood != null) {
+						floodVal = sigLevelsArray.flood.value;
 					}
-					if (sigLevels.moderate != null) {
-						moderateVal = sigLevels.moderate.value;
+					if (sigLevelsArray.moderate != null) {
+						moderateVal = sigLevelsArray.moderate.value;
 					}
-					if (sigLevels.major != null) {
-						majorVal = sigLevels.major.value;
+					if (sigLevelsArray.major != null) {
+						majorVal = sigLevelsArray.major.value;
 					}
-					if (sigLevels.topcurve != null) {
-						topcurveVal = sigLevels.topcurve.value;
-					} */
+					if (sigLevelsArray.topcurve != null) {
+						topcurveVal = sigLevelsArray.topcurve.value;
+					}
 					
 					floodBarCalc();
 					
@@ -1574,7 +1574,7 @@
 					actionLabel.text = "Action stage";
 					areaLabels.addChild(actionLabel);
 					areaLabels.updateDataChild(actionLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (actionVal+.1).toString()); 
-					
+					trace("actionVal:" + actionVal);
 					/* var actionNumber:spark.components.Label = new spark.components.Label();
 					actionNumber.text = parseFloat(sigLevels.action.value).toString();
 					areaLabels.addChild(actionNumber);
@@ -1583,14 +1583,17 @@
 					floodLabel.text = "Flood stage";
 					areaLabels.addChild(floodLabel);
 					areaLabels.updateDataChild(floodLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (floodVal+.1).toString()); 
+					trace("floodVal:" + floodVal);
 					
 					moderateLabel.text = "Moderate stage";
 					areaLabels.addChild(moderateLabel);
 					areaLabels.updateDataChild(moderateLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (moderateVal+.1).toString()); 
+					trace("moderateVal:" + moderateVal);
 					
 					majorLabel.text = "Major stage";
 					areaLabels.addChild(majorLabel);
 					areaLabels.updateDataChild(majorLabel, null, null, forecastArray.getItemAt(forecastArray.length-1).valid.value, (majorVal+.1).toString());  
+					trace("majorVal:" + majorVal);
 					
 					/* var recordLabel:spark.components.Label = new spark.components.Label();
 					recordLabel.text = "Record stage";

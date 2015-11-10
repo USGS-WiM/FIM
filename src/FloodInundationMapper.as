@@ -425,7 +425,7 @@
 		}
 		
 		//dev only
-		nwisSites.alpha = nwisSitesAlpha;
+		//nwisSites.alpha = nwisSitesAlpha;
 		
 		//testMap.extent = map.extent;
 		//testMap.scale = map.scale;
@@ -691,7 +691,7 @@
 		}
 		
 		//dev only
-		if (nwisSites.visible) {
+		/*if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
 			
@@ -707,7 +707,7 @@
 			nwisIdentifyTask.showBusyCursor = true;
 			nwisIdentifyTask.execute(nwisIdentifyParameters, new AsyncResponder(nwisIdentifyResult, nwisIdentifyFault));
 			
-		}
+		}*/
 		
 	}
 
@@ -2399,6 +2399,7 @@
 			floodBreachPrint.layerDefinitions = floodBreachDyn.layerDefinitions;
 			floodExtentMultiPrint.layerDefinitions = floodMultiSitesDyn.layerDefinitions;
 			floodBreachMultiPrint.layerDefinitions = floodBreachMultiDyn.layerDefinitions;
+			floodThreeSitesDyn.layerDefinitions = floodThreeSitesDynPrint.layerDefinitions;
 			supplementalLayersPrint.layerDefinitions = supplementalLayers.layerDefinitions;
 			
 			var newPrintTask:PrintTask = new PrintTask();
@@ -2458,13 +2459,25 @@
 				siteToGage = "Map corresponding to a Gage Height of " + currentStage + " feet and an Elevation of " + currentElev + " feet (NAVD 88)";
 			} else if (multiSite == '1') {
 				siteDefExp = "SITE_NO = '" + siteNo + "' OR SITE_NO = '" + siteNo_2 + "'";
-				siteToGage = "Map corresponding to streamgage number " + siteNo + " at " + gageValues.getItemAt(sliderValue).gageValue + " feet and streamgage number " + siteNo_2 + " at " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet";
 				/*siteToGage = "Map corresponding to a Gage Height of " + gageValues.getItemAt(sliderValue).gageValue + " feet and an Elevation of " + altitudeValues.getItemAt(sliderValue).altitudeValue + " feet (NAVD 88) at " + siteNo + "\n" +
-					"Map corresponding to a Gage Height of " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet and an Elevation of " + altitudeValues2.getItemAt(sliderValue_2).altitudeValue + " feet (NAVD 88) at " + siteNo_2;*/
+				"Map corresponding to a Gage Height of " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet and an Elevation of " + altitudeValues2.getItemAt(sliderValue_2).altitudeValue + " feet (NAVD 88) at " + siteNo_2;*/
+				//siteToGage = "Map corresponding to streamgage number " + siteNo + " at " + gageValues.getItemAt(sliderValue).gageValue + " feet and streamgage number " + siteNo_2 + " at " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet";
+				siteToGage = "Map corresponding to selected stages at following sites: " + gageValues.getItemAt(sliderValue).gageValue + " ft at " + siteNo + "; " + gageValues2.getItemAt(sliderValue_2).gageValue + " ft at " + siteNo_2;
 			} else if (multiSite == '2') {
 				siteDefExp = "SITE_NO = '" + siteNo + "' OR SITE_NO = '" + siteNo_2 + "' OR SITE_NO = '" + siteNo_3 + "'";
-				siteToGage = "Map corresponding to a Gage Height of " + gageValues.getItemAt(sliderValue).gageValue + " feet and an Elevation of " + altitudeValues.getItemAt(sliderValue).altitudeValue + " feet (NAVD 88) at " + siteNo + "\n" +
-				"Map corresponding to a Gage Height of " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet and an Elevation of " + altitudeValues2.getItemAt(sliderValue_2).altitudeValue + " feet (NAVD 88) at " + siteNo_2;
+				/*siteToGage = "Map corresponding to a Gage Height of " + gageValues.getItemAt(sliderValue).gageValue + " feet and an Elevation of " + altitudeValues.getItemAt(sliderValue).altitudeValue + " feet (NAVD 88) at " + siteNo + "\n" +
+				"Map corresponding to a Gage Height of " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet and an Elevation of " + altitudeValues2.getItemAt(sliderValue_2).altitudeValue + " feet (NAVD 88) at " + siteNo_2;*/
+				siteToGage = "<FNT size='7.5'>Map corresponding to streamgage number " + siteNo + " at " + gageValues.getItemAt(sliderValue).gageValue + " feet and streamgage number " + siteNo_2 + " at " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet" +
+				" and streamgage number " + siteNo_3 + " at " + gageValues3.getItemAt(sliderValue_3).gageValue + " feet</FNT>";
+				siteToGage = "<FNT size='7.5'>Map corresponding to selected stages at following sites: " + gageValues.getItemAt(sliderValue).gageValue + " ft at " + siteNo + "; " + gageValues2.getItemAt(sliderValue_2).gageValue + " ft at " + siteNo_2 + "; " + gageValues3.getItemAt(sliderValue_3).gageValue + " ft at " + siteNo_3 + "</FNT>";
+			} else if (multiSite == '3') {
+				siteDefExp = "SITE_NO = '" + siteNo + "' OR SITE_NO = '" + siteNo_2 + "' OR SITE_NO = '" + siteNo_3 + "'";
+				/*siteToGage = "Map corresponding to a Gage Height of " + gageValues.getItemAt(sliderValue).gageValue + " feet and an Elevation of " + altitudeValues.getItemAt(sliderValue).altitudeValue + " feet (NAVD 88) at " + siteNo + "\n" +
+				"Map corresponding to a Gage Height of " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet and an Elevation of " + altitudeValues2.getItemAt(sliderValue_2).altitudeValue + " feet (NAVD 88) at " + siteNo_2 + "\n" +
+				"Map corresponding to a Gage Height of " + gageValues3.getItemAt(sliderValue_3).gageValue + " feet and an Elevation of " + altitudeValues3.getItemAt(sliderValue_3).altitudeValue + " feet (NAVD 88) at " + siteNo_3;*/
+				siteToGage = "<FNT size='7.5'>Map corresponding to streamgage number " + siteNo + " at " + gageValues.getItemAt(sliderValue).gageValue + " feet and streamgage number " + siteNo_2 + " at " + gageValues2.getItemAt(sliderValue_2).gageValue + " feet" +
+				" and streamgage number " + siteNo_3 + " at " + gageValues3.getItemAt(sliderValue_3).gageValue + " feet</FNT>";
+				siteToGage = "<FNT size='7.5'>Map corresponding to selected stages at following sites: " + gageValues.getItemAt(sliderValue).gageValue + " ft at " + siteNo + "; " + gageValues2.getItemAt(sliderValue_2).gageValue + " ft at " + siteNo_2 + "; " + gageValues3.getItemAt(sliderValue_3).gageValue + " ft at " + siteNo_3 + "</FNT>";
 			}
 			
 			printParameters.customParameters.Map_Info = printParameters.customParameters.Map_Info + "|" + siteDefExp + "|" + siteToGage;
@@ -2485,6 +2498,8 @@
 			} else if (map.scale >= 288000) {
 				printParameters.layoutTemplate = "FIMpage2design_288k";
 			}
+			
+			//printParameters.layoutTemplate = "FIMpage2design_test";
 														
 			printParameters.customParameters.rand = Math.floor(Math.random() * (1 + 1000000 - 1)) + 1;
 			printParameters.preserveScale = false;
