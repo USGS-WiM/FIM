@@ -36,9 +36,9 @@
   	<resource name="nwisSites" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMTest/nwisSites/MapServer"></resource>
   </resourceBundle>
   <resourceBundle name="urls.proxies">
-  	<resource name="httpProxy" value="http://wim.usgs.gov/proxies/httpProxy/Default.aspx?"></resource>
-  	<resource name="nwisChartProxy" value="http://wim.usgs.gov/proxies/nwisChartProxy/Default.aspx?"></resource>
-  	<resource name="webCamProxy" value="http://wim.usgs.gov/webCam/webCamNew/Default.aspx?webCamInfo="></resource>
+  	<resource name="httpProxy" value="http://fim.wim.usgs.gov/proxies/httpProxy/Default.aspx?"></resource>
+  	<resource name="nwisChartProxy" value="http://fim.wim.usgs.gov/proxies/nwisChartProxy/Default.aspx?"></resource>
+  	<resource name="webCamProxy" value="http://fim.wim.usgs.gov/webCam/webCamNew/Default.aspx?webCamInfo="></resource>
   </resourceBundle>
   <resourceBundle name="urls.nonWim">
   	<resource name="ahpsForecastUrl" value="http://gis.srh.noaa.gov/ArcGIS/rest/services/ahps_gauges/MapServer"></resource>
