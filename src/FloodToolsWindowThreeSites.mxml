@@ -643,7 +643,7 @@
 						}
 					}
 					var sortField:SortField = new SortField();
-					sortField.name = "pairStage";
+					sortField.name = "pairStage2";
 					sortField.numeric = true;
 					
 					var numericSort:Sort = new Sort();
@@ -674,7 +674,7 @@
 					sortField.name = "pairStage1";
 					sortField.numeric = true;
 					
-					numericSort= new Sort();
+					numericSort = new Sort();
 					numericSort.fields = [sortField];
 					
 					var newSets:ArrayCollection = new ArrayCollection();
