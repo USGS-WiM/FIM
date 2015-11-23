@@ -146,6 +146,8 @@
 	public var currentStage:String;
 	[Bindable]
 	public var currentElev:String;
+	[Bindable]
+	public var currentDischarge:String;
 
 	[Bindable]
 	public var siteState:String;
@@ -205,6 +207,8 @@
 	public var altitudeValues2:ArrayCollection = new ArrayCollection();
 	[Bindable]
 	public var altitudeValues3:ArrayCollection = new ArrayCollection();
+	[Bindable]
+	public var dischargeValues:ArrayCollection = new ArrayCollection();
 		
 	private var gridInfos:ArrayCollection = new ArrayCollection();
 	
@@ -1496,6 +1500,11 @@
 			var graphicID:String = floodGraphic.attributes.USGSID + floodGraphic.attributes.STAGE.toFixed(2) + floodGraphic.attributes.GRIDID;
 			gageValues.addItem({gageValue:floodGraphic.attributes.STAGE.toFixed(2)});
 			altitudeValues.addItem({altitudeValue:floodGraphic.attributes.ELEV.toFixed(2)});
+			if (floodGraphic.attributes.QCFS != null) {
+				dischargeValues.addItem({dischargeValue:floodGraphic.attributes.QCFS.toFixed(2)});
+			} else {
+				dischargeValues.addItem({dischargeValue:null});
+			}
 			if (!floodExisting[graphicID])
 			{
 				floodExisting[graphicID] = 1;
@@ -1558,6 +1567,7 @@
 		
 		currentStage = gageValues.getItemAt(0).gageValue;
 		currentElev = altitudeValues.getItemAt(0).altitudeValue;
+		currentDischarge = dischargeValues.getItemAt(0).dischargeValue;
 		
 		hasSuppLayerCheck(siteNo);
 		
@@ -1574,6 +1584,7 @@
 		
 		
 		function valuesSort():void {
+			//sort gage heights
 			var sortField:SortField = new SortField();
 			sortField.name = "gageValue";
 			sortField.numeric = true;
@@ -1584,6 +1595,7 @@
 			gageValues.sort = numericSort;
 			gageValues.refresh();
 			
+			//sort altitudes
 			sortField = new SortField();
 			sortField.name = "altitudeValue";
 			sortField.numeric = true;
@@ -1593,6 +1605,17 @@
 			
 			altitudeValues.sort = numericSort;
 			altitudeValues.refresh();
+			
+			//sort discharge (qcfs)
+			sortField = new SortField();
+			sortField.name = "dischargeValue";
+			sortField.numeric = true;
+			
+			numericSort = new Sort();
+			numericSort.fields = [sortField];
+			
+			dischargeValues.sort = numericSort;
+			dischargeValues.refresh();
 		}
 			
 	}
