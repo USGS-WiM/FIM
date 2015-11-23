@@ -888,6 +888,7 @@
 							hasMoreInfo = true;
 							moreInfo = result.attributes[0].ADD_INFO;
 							stateCheck();
+							floodTabs.selectedIndex = floodTabs.getChildIndex(moreInfoTab);
 						} else {
 							trace('no more info for site');
 							stateCheck();

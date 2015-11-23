@@ -1031,19 +1031,19 @@
 		<esri:ArcGISDynamicMapServiceLayer
 			id="floodExtentPrint"
 			visible="{floodExtentsDyn.visible}"
-			alpha="0.65" 
+			alpha="{floodExtentsDyn.alpha}" 
 			url="{resourceManager.getString('urls', 'floodExtentsDynUrl')}">
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:ArcGISDynamicMapServiceLayer
 			id="floodBreachPrint"
 			visible="{floodBreachDyn.visible}"
-			alpha="0.65" 
+			alpha="{floodBreachDyn.alpha}" 
 			url="{resourceManager.getString('urls', 'floodBreachDynUrl')}">
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:ArcGISDynamicMapServiceLayer
 			id="floodExtentMultiPrint"
 			visible="{floodMultiSitesDyn.visible}"
-			alpha="0.65" 
+			alpha="{floodMultiSitesDyn.alpha}" 
 			url="{resourceManager.getString('urls', 'floodExtentsMultiDynUrl')}">
 			<esri:visibleLayers>
 				<s:ArrayCollection>
@@ -1053,7 +1053,7 @@
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:ArcGISDynamicMapServiceLayer 
 			id="floodThreeSitesDynPrint"
-			alpha="0.65"
+			alpha="{floodThreeSitesDyn.alpha}"
 			url="{resourceManager.getString('urls', 'floodExtentsThreeDynUrl')}" >
 			<esri:visibleLayers>
 				<s:ArrayCollection>
@@ -1064,7 +1064,7 @@
 		<esri:ArcGISDynamicMapServiceLayer
 			id="floodBreachMultiPrint"
 			visible="{floodBreachMultiDyn.visible}"
-			alpha="0.65" 
+			alpha="{floodBreachMultiDyn.alpha}" 
 			url="{resourceManager.getString('urls', 'floodBreachMultiDynUrl')}">
 			<esri:visibleLayers>
 				<s:ArrayCollection>
