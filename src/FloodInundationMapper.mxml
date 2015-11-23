@@ -165,6 +165,7 @@
 				<fx:String>ELEV</fx:String>
 				<fx:String>USGSID</fx:String>
 				<fx:String>GRIDID</fx:String>
+				<fx:String>QCFS</fx:String>
 			</esri:outFields>
 		</esri:Query>
 		<!-- Simple query for getting library extent -->

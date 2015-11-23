@@ -241,6 +241,8 @@
 			[Bindable]
 			private var altitudeValues:ArrayCollection = FlexGlobals.topLevelApplication.altitudeValues;
 			[Bindable]
+			private var dischargeValues:ArrayCollection = FlexGlobals.topLevelApplication.dischargeValues;
+			[Bindable]
 			private var forecastData:ArrayCollection;
 			[Bindable]
 			private var floodStages:ArrayCollection = new ArrayCollection();
@@ -2205,6 +2207,7 @@
 				FlexGlobals.topLevelApplication.sliderValue = floodSlider.value;
 				FlexGlobals.topLevelApplication.currentStage = gageValues.getItemAt(floodSlider.value).gageValue;
 				FlexGlobals.topLevelApplication.currentElev = altitudeValues.getItemAt(floodSlider.value).altitudeValue;
+				FlexGlobals.topLevelApplication.currentDischarge = dischargeValues.getItemAt(floodSlider.value).dischargeValue;
 				
 				if (int(siteNo) == 0) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.layerDefinitions = [
@@ -2265,6 +2268,7 @@
 				FlexGlobals.topLevelApplication.sliderValue = floodSlider.value;
 				if (gageValues.length > 0) {
 					FlexGlobals.topLevelApplication.currentStage = gageValues.getItemAt(floodSlider.value).gageValue;
+					FlexGlobals.topLevelApplication.currentDischarge = dischargeValues.getItemAt(floodSlider.value).dischargeValue;
 					FlexGlobals.topLevelApplication.currentElev = altitudeValues.getItemAt(floodSlider.value).altitudeValue;
 				
 				
@@ -2472,6 +2476,10 @@
 							<s:Label text="Selected Gage Height: " fontSize="9"/>
 							<s:Label id="thumbLabelDeluxe" color="red" fontSize="9" fontWeight="bold" text="{gageValues.getItemAt(floodSlider.value).gageValue} feet" />
 						</mx:VBox>
+						<mx:VBox id="currentDischargeDeluxe" visible="{dischargeValues.getItemAt(floodSlider.value).dischargeValue != null}" includeInLayout="{dischargeValues.getItemAt(floodSlider.value).dischargeValue != null}" verticalGap="5" textAlign="left" >
+							<s:Label text="Selected Discharge: " fontSize="9"/>
+							<s:Label color="red" fontSize="9" fontWeight="bold" text="{dischargeValues.getItemAt(floodSlider.value).dischargeValue} cfs" />
+						</mx:VBox>
 						<mx:VBox id="currentAltitudeDeluxe" verticalGap="5" textAlign="left" >
 							<s:Label text="Selected NAVD88 Altitude: " fontSize="9" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="North American Vertical Datum of 1988. Click for more info." click="navigateToURL(new URLRequest('http://www.ngs.noaa.gov/faq.shtml'))" />
 							<s:Label color="red" fontWeight="bold" fontSize="9" text="{altitudeValues.getItemAt(floodSlider.value).altitudeValue} feet" />
@@ -2614,7 +2622,7 @@
 								<!--<mx:HBox verticalGap="0" horizontalAlign="center"><mx:Text text="Current NAVD88 Altitude: " fontWeight="bold" />
 									<mx:Text text="{(navd88Alt == null) ? 'n/a': navd88Alt + ' feet'}" />
 								</mx:HBox>
-								--><mx:HBox verticalGap="0" horizontalAlign="center"><mx:Text text="Discharge: " fontWeight="bold" />
+								--><mx:HBox verticalGap="0" horizontalAlign="center"><mx:Text text="Current Discharge: " fontWeight="bold" />
 									<mx:Text text="{(discharge == null) ? 'n/a': discharge + ' cfs'}" />
 								</mx:HBox>
 								<mx:VBox paddingTop="10" fontWeight="bold" verticalGap="0">
