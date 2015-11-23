@@ -429,7 +429,7 @@
 		}
 		
 		//dev only
-		//nwisSites.alpha = nwisSitesAlpha;
+		nwisSites.alpha = nwisSitesAlpha;
 		
 		//testMap.extent = map.extent;
 		//testMap.scale = map.scale;
@@ -695,7 +695,7 @@
 		}
 		
 		//dev only
-		/*if (nwisSites.visible) {
+		if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
 			
@@ -711,7 +711,7 @@
 			nwisIdentifyTask.showBusyCursor = true;
 			nwisIdentifyTask.execute(nwisIdentifyParameters, new AsyncResponder(nwisIdentifyResult, nwisIdentifyFault));
 			
-		}*/
+		}
 		
 	}
 
