@@ -429,7 +429,7 @@
 		}
 		
 		//dev only
-		nwisSites.alpha = nwisSitesAlpha;
+		//nwisSites.alpha = nwisSitesAlpha;
 		
 		//testMap.extent = map.extent;
 		//testMap.scale = map.scale;
@@ -695,7 +695,7 @@
 		}
 		
 		//dev only
-		if (nwisSites.visible) {
+		/*if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
 			
@@ -711,7 +711,7 @@
 			nwisIdentifyTask.showBusyCursor = true;
 			nwisIdentifyTask.execute(nwisIdentifyParameters, new AsyncResponder(nwisIdentifyResult, nwisIdentifyFault));
 			
-		}
+		}*/
 		
 	}
 
@@ -1031,8 +1031,10 @@
 					
 					gageValues = new ArrayCollection();
 					gageValues2 = new ArrayCollection();
+					gageValues3 = new ArrayCollection();
 					altitudeValues = new ArrayCollection();
 					altitudeValues2 = new ArrayCollection();
+					altitudeValues3 = new ArrayCollection();
 					gridInfos = new ArrayCollection();
 					
 					if (map.level < 12) {
