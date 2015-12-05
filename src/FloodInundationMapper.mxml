@@ -543,6 +543,16 @@
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:GraphicsLayer id="queryGraphicsLayer" alpha="0.35"/>
 		<esri:ArcGISDynamicMapServiceLayer 
+			id="gridsDyn"
+			alpha="0.75"
+			url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>0</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
+		</esri:ArcGISDynamicMapServiceLayer>
+		<esri:ArcGISDynamicMapServiceLayer 
 			id="floodExtentsDyn"
 			alpha="0.35"
 			url="{resourceManager.getString('urls', 'floodExtentsDynUrl')}" >
@@ -907,6 +917,7 @@
 					<s:VGroup paddingTop="5" paddingLeft="5" paddingBottom="10" gap="0">
 						<localControls:MapServiceLegend id="floodExtentLegend" map="{map}" legendTitle="Flood-inundation area" serviceLayer="{floodExtentsDyn}" needsUpdates="false" visible="false" includeInLayout="{floodExtentLegend.visible}" legendWidth="260" />
 						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty due to levee (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
+						<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Flood depths" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
 						<localControls:MapServiceLegend id="sitesLegend" map="{map}" legendTitle="USGS FIM sites (NWS forecast category)" serviceLayer="{sitesLegendLayer}" needsUpdates="false" visible="true" includeInLayout="true" legendWidth="260" />
 						<!-- dev only -->
 						<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
