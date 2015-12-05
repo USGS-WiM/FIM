@@ -2219,6 +2219,41 @@
 				FlexGlobals.topLevelApplication.currentElev = altitudeValues.getItemAt(floodSlider.value).altitudeValue;
 				FlexGlobals.topLevelApplication.currentDischarge = dischargeValues.getItemAt(floodSlider.value).dischargeValue;
 				
+				var gridInfos:ArrayCollection = FlexGlobals.topLevelApplication.gridInfos;
+				var currentShortName:String = FlexGlobals.topLevelApplication.currentShortName;
+				var gridLayerIndex:Number = FlexGlobals.topLevelApplication.gridLayerIndex;
+				var floodGraphics:Object = FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider;
+				var graphicIDArray:Array;
+				
+				for each (var floodGraphic:Graphic in floodGraphics)
+				{	
+					var graphicID:String = floodGraphic.id;
+					var index:int = floodSlider.value;
+					var tempValue:Number = FlexGlobals.topLevelApplication.gageValues.getItemAt(index).gageValue;
+					var id:String;
+					
+					id = siteNo + tempValue.toFixed(2);
+					if (graphicID.match(siteNo + tempValue.toFixed(2)) != null) {
+						graphicIDArray = graphicID.split(siteNo + tempValue.toFixed(2));
+						break;
+					}
+				}
+				
+				for (var i:int; i < gridInfos.length; i++) {
+					if (gridInfos[i].shortname == currentShortName && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
+						gridLayerIndex = gridInfos[i].index;
+					} else if (gridInfos[i].shortname == currentShortName && gridInfos[i].gridid == graphicIDArray[1]+'b') {
+						gridLayerIndex = gridInfos[i].index;
+					}
+				}
+				
+				var vis:ArrayCollection = new ArrayCollection();
+				vis.addItem(gridLayerIndex);
+				FlexGlobals.topLevelApplication.gridsDyn.visibleLayers = vis;
+				FlexGlobals.topLevelApplication.gridsDyn.refresh();
+				
+				FlexGlobals.topLevelApplication.gridsDynLegend.aLegendService.send();
+				
 				if (int(siteNo) == 0) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.layerDefinitions = [
 						"(USGSID LIKE '%" + siteNo + "%' AND STAGE = " + gageValues[floodSlider.value].gageValue + ")"

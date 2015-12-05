@@ -194,6 +194,8 @@
 	private var lastGridResult:String;
 	
 	public var infoBoxGraphic:Graphic;
+
+	public var graphicIDArray:Array;
 	
 	[Bindable]
 	public var gageValues:ArrayCollection = new ArrayCollection();
@@ -210,7 +212,9 @@
 	[Bindable]
 	public var dischargeValues:ArrayCollection = new ArrayCollection();
 		
-	private var gridInfos:ArrayCollection = new ArrayCollection();
+	public var gridInfos:ArrayCollection = new ArrayCollection();
+
+	public var gridLayerIndex:Number;
 	
 	[Bindable]
 	public var sliderValue:Number = 0;
@@ -460,8 +464,6 @@
 			identifyParameters.returnGeometry = false;
 			identifyParameters.layerOption = "all";
 			
-			var graphicIDArray:Array;
-			
 			for each (var floodGraphic:Graphic in  queryGraphicsLayer.graphicProvider)
 			{	
 				var graphicID:String = floodGraphic.id;
@@ -488,12 +490,12 @@
 			identifyParameters.layerIds = [];
 				
 			for (var i:int; i < gridInfos.length; i++) {
-				trace(gridInfos[i].shortname + "_" + gridInfos[i].gridid);
-				trace(currentShortName);
 				if (gridInfos[i].shortname == currentShortName && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
 					identifyParameters.layerIds.push([gridInfos[i].index]);
+					gridLayerIndex = gridInfos[i].index;
 				} else if (gridInfos[i].shortname == currentShortName && gridInfos[i].gridid == graphicIDArray[1]+'b') {
 					identifyParameters.layerIds.push([gridInfos[i].index]);
+					gridLayerIndex = gridInfos[i].index;
 				}
 			}
 			
@@ -849,6 +851,13 @@
 	{	
 		if (results && results.length > 0 && siteClicked == false) {
 			
+			var vis:ArrayCollection = new ArrayCollection();
+			vis.addItem(-1);
+			gridsDyn.visibleLayers = vis;
+			gridsDyn.refresh();
+			
+			gridsDynLegend.aLegendService.send();
+			
 			floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
 			floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
 			floodBreachMultiDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1019,6 +1028,13 @@
 				siteGraphic.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void {
 					
 					siteClicked = true;
+					
+					var vis:ArrayCollection = new ArrayCollection();
+					vis.addItem(-1);
+					gridsDyn.visibleLayers = vis;
+					gridsDyn.refresh();
+					
+					gridsDynLegend.aLegendService.send();
 					
 					floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
 					floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1437,6 +1453,13 @@
 		hazus_layers = "";
 		hazus_sld = "";
 		hazusWMSParams = new ArrayCollection();
+		var vis:ArrayCollection = new ArrayCollection();
+		vis.addItem(-1);
+		gridsDyn.visibleLayers = vis;
+		gridsDyn.refresh();
+		
+		gridsDynLegend.aLegendService.send();
+		
 		floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
 		floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
 		floodBreachMultiDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1444,8 +1467,10 @@
 		floodMultiSitesDyn2.layerDefinitions = ["OBJECTID = -1"];
 		floodThreeSitesDyn.layerDefinitions = ["OBJECTID = -1"];
 		supplementalLayers.layerDefinitions = ["OBJECTID = -1", "OBJECTID = -1"];
+		
 		supplementalLayers.visible = false;
 		floodExtentLegend.visible = false;
+		gridsDynLegend.visible = false;
 		breachLegend.visible = false;
 	}
 				
@@ -1530,6 +1555,35 @@
 		//Sort values so that they are in ascending order when referenced in the gageValues array as in the flood slider
 		valuesSort();
 		
+		for each (var floodGraphic:Graphic in  queryGraphicsLayer.graphicProvider)
+		{	
+			var graphicID:String = floodGraphic.id;
+			var tempValue:Number = gageValues.getItemAt(0).gageValue;
+			var id:String;
+			
+			id = siteNo + tempValue.toFixed(2);
+			
+			if (graphicID.match(siteNo + tempValue.toFixed(2)) != null) {
+				graphicIDArray = graphicID.split(siteNo + tempValue.toFixed(2));
+				break;
+			}
+		}
+		
+		for (var i:int; i < gridInfos.length; i++) {
+			if (gridInfos[i].shortname == currentShortName && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
+				gridLayerIndex = gridInfos[i].index;
+			} else if (gridInfos[i].shortname == currentShortName && gridInfos[i].gridid == graphicIDArray[1]+'b') {
+				gridLayerIndex = gridInfos[i].index;
+			}
+		}
+		
+		var vis:ArrayCollection = new ArrayCollection();
+		vis.addItem(gridLayerIndex);
+		gridsDyn.visibleLayers = vis;
+		gridsDyn.refresh();
+		
+		gridsDynLegend.aLegendService.send();
+		
 		if (int(siteNo) == 0) {
 			floodExtentsDyn.layerDefinitions = [
 				"(USGSID LIKE '%" + siteNo + "%' AND STAGE = " + gageValues[0].gageValue + ")"
@@ -1565,6 +1619,7 @@
 		supplementalLayers.refresh();
 		supplementalLayers.visible = true;
 		floodExtentLegend.visible = true;
+		gridsDynLegend.visible = true;
 		breachLegend.visible = true;
 		
 		currentStage = gageValues.getItemAt(0).gageValue;
@@ -1754,6 +1809,17 @@
 		if (gageValues.length != 0 && gageValues2.length != 0) {
 			sliderGageValue = gageValues[0].gageValue;
 			sliderGageValue_2 = gageValues2[0].gageValue;
+			
+			var vis:ArrayCollection = new ArrayCollection();
+			vis.addItem(gridLayerIndex);
+			gridsDyn.visibleLayers = vis;
+			gridsDyn.refresh();
+			
+			gridsDynLegend.aLegendService.send();
+			
+			//Investigate legend
+			//gridsDynLegend.getLegends();
+			
 			floodMultiSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + ")"
 			];
@@ -1776,6 +1842,7 @@
 			supplementalLayers.visible = true;
 			
 			floodExtentLegend.visible = true;
+			gridsDynLegend.visible = true;
 			breachLegend.visible = true;
 		}
 		
@@ -1891,6 +1958,14 @@
 			sliderGageValue = gageValues[0].gageValue;
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			sliderGageValue_3 = gageValues3[0].gageValue;
+			
+			var vis:ArrayCollection = new ArrayCollection();
+			vis.addItem(gridLayerIndex);
+			gridsDyn.visibleLayers = vis;
+			gridsDyn.refresh();
+			
+			gridsDynLegend.aLegendService.send();
+			
 			floodMultiSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + ")"
 			];
@@ -1901,6 +1976,7 @@
 			floodMultiSitesDyn2.refresh();
 			
 			floodExtentLegend.visible = true;
+			gridsDynLegend.visible = true;
 			breachLegend.visible = true;
 		}
 		
@@ -2030,12 +2106,21 @@
 			sliderGageValue = gageValues[0].gageValue;
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			sliderGageValue_3 = gageValues3[0].gageValue;
+			
+			var vis:ArrayCollection = new ArrayCollection();
+			vis.addItem(gridLayerIndex);
+			gridsDyn.visibleLayers = vis;
+			gridsDyn.refresh();
+			
+			gridsDynLegend.aLegendService.send();
+			
 			floodThreeSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + " AND USGSID_3 LIKE '%" + int(siteNo_3) + "%' AND STAGE_3 = " + gageValues3[0].gageValue + ")"
 			];
 			floodThreeSitesDyn.refresh();
 			
 			floodExtentLegend.visible = true;
+			gridsDynLegend.visible = true;
 			breachLegend.visible = true;
 		}
 		
