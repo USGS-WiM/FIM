@@ -1037,6 +1037,9 @@
 					gridsDynLegend.aLegendService.send();
 					
 					floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
+					var vis:ArrayCollection = new ArrayCollection();
+					vis.addItem(-1);
+					gridsDyn.visibleLayers = vis;
 					floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
 					floodBreachMultiDyn.layerDefinitions = ["OBJECTID = -1"];
 					floodMultiSitesDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1461,6 +1464,9 @@
 		gridsDynLegend.aLegendService.send();
 		
 		floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
+		var vis:ArrayCollection = new ArrayCollection();
+		vis.addItem(-1);
+		gridsDyn.visibleLayers = vis;
 		floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
 		floodBreachMultiDyn.layerDefinitions = ["OBJECTID = -1"];
 		floodMultiSitesDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1514,6 +1520,7 @@
 	{
 		floodExisting = new Object();
 		getGridInfo();
+		gridLayerIndex = -1;
 		
 		if (currentTimeStamp != token.jobTime) { return };
 		
