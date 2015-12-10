@@ -1762,6 +1762,7 @@
 						
 					}
 					floodSlider.value = closestArrayItem;
+					floodSlider.dispatchEvent(new SliderEvent(SliderEvent.CHANGE));
 				}
 			}
 			
