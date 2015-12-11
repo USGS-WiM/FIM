@@ -91,6 +91,9 @@
 				<fx:String>fcstTime</fx:String>
 			</esri:outFields>
 		</esri:Query>
+		
+		<mx:Fade id="fadeOut" duration="1000" alphaFrom="1.0" alphaTo="0.0"/>
+		<mx:Fade id="fadeIn" duration="5000" alphaFrom="1.0" alphaTo="1.0"/>
 	</fx:Declarations>
 	
 	<fx:Script>
@@ -112,8 +115,8 @@
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
-			import mx.events.CollectionEvent;
 			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ItemClickEvent;
 			import mx.events.SliderEvent;
@@ -124,6 +127,8 @@
 			import mx.rpc.http.HTTPService;
 			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectUtil;
+			
+			import spark.effects.Fade;
 			
 			[Bindable]
 			private var siteFID:String = FlexGlobals.topLevelApplication.siteFID;
@@ -506,6 +511,7 @@
 						for (i=0;i<gageValues2.length;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[0].pairStage)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -513,6 +519,7 @@
 						for (i=0;i<gageValues2.length;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -538,6 +545,7 @@
 						for (i=0;i<gageValues.length;i++) {
 							if (gageValues[i].gageValue == parseFloat(tempPairValue[0].pairStage)) {
 								floodSlider1.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -545,54 +553,13 @@
 						for (i=0;i<gageValues.length;i++) {
 							if (gageValues[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
 								floodSlider1.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
 					}
 					
 				}
-				
-				/* for each (var floodGraphic:Graphic in  FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider)
-				{	
-					var graphicID:String = floodGraphic.id;
-					var index:int = event.target.value;
-					var tempValue:Number;
-					var tempValue2:Number;
-					if (event.target.id == "floodSlider1") {
-						tempValue = gageValues.getItemAt(index).gageValue;
-						tempValue2 = gageValues2[floodSlider2.value].gageValue;
-					} else if (event.target.id == "floodSlider2") {
-						tempValue = gageValues[floodSlider1.value].gageValue;
-						tempValue2 = gageValues2.getItemAt(index).gageValue;
-					}
-					var id:String = siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2);
-					if (graphicID.match(siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2)) != null) {
-						floodGraphic.visible = true;
-					} else {
-						floodGraphic.visible = false;
-					}
-				}
-				
-				for each (var breachGraphic:Graphic in  FlexGlobals.topLevelApplication.breachGraphicsLayer.graphicProvider)
-				{	
-					var graphicID:String = breachGraphic.id;
-					var index:int = event.target.value;
-					var tempValue:Number;
-					var tempValue2:Number;
-					if (event.target.id == "floodSlider1") {
-						tempValue = gageValues.getItemAt(index).gageValue;
-						tempValue2 = gageValues2[floodSlider2.value].gageValue;
-					} else if (event.target.id == "floodSlider2") {
-						tempValue = gageValues[floodSlider1.value].gageValue;
-						tempValue2 = gageValues2.getItemAt(index).gageValue;
-					}
-					var id:String = 'b' + siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2);
-					if (graphicID == id) {
-						breachGraphic.visible = true;
-					} else {
-						breachGraphic.visible = false;
-					}
-				} */
 				
 				FlexGlobals.topLevelApplication.sliderValue = floodSlider1.value;
 				FlexGlobals.topLevelApplication.sliderValue_2 = floodSlider2.value;
@@ -606,6 +573,17 @@
 					"(SITE_NO_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[floodSlider1.value].gageValue + " AND SITE_NO_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[floodSlider2.value].gageValue + ")"
 				];
 				FlexGlobals.topLevelApplication.floodBreachMultiDyn.refresh();
+				
+				function slideWarningShow():void {
+					sliderAdjustWarning.visible = true;
+					delayedFunctionCall(5000, function(e:Event) { e.currentTarget.removeEventListener(e.type, arguments.callee); sliderAdjustWarning.visible = false; });
+				}
+				
+				function delayedFunctionCall(delay:int, func:Function) {
+					var timer:Timer = new Timer(delay, 1);
+					timer.addEventListener(TimerEvent.TIMER, func);
+					timer.start();
+				}
 				
 			}
 			
@@ -713,10 +691,13 @@
 									</s:HGroup>
 									<s:Button id="zoomToFeaturesButton"  label="Zoom To Flood Study Area" click="zoomToFeatures(event)" />
 								</mx:VBox>
-								<s:HGroup id="breachToggleGroup" paddingLeft="50" paddingTop="25" visible="{(siteInfo.getItemAt(0).has_breach == 1) ? true : false}" includeInLayout="{(siteInfo.getItemAt(0).has_breach == 1) ? true : false}">
-									<s:CheckBox id="breachToggle" selected="true" click="breachVisFunction(event)"/>
-									<s:Label  text="Include area of uncertainty due to levee"/>
-								</s:HGroup>
+								<s:VGroup>
+									<s:HGroup id="breachToggleGroup" paddingLeft="50" paddingTop="25" visible="{(siteInfo.getItemAt(0).has_breach == 1) ? true : false}" includeInLayout="{(siteInfo.getItemAt(0).has_breach == 1) ? true : false}">
+										<s:CheckBox id="breachToggle" selected="true" click="breachVisFunction(event)"/>
+										<s:Label  text="Include area of uncertainty due to levee"/>
+									</s:HGroup>
+									<s:Label id="sliderAdjustWarning" paddingLeft="50" paddingTop="15" width="350" visible="false" color="red" showEffect="{fadeIn}" hideEffect="{fadeOut}" text="Your selection was not available so the sliders were adjusted to show the nearest available map" />
+								</s:VGroup>
 							</s:HGroup>
 							<mx:HBox horizontalGap="0">
 								<mx:VBox id="floodSliderBox" verticalAlign="middle" horizontalAlign="center" verticalGap="0">

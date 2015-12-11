@@ -84,6 +84,9 @@
 				<fx:String>fcsttime</fx:String>
 			</esri:outFields>
 		</esri:Query>
+	
+		<mx:Fade id="fadeOut" duration="1000" alphaFrom="1.0" alphaTo="0.0"/>
+		<mx:Fade id="fadeIn" duration="5000" alphaFrom="1.0" alphaTo="1.0"/>
 	</fx:Declarations>
 	
 	<fx:Script>
@@ -118,6 +121,8 @@
 			import mx.utils.ArrayUtil;
 			import mx.utils.ObjectProxy;
 			import mx.utils.ObjectUtil;
+			
+			import spark.effects.Fade;
 			
 			[Bindable]
 			private var siteFID:String = FlexGlobals.topLevelApplication.siteFID;
@@ -515,6 +520,7 @@
 						for (i=0;i<gageValues2.length;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[0].pairStage2)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -522,6 +528,7 @@
 						for (i=0;i<gageValues2.length;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage2)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -551,6 +558,7 @@
 						for (i=0;i<gageValues3.length;i++) {
 							if (gageValues3[i].gageValue == parseFloat(newSets[0].pairStage3)) {
 								floodSlider3.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -558,6 +566,7 @@
 						for (i=0;i<gageValues3.length;i++) {
 							if (gageValues3[i].gageValue == parseFloat(newSets[newSets.length-1].pairStage3)) {
 								floodSlider3.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -588,6 +597,7 @@
 						for (i=0;i<gageValues.length;i++) {
 							if (gageValues[i].gageValue == parseFloat(tempPairValue[0].pairStage1)) {
 								floodSlider1.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -595,6 +605,7 @@
 						for (i=0;i<gageValues.length;i++) {
 							if (gageValues[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage1)) {
 								floodSlider1.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -624,6 +635,7 @@
 						for (i=0;i<gageValues3.length;i++) {
 							if (gageValues3[i].gageValue == parseFloat(newSets[0].pairStage3)) {
 								floodSlider3.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -631,6 +643,7 @@
 						for (i=0;i<gageValues3.length;i++) {
 							if (gageValues3[i].gageValue == parseFloat(newSets[newSets.length-1].pairStage3)) {
 								floodSlider3.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -658,6 +671,7 @@
 						for (i=0;i<gageValues2.length;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[0].pairStage2)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -665,6 +679,7 @@
 						for (i=0;i<gageValues2.length;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage2)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -694,6 +709,7 @@
 						for (i=0;i<gageValues.length;i++) {
 							if (gageValues[i].gageValue == parseFloat(newSets[0].pairStage1)) {
 								floodSlider1.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -701,6 +717,7 @@
 						for (i=0;i<gageValues.length;i++) {
 							if (gageValues[i].gageValue == parseFloat(newSets[newSets.length-1].pairStage1)) {
 								floodSlider1.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -777,6 +794,7 @@
 						for (i=0;i<gageValues2.length-1;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[0].pairStage)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -784,6 +802,7 @@
 						for (i=0;i<gageValues2.length-1;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -811,6 +830,7 @@
 						for (i=0;i<gageValues.length-1;i++) {
 							if (gageValues[i].gageValue == parseFloat(tempPairValue[0].pairStage)) {
 								floodSlider1.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -818,6 +838,7 @@
 						for (i=0;i<gageValues.length-1;i++) {
 							if (gageValues[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
 								floodSlider1.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -846,6 +867,7 @@
 						for (i=0;i<gageValues3.length-1;i++) {
 							if (gageValues3[i].gageValue == parseFloat(tempPairValue[0].pairStage)) {
 								floodSlider3.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -853,6 +875,7 @@
 						for (i=0;i<gageValues3.length-1;i++) {
 							if (gageValues3[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
 								floodSlider3.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -880,6 +903,7 @@
 						for (i=0;i<gageValues2.length-1;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[0].pairStage)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -887,6 +911,7 @@
 						for (i=0;i<gageValues2.length-1;i++) {
 							if (gageValues2[i].gageValue == parseFloat(tempPairValue[tempPairValue.length-1].pairStage)) {
 								floodSlider2.value = i;
+								slideWarningShow();
 								break;
 							}
 						}
@@ -924,6 +949,17 @@
 				FlexGlobals.topLevelApplication.sliderValue_2 = floodSlider2.value;
 				FlexGlobals.topLevelApplication.sliderValue_3 = floodSlider3.value;
 				
+			}
+			
+			private function slideWarningShow():void {
+				sliderAdjustWarning.visible = true;
+				delayedFunctionCall(5000, function(e:Event) { e.currentTarget.removeEventListener(e.type, arguments.callee); sliderAdjustWarning.visible = false; });
+			}
+			
+			private function delayedFunctionCall(delay:int, func:Function) {
+				var timer:Timer = new Timer(delay, 1);
+				timer.addEventListener(TimerEvent.TIMER, func);
+				timer.start();
 			}
 			
 			private function breachMultiQueryFunction(event:MouseEvent):void {
@@ -1020,6 +1056,7 @@
 									<s:HGroup>
 										<wim:OpacityControl opacityElement="{FlexGlobals.topLevelApplication.floodMultiSitesDyn}" />
 										<s:Label text="Opacity Control"/>
+										<s:Label id="sliderAdjustWarning" paddingLeft="50" paddingTop="15" width="350" visible="false" color="red" showEffect="{fadeIn}" hideEffect="{fadeOut}" text="Your selection was not available so the sliders were adjusted to show the nearest available map" />
 									</s:HGroup>
 									<!--<s:Button id="zoomToFeaturesButton"  label="Zoom To Flood Study Area" click="zoomToFeatures()" />-->
 								</mx:VBox>
