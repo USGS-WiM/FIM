@@ -2248,12 +2248,7 @@
 					}
 				}
 				
-				var vis:ArrayCollection = new ArrayCollection();
-				vis.addItem(gridLayerIndex);
-				FlexGlobals.topLevelApplication.gridsDyn.visibleLayers = vis;
-				FlexGlobals.topLevelApplication.gridsDyn.refresh();
-				
-				FlexGlobals.topLevelApplication.gridsDynLegend.aLegendService.send();
+				FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex);
 				
 				if (int(siteNo) == 0) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.layerDefinitions = [
@@ -2539,7 +2534,7 @@
 						</s:HGroup>
 					</mx:Box>
 					
-					<mx:Box paddingTop="15">
+					<mx:Box visible="{siteNo != '13206000'}" includeInLayout="{siteNo != '13206000'}" paddingTop="15">
 						<mx:Image source="./assets/images/usgsLogoSm.jpg" toolTip="USGS" />
 					</mx:Box>
 					
