@@ -1056,7 +1056,7 @@
 									<s:HGroup>
 										<wim:OpacityControl opacityElement="{FlexGlobals.topLevelApplication.floodMultiSitesDyn}" />
 										<s:Label text="Opacity Control"/>
-										<s:Label id="sliderAdjustWarning" paddingLeft="50" paddingTop="15" width="350" visible="false" color="red" showEffect="{fadeIn}" hideEffect="{fadeOut}" text="Your selection was not available so the sliders were adjusted to show the nearest available map" />
+										<s:Label id="sliderAdjustWarning" paddingLeft="50" paddingTop="15" width="350" visible="false" color="red" showEffect="{fadeIn}" hideEffect="{fadeOut}" text="Your selection was not modeled. The sliders were adjusted to show the nearest available map." />
 									</s:HGroup>
 									<!--<s:Button id="zoomToFeaturesButton"  label="Zoom To Flood Study Area" click="zoomToFeatures()" />-->
 								</mx:VBox>

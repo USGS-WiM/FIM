@@ -433,7 +433,8 @@
 		}
 		
 		//dev only
-		nwisSites.alpha = nwisSitesAlpha;
+		//nwisSites.alpha = nwisSitesAlpha;
+		//end dev only
 		
 		//testMap.extent = map.extent;
 		//testMap.scale = map.scale;
@@ -697,7 +698,7 @@
 		}
 		
 		//dev only
-		if (nwisSites.visible) {
+		/*if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
 			
@@ -713,7 +714,8 @@
 			nwisIdentifyTask.showBusyCursor = true;
 			nwisIdentifyTask.execute(nwisIdentifyParameters, new AsyncResponder(nwisIdentifyResult, nwisIdentifyFault));
 			
-		}
+		}*/
+		//end dev only
 		
 	}
 
@@ -853,10 +855,12 @@
 			
 			var vis:ArrayCollection = new ArrayCollection();
 			vis.addItem(-1);
-			gridsDyn.visibleLayers = vis;
+			//dev only
+			/*gridsDyn.visibleLayers = vis;
 			gridsDyn.refresh();
 			
-			gridsDynLegend.aLegendService.send();
+			gridsDynLegend.aLegendService.send();*/
+			//end dev only
 			
 			floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
 			floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1029,17 +1033,9 @@
 					
 					siteClicked = true;
 					
-					var vis:ArrayCollection = new ArrayCollection();
-					vis.addItem(-1);
-					gridsDyn.visibleLayers = vis;
-					gridsDyn.refresh();
-					
-					gridsDynLegend.aLegendService.send();
+					gridsReset(false, -1);
 					
 					floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
-					var vis:ArrayCollection = new ArrayCollection();
-					vis.addItem(-1);
-					gridsDyn.visibleLayers = vis;
 					floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
 					floodBreachMultiDyn.layerDefinitions = ["OBJECTID = -1"];
 					floodMultiSitesDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1456,17 +1452,10 @@
 		hazus_layers = "";
 		hazus_sld = "";
 		hazusWMSParams = new ArrayCollection();
-		var vis:ArrayCollection = new ArrayCollection();
-		vis.addItem(-1);
-		gridsDyn.visibleLayers = vis;
-		gridsDyn.refresh();
 		
-		gridsDynLegend.aLegendService.send();
+		gridsReset(true, -1);
 		
 		floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
-		var vis:ArrayCollection = new ArrayCollection();
-		vis.addItem(-1);
-		gridsDyn.visibleLayers = vis;
 		floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
 		floodBreachMultiDyn.layerDefinitions = ["OBJECTID = -1"];
 		floodMultiSitesDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1476,8 +1465,26 @@
 		
 		supplementalLayers.visible = false;
 		floodExtentLegend.visible = false;
-		gridsDynLegend.visible = false;
+		
 		breachLegend.visible = false;
+	}
+	
+	public function gridsReset(hideLegend:Boolean,layerIndex:Number):void {
+		//dev only
+		/*var vis:ArrayCollection = new ArrayCollection();
+		vis.addItem(layerIndex);
+		
+		gridsDyn.visibleLayers = vis;
+		gridsDyn.refresh();
+		
+		gridsDynLegend.aLegendService.send();
+		gridsDyn.visibleLayers = vis;
+		if (hideLegend == true) {
+			gridsDynLegend.visible = false;
+		} else if (hideLegend == false) {
+			gridsDynLegend.visible = true;
+		}*/
+		//end dev only
 	}
 				
 	private function queryFault(info:Object, token:Object = null):void
@@ -1584,12 +1591,7 @@
 			}
 		}
 		
-		var vis:ArrayCollection = new ArrayCollection();
-		vis.addItem(gridLayerIndex);
-		gridsDyn.visibleLayers = vis;
-		gridsDyn.refresh();
-		
-		gridsDynLegend.aLegendService.send();
+		gridsReset(false, gridLayerIndex);
 		
 		if (int(siteNo) == 0) {
 			floodExtentsDyn.layerDefinitions = [
@@ -1626,7 +1628,6 @@
 		supplementalLayers.refresh();
 		supplementalLayers.visible = true;
 		floodExtentLegend.visible = true;
-		gridsDynLegend.visible = true;
 		breachLegend.visible = true;
 		
 		currentStage = gageValues.getItemAt(0).gageValue;
@@ -1817,15 +1818,7 @@
 			sliderGageValue = gageValues[0].gageValue;
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			
-			var vis:ArrayCollection = new ArrayCollection();
-			vis.addItem(gridLayerIndex);
-			gridsDyn.visibleLayers = vis;
-			gridsDyn.refresh();
-			
-			gridsDynLegend.aLegendService.send();
-			
-			//Investigate legend
-			//gridsDynLegend.getLegends();
+			gridsReset(false, gridLayerIndex);
 			
 			floodMultiSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + ")"
@@ -1849,7 +1842,6 @@
 			supplementalLayers.visible = true;
 			
 			floodExtentLegend.visible = true;
-			gridsDynLegend.visible = true;
 			breachLegend.visible = true;
 		}
 		
@@ -1966,12 +1958,7 @@
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			sliderGageValue_3 = gageValues3[0].gageValue;
 			
-			var vis:ArrayCollection = new ArrayCollection();
-			vis.addItem(gridLayerIndex);
-			gridsDyn.visibleLayers = vis;
-			gridsDyn.refresh();
-			
-			gridsDynLegend.aLegendService.send();
+			gridsReset(false, gridLayerIndex);
 			
 			floodMultiSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + ")"
@@ -1983,7 +1970,6 @@
 			floodMultiSitesDyn2.refresh();
 			
 			floodExtentLegend.visible = true;
-			gridsDynLegend.visible = true;
 			breachLegend.visible = true;
 		}
 		
@@ -2114,12 +2100,7 @@
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			sliderGageValue_3 = gageValues3[0].gageValue;
 			
-			var vis:ArrayCollection = new ArrayCollection();
-			vis.addItem(gridLayerIndex);
-			gridsDyn.visibleLayers = vis;
-			gridsDyn.refresh();
-			
-			gridsDynLegend.aLegendService.send();
+			gridsReset(false, gridLayerIndex);
 			
 			floodThreeSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + " AND USGSID_3 LIKE '%" + int(siteNo_3) + "%' AND STAGE_3 = " + gageValues3[0].gageValue + ")"
@@ -2127,7 +2108,6 @@
 			floodThreeSitesDyn.refresh();
 			
 			floodExtentLegend.visible = true;
-			gridsDynLegend.visible = true;
 			breachLegend.visible = true;
 		}
 		
