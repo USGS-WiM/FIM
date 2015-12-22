@@ -696,7 +696,7 @@
 										<s:CheckBox id="breachToggle" selected="true" click="breachVisFunction(event)"/>
 										<s:Label  text="Include area of uncertainty due to levee"/>
 									</s:HGroup>
-									<s:Label id="sliderAdjustWarning" paddingLeft="50" paddingTop="15" width="350" visible="false" color="red" showEffect="{fadeIn}" hideEffect="{fadeOut}" text="Your selection was not available so the sliders were adjusted to show the nearest available map" />
+									<s:Label id="sliderAdjustWarning" paddingLeft="50" paddingTop="15" width="350" visible="false" color="red" showEffect="{fadeIn}" hideEffect="{fadeOut}" text="Your selection was not modeled. The sliders were adjusted to show the nearest available map." />
 								</s:VGroup>
 							</s:HGroup>
 							<mx:HBox horizontalGap="0">
