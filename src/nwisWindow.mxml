@@ -383,7 +383,7 @@
 					hydroRequest.send();
 					
 					// Request to get all forecast data for hydrograph in flood tools
-					/* if (ahpsID != 'NONE' && ahpsID != null) {
+					 if (ahpsID != 'NONE' && ahpsID != null) {
 						var forecastService:HTTPService = new HTTPService();
 						forecastService.method = "GET";
 						forecastService.url = resourceManager.getString('urls.proxies', 'httpProxy')+"ahpsID="+ahpsID; //"http://water.weather.gov/ahps2/hydrograph_to_xml.php?gage="+ahpsID+"&amp;output=xml";
@@ -391,7 +391,7 @@
 						forecastService.send();
 					} else if (ahpsID == 'NONE' || ahpsID == null) {
 						forecastArray = new ArrayCollection();
-					} */
+					} 
 					
 					//siteQuery.geometry = FlexGlobals.topLevelApplication.map.extent;
 					siteQuery.where = "SITE_NO = '" + siteNo + "'";
@@ -896,9 +896,11 @@
 				function checkForNoData(array:ArrayCollection):ArrayCollection {
 					var updatedArray:ArrayCollection = new ArrayCollection();
 					
-					for (var i:int = 0; i < array.length; i++) {
-						if (array[i].value != "-999999") {
-							updatedArray.addItem(array[i]);
+					if (array != null) {
+						for (var i:int = 0; i < array.length; i++) {
+							if (array[i].value != "-999999") {
+								updatedArray.addItem(array[i]);
+							}
 						}
 					}
 					
@@ -1646,11 +1648,11 @@
 										<mx:Label text="{siteNo}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" click="navigateToURL(new URLRequest('http://waterdata.usgs.gov/nwis/uv?site_no='+siteNo))" />
 										<mx:Label text=" Provisional Data, Subject to Revision" />
 									</mx:HBox>
-									<!--<mx:HBox id="ahpsSiteLink" horizontalGap="0" visible="{ahpsID != 'NONE'}" includeInLayout="{ahpsSiteLink.visible}">
+									<mx:HBox id="ahpsSiteLink" horizontalGap="0" visible="{ahpsID != 'NONE'}" includeInLayout="{ahpsSiteLink.visible}">
 										<mx:Label text="NWS Site ID: " />
 										<mx:Label text="{ahpsID.toUpperCase()}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" click="navigateToURL(new URLRequest('http://water.weather.gov/ahps2/hydrograph.php?gage='+ahpsID))" />
 										<mx:Label text=" Forecast Subject to Revision" />
-									</mx:HBox>-->
+									</mx:HBox>
 								</mx:VBox>
 							</mx:VBox>
 						</mx:VBox>

@@ -433,7 +433,7 @@
 		}
 		
 		//dev only
-		//nwisSites.alpha = nwisSitesAlpha;
+		nwisSites.alpha = nwisSitesAlpha;
 		//end dev only
 		
 		//testMap.extent = map.extent;
@@ -698,7 +698,7 @@
 		}
 		
 		//dev only
-		/*if (nwisSites.visible) {
+		if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
 			
@@ -714,7 +714,7 @@
 			nwisIdentifyTask.showBusyCursor = true;
 			nwisIdentifyTask.execute(nwisIdentifyParameters, new AsyncResponder(nwisIdentifyResult, nwisIdentifyFault));
 			
-		}*/
+		}
 		//end dev only
 		
 	}
@@ -856,10 +856,10 @@
 			var vis:ArrayCollection = new ArrayCollection();
 			vis.addItem(-1);
 			//dev only
-			/*gridsDyn.visibleLayers = vis;
+			gridsDyn.visibleLayers = vis;
 			gridsDyn.refresh();
 			
-			gridsDynLegend.aLegendService.send();*/
+			gridsDynLegend.aLegendService.send();
 			//end dev only
 			
 			floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -886,6 +886,12 @@
 			if (inSites == false) {
 				
 				siteNo = result.feature.attributes.Name;
+				if (result.feature.attributes.CH5ID == "Null") {
+					ahpsID = "None";
+				} else {
+					ahpsID = result.feature.attributes.CH5ID;
+				}
+				
 				
 				_queryWindow = PopUpManager.createPopUp(map, nwisWindow, false) as WiMInfoWindow;
 				_queryWindow.setStyle("skinClass", WiMInfoWindowSkin);
@@ -902,7 +908,13 @@
 				_queryWindow.data = result.feature.attributes;
 				//siteInfoBox.visible = true;
 				
+				var aGraphic:Graphic = result.feature;
+				
+				aGraphic.symbol = nwisSiteSelectedSym;
+				queryGraphicsLayer.add(aGraphic);
+				
 				queryGraphicsLayer.visible = true;
+				queryGraphicsLayer.alpha = 1.0;
 			}
 		} else {
 			siteClicked = false;
@@ -1471,7 +1483,7 @@
 	
 	public function gridsReset(hideLegend:Boolean,layerIndex:Number):void {
 		//dev only
-		/*var vis:ArrayCollection = new ArrayCollection();
+		var vis:ArrayCollection = new ArrayCollection();
 		vis.addItem(layerIndex);
 		
 		gridsDyn.visibleLayers = vis;
@@ -1483,7 +1495,7 @@
 			gridsDynLegend.visible = false;
 		} else if (hideLegend == false) {
 			gridsDynLegend.visible = true;
-		}*/
+		}
 		//end dev only
 	}
 				
