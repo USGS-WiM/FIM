@@ -213,7 +213,8 @@
 	public var dischargeValues:ArrayCollection = new ArrayCollection();
 		
 	public var gridInfos:ArrayCollection = new ArrayCollection();
-
+	
+	[Bindable]
 	public var gridLayerIndex:Number;
 	
 	[Bindable]
@@ -1603,7 +1604,7 @@
 			}
 		}
 		
-		gridsReset(false, gridLayerIndex);
+		//gridsReset(false, gridLayerIndex);
 		
 		if (int(siteNo) == 0) {
 			floodExtentsDyn.layerDefinitions = [
