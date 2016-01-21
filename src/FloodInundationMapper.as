@@ -216,6 +216,8 @@
 	
 	[Bindable]
 	public var gridLayerIndex:Number;
+	[Bindable]
+	public var gridLayerIndexArrColl:ArrayCollection;
 	
 	[Bindable]
 	public var sliderValue:Number = 0;
@@ -490,13 +492,16 @@
 			}
 			
 			identifyParameters.layerIds = [];
+			gridLayerIndexArrColl = new ArrayCollection();
 				
 			for (var i:int; i < gridInfos.length; i++) {
 				if (gridInfos[i].shortname == currentShortName && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
 					identifyParameters.layerIds.push([gridInfos[i].index]);
+					gridLayerIndexArrColl.addItem([gridInfos[i].index]);
 					gridLayerIndex = gridInfos[i].index;
 				} else if (gridInfos[i].shortname == currentShortName && gridInfos[i].gridid == graphicIDArray[1]+'b') {
 					identifyParameters.layerIds.push([gridInfos[i].index]);
+					gridLayerIndexArrColl.addItem([gridInfos[i].index]);
 					gridLayerIndex = gridInfos[i].index;
 				}
 			}
@@ -1046,7 +1051,9 @@
 					
 					siteClicked = true;
 					
-					gridsReset(false, -1);
+					var tempAC = new ArrayCollection();
+					
+					gridsReset(false, -1, tempAC);
 					
 					floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
 					floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1466,7 +1473,9 @@
 		hazus_sld = "";
 		hazusWMSParams = new ArrayCollection();
 		
-		gridsReset(true, -1);
+		var tempAC = new ArrayCollection();
+		
+		gridsReset(true, -1, tempAC);
 		
 		floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
 		floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1482,16 +1491,16 @@
 		breachLegend.visible = false;
 	}
 	
-	public function gridsReset(hideLegend:Boolean,layerIndex:Number):void {
+	public function gridsReset(hideLegend:Boolean,layerIndex:Number,layerIndexArray:ArrayCollection):void {
 		//dev only
 		var vis:ArrayCollection = new ArrayCollection();
 		vis.addItem(layerIndex);
 		
-		gridsDyn.visibleLayers = vis;
+		gridsDyn.visibleLayers = layerIndexArray;
 		gridsDyn.refresh();
 		
 		gridsDynLegend.aLegendService.send();
-		gridsDyn.visibleLayers = vis;
+		//gridsDyn.visibleLayers = layerIndexArray;
 		if (hideLegend == true) {
 			gridsDynLegend.visible = false;
 		} else if (hideLegend == false) {
@@ -1541,6 +1550,7 @@
 		floodExisting = new Object();
 		getGridInfo();
 		gridLayerIndex = -1;
+		gridLayerIndexArrColl = new ArrayCollection();
 		
 		if (currentTimeStamp != token.jobTime) { return };
 		
@@ -1599,8 +1609,10 @@
 		for (var i:int; i < gridInfos.length; i++) {
 			if (gridInfos[i].shortname == currentShortName && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
 				gridLayerIndex = gridInfos[i].index;
+				gridLayerIndexArrColl.addItem(gridInfos[i].index);
 			} else if (gridInfos[i].shortname == currentShortName && gridInfos[i].gridid == graphicIDArray[1]+'b') {
 				gridLayerIndex = gridInfos[i].index;
+				gridLayerIndexArrColl.addItem(gridInfos[i].index);
 			}
 		}
 		
@@ -1831,7 +1843,7 @@
 			sliderGageValue = gageValues[0].gageValue;
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			
-			gridsReset(false, gridLayerIndex);
+			gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
 			
 			floodMultiSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + ")"
@@ -1971,7 +1983,7 @@
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			sliderGageValue_3 = gageValues3[0].gageValue;
 			
-			gridsReset(false, gridLayerIndex);
+			gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
 			
 			floodMultiSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + ")"
@@ -2113,7 +2125,7 @@
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			sliderGageValue_3 = gageValues3[0].gageValue;
 			
-			gridsReset(false, gridLayerIndex);
+			gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
 			
 			floodThreeSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + " AND USGSID_3 LIKE '%" + int(siteNo_3) + "%' AND STAGE_3 = " + gageValues3[0].gageValue + ")"
