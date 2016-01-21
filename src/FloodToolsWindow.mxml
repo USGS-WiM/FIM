@@ -2226,6 +2226,8 @@
 				var floodGraphics:Object = FlexGlobals.topLevelApplication.queryGraphicsLayer.graphicProvider;
 				var graphicIDArray:Array;
 				
+				var gridLayerIndexArrColl = new ArrayCollection();
+				
 				for each (var floodGraphic:Graphic in floodGraphics)
 				{	
 					var graphicID:String = floodGraphic.id;
@@ -2243,17 +2245,20 @@
 				for (var i:int; i < gridInfos.length; i++) {
 					if (gridInfos[i].shortname == currentShortName && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
 						gridLayerIndex = gridInfos[i].index;
+						gridLayerIndexArrColl.addItem(gridInfos[i].index);
 					} else if (gridInfos[i].shortname == currentShortName && gridInfos[i].gridid == graphicIDArray[1]+'b') {
 						gridLayerIndex = gridInfos[i].index;
+						gridLayerIndexArrColl.addItem(gridInfos[i].index);
 					}
 				}
 				
 				FlexGlobals.topLevelApplication.gridLayerIndex = gridLayerIndex;
+				FlexGlobals.topLevelApplication.gridLayerIndexArrColl = gridLayerIndexArrColl;
 				
 				trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
 				
-				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != -1) {
-					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex);
+				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != new ArrayCollection() && gridToggle.selected) {
+					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
 				}
 				
 				if (int(siteNo) == 0) {
@@ -2345,13 +2350,16 @@
 			}
 			
 			private function gridsState(event:MouseEvent):void {
-				trace(FlexGlobals.topLevelApplication.gridLayerIndex);
+				trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				if (gridToggle.selected) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = false;
-					FlexGlobals.topLevelApplication.gridsReset(false, FlexGlobals.topLevelApplication.gridLayerIndex);
+					//Need to code for only hiding if there is a breach grid to show, otherwise show poly for fuller context for user
+					FlexGlobals.topLevelApplication.floodBreachDyn.visible = false;
+					FlexGlobals.topLevelApplication.gridsReset(false, FlexGlobals.topLevelApplication.gridLayerIndex, FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				} else if (!gridToggle.selected) {
-					FlexGlobals.topLevelApplication.gridsReset(true, -1);
+					FlexGlobals.topLevelApplication.gridsReset(true, -1, new ArrayCollection());
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = true;
+					FlexGlobals.topLevelApplication.floodBreachDyn.visible = true;
 				}
 			}
 			
