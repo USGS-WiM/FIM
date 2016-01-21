@@ -1061,18 +1061,19 @@
 		<!-- End Basemaps -->
 		<!-- Operational layers -->
 		<!-- dev only -->
-		<esri:ArcGISDynamicMapServiceLayer 
+		<!-- not quite ready. prints not completing when it is added -->
+		<!--<esri:ArcGISDynamicMapServiceLayer 
 			id="gridsDynPrint"
 			visible="{gridsDyn.visible}"
 			alpha="{gridsDyn.alpha}" 
 			visibleLayers="{gridsDyn.visibleLayers}"
 			url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}" >
-		</esri:ArcGISDynamicMapServiceLayer>
+		</esri:ArcGISDynamicMapServiceLayer>-->
 		<!-- end dev only -->
 		<esri:ArcGISDynamicMapServiceLayer
 			id="floodExtentPrint"
 			visible="{floodExtentsDyn.visible}"
-			alpha="{floodExtentsDyn.alpha}" 
+			alpha="{floodExtentsDyn.alpha}"
 			url="{resourceManager.getString('urls', 'floodExtentsDynUrl')}">
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:ArcGISDynamicMapServiceLayer
