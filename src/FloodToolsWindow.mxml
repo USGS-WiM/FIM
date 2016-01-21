@@ -2250,7 +2250,9 @@
 				
 				FlexGlobals.topLevelApplication.gridLayerIndex = gridLayerIndex;
 				
-				if (FlexGlobals.topLevelApplication.gridsDyn.visible) {
+				trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
+				
+				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != -1) {
 					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex);
 				}
 				
