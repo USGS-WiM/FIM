@@ -204,7 +204,7 @@
 				//Method for getting realtime info for all stream gages
 				var dataRequest:HTTPService = new HTTPService();
 				dataRequest.method = "GET";
-				dataRequest.url = "http://wim.usgs.gov/proxies/httpProxy/Default.aspx?site_no="+siteNo+","+siteNo_2+","+siteNo_3+"&dataTest=true";
+				dataRequest.url = "http://fim.wim.usgs.gov/proxies/httpProxy/Default.aspx?site_no="+siteNo+","+siteNo_2+","+siteNo_3+"&dataTest=true";
 				dataRequest.addEventListener(ResultEvent.RESULT, reqResult);
 				dataRequest.send();
 				
