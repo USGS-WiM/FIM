@@ -1183,7 +1183,7 @@
 			
 			protected function forecastRequest(event:ResultEvent):void
 			{
-				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame') {
+				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame' && event.result.site.forecast != 'Gauge monitored seasonally - readings not available during winter months.') {
 					forecastArray = event.result.site.forecast.datum as ArrayCollection;
 					sigLevelsArray = event.result.site.sigstages;
 					
@@ -2255,11 +2255,13 @@
 				FlexGlobals.topLevelApplication.gridLayerIndex = gridLayerIndex;
 				FlexGlobals.topLevelApplication.gridLayerIndexArrColl = gridLayerIndexArrColl;
 				
-				trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
+				/* dev only */
+				/* trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
 				
 				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != new ArrayCollection() && gridToggle.selected) {
 					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
-				}
+				} */
+				/* end dev only */
 				
 				if (int(siteNo) == 0) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.layerDefinitions = [
@@ -2350,7 +2352,8 @@
 			}
 			
 			private function gridsState(event:MouseEvent):void {
-				trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
+				//dev only
+				/* trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				if (gridToggle.selected) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = false;
 					//Need to code for only hiding if there is a breach grid to show, otherwise show poly for fuller context for user
@@ -2360,7 +2363,8 @@
 					FlexGlobals.topLevelApplication.gridsReset(true, -1, new ArrayCollection());
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = true;
 					FlexGlobals.topLevelApplication.floodBreachDyn.visible = true;
-				}
+				}  */
+				//end dev only
 			}
 			
 			private function breachQueryFunction(event:MouseEvent):void {
@@ -2535,10 +2539,12 @@
 						<wim:OpacityControl opacityElement="{FlexGlobals.topLevelApplication.floodExtentsDyn}" />
 						<s:Label paddingTop="2" text="Adjust flood opacity" fontSize="9"/>
 					</s:HGroup>
-					<s:HGroup id="gridsToggleGroup" visible="{FlexGlobals.topLevelApplication.gridLayerIndex != -1}" includeInLayout="{gridsToggleGroup.visible}" verticalAlign="middle" width="100%" horizontalAlign="center" paddingLeft="35" paddingBottom="5">
+					<!-- dev only -->
+					<!--<s:HGroup id="gridsToggleGroup" visible="{FlexGlobals.topLevelApplication.gridLayerIndex != -1}" includeInLayout="{gridsToggleGroup.visible}" verticalAlign="middle" width="100%" horizontalAlign="center" paddingLeft="35" paddingBottom="5">
 						<s:CheckBox id="gridToggle" selected="false" click="gridsState(event)" />
 						<s:Label width="120" text="view grids"/>
-					</s:HGroup>
+					</s:HGroup>-->
+					<!-- end dev only -->
 					<!--<s:Label text="Zoom to Flood Study Area:" textAlign="center" fontWeight="bold" width="100"/>
 					<s:Button id="zoomToFeaturesButton" label="Go" click="zoomToFeatures()" />-->
 					<mx:Box paddingTop="15">
