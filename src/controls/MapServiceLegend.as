@@ -172,6 +172,9 @@ package controls
 									var legendItemImage:Image = new Image();
 									legendItemImage.load( b64Decoder.toByteArray() );
 									var aLabel:String = aLegendItem["label"];
+									if (serviceLayer.id == "gridsDyn" && aLabel.split(":").length > 1) {
+										aLabel = Number(Number(aLabel.split(":")[1]).toFixed(1)).toFixed(0).split(".")[0] + " ft";
+									}
 									//If singleTitle is specified and there is a single legend item with no label, use the layerName 
 									if ((singleTitle != null) && (aLabel.length == 0) && ((legendResults[i]["legend"] as Array).length <= 1)) { aLabel = legendResults[i]["layerName"]; }
 									//Use USGS sentence capitalization on labels

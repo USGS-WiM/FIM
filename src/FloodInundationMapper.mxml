@@ -58,7 +58,7 @@
 				xmlns:localControls="controls.*"
 				xmlns:navigationClasses="com.esri.ags.controls.navigationClasses.*"
 				creationComplete="setUp()" layout="absolute"
-				pageTitle="USGS Flood Inundation Mapper" viewSourceURL="srcview/index.html">
+				pageTitle="USGS Flood Inundation Mapper">
 	
 	<fx:Style source="assets/styles/main.css"/>
 	
@@ -523,7 +523,7 @@
 				</esri:visibleLayers>
 		</esri:WMSLayer>
 		<!-- dev only -->
-		<esri:ArcGISDynamicMapServiceLayer
+		<!--<esri:ArcGISDynamicMapServiceLayer
 			id="qpf"
 			visible="{qpfToggle.selected}"
 			alpha="0.7"
@@ -533,7 +533,7 @@
 					<fx:Number>0</fx:Number>                
 				</mx:ArrayCollection>            
 			</esri:visibleLayers>
-		</esri:ArcGISDynamicMapServiceLayer>
+		</esri:ArcGISDynamicMapServiceLayer>-->
 		<!-- end dev only -->
 		<esri:ArcGISDynamicMapServiceLayer
 			 id="warningsTest"
@@ -554,7 +554,7 @@
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:GraphicsLayer id="queryGraphicsLayer" alpha="0.35"/>
 		<!-- dev only -->
-		<esri:ArcGISDynamicMapServiceLayer 
+		<!--<esri:ArcGISDynamicMapServiceLayer 
 			id="gridsDyn"
 			alpha="0.75"
 			url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}" >
@@ -563,7 +563,7 @@
 					<fx:Number>0</fx:Number>
 				</s:ArrayCollection>
 			</esri:visibleLayers>
-		</esri:ArcGISDynamicMapServiceLayer>
+		</esri:ArcGISDynamicMapServiceLayer>-->
 		<!-- end dev only -->
 		<esri:ArcGISDynamicMapServiceLayer 
 			id="floodExtentsDyn"
@@ -669,7 +669,7 @@
 			</esri:visibleLayers>
 		</esri:ArcGISDynamicMapServiceLayer>
 		<!-- dev only -->
-		<esri:ArcGISDynamicMapServiceLayer
+		<!--<esri:ArcGISDynamicMapServiceLayer
 			id="nwisSites"
 			visible="{nwisToggle.selected}"
 			alpha="0.5"
@@ -680,7 +680,7 @@
 					<fx:Number>{(map.scale > 1000000) ? '0' : '1'}</fx:Number>
 				</s:ArrayCollection>
 			</esri:visibleLayers>
-		</esri:ArcGISDynamicMapServiceLayer>
+		</esri:ArcGISDynamicMapServiceLayer>-->
 		<!-- end dev only -->
 		<esri:GraphicsLayer
 			id="siteLayer" 
@@ -874,7 +874,7 @@
 							<wim:LayerToggle id="weatherToggle" layerID="0" serviceLayerID="weather" layerTitle="National Weather Service Radars" selected="{weather.visible}" />
 							<wim:LayerToggle id="warningsToggle" layerID="0" serviceLayerID="warningsTest" layerTitle="Flood Watches/Warnings" selected="{warningsTest.visible}" />
 							<!-- dev only -->
-							<wim:LayerToggle id="nwisToggle" layerID="0" serviceLayerID="nwisSites" layerTitle="NWIS gages" selected="{nwisSites.visible}" />
+							<!--<wim:LayerToggle id="nwisToggle" layerID="0" serviceLayerID="nwisSites" layerTitle="NWIS gages" selected="{nwisSites.visible}" />-->
 							<!-- end dev only -->
 							<s:HGroup>
 								<s:HGroup paddingTop="2">
@@ -892,7 +892,7 @@
 								<wim:LayerToggle id="ahpsForecastOldToggle" serviceLayerID="ahpsForecastOld" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(oldCount)) ? 'Observation > 24 hrs old' : 'Observation > 24 hrs old ('+oldCount+')'}" selected="false" adjustOpacity="false" />
 							</s:VGroup>
 							<!-- dev only -->
-							<wim:LayerToggle id="qpfToggle" adjustOpacity="true" serviceLayerID="qpf" layerTitle="Quantitative Precipitation Forecast" selected="{qpf.visible}" creationComplete="{qpfToggle.selected = false}" />
+							<!--<wim:LayerToggle id="qpfToggle" adjustOpacity="true" serviceLayerID="qpf" layerTitle="Quantitative Precipitation Forecast" selected="{qpf.visible}" creationComplete="{qpfToggle.selected = false}" />
 							<s:VGroup paddingLeft="40">
 								<s:RadioButton group="{qpfOpt}"
 											   id="day1"
@@ -924,7 +924,7 @@
 											   label="Day 5" 
 											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(4); qpf.refresh();}"
 											   value="emulsion"/>
-							</s:VGroup>
+							</s:VGroup>-->
 							<!-- end dev only -->
 						</s:VGroup>
 					</s:VGroup>
@@ -934,17 +934,17 @@
 						<localControls:MapServiceLegend id="floodExtentLegend" map="{map}" legendTitle="Flood-inundation area" serviceLayer="{floodExtentsDyn}" needsUpdates="false" visible="false" includeInLayout="{floodExtentLegend.visible}" legendWidth="260" />
 						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty due to levee (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
 						<!-- dev only -->
-						<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Flood depths" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
-						<!-- end dev only -->
+						<!--<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Flood depths" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
+						--><!-- end dev only -->
 						<localControls:MapServiceLegend id="sitesLegend" map="{map}" legendTitle="USGS FIM sites (NWS forecast category)" serviceLayer="{sitesLegendLayer}" needsUpdates="false" visible="true" includeInLayout="true" legendWidth="260" />
 						<!-- dev only -->
-						<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
-						<!-- end dev only -->
+						<!--<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
+						--><!-- end dev only -->
 						<localControls:MapServiceLegend id="ahpsForecastLegend" map="{map}" serviceLayer="{ahpsForecast}" needsUpdates="false" visible="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" includeInLayout="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" legendWidth="260" />
 						<localControls:MapServiceLegend id="supplementalLayersLegend" map="{map}" serviceLayer="{supplementalLayers}" needsUpdates="false" visible="{supplementalLayers.visible}" includeInLayout="{supplementalLayersLegend.visible}" legendWidth="260" />
 						<!-- dev only -->
-						<localControls:MapServiceLegend id="qpfLegend" map="{map}" legendTitle="QPF" serviceLayer="{qpf}" legendWidth="260" needsUpdates="true"/>
-						<!-- end dev only -->
+						<!--<localControls:MapServiceLegend id="qpfLegend" map="{map}" legendTitle="QPF" serviceLayer="{qpf}" legendWidth="260" needsUpdates="true"/>
+						--><!-- end dev only -->
 					</s:VGroup>
 				</mx:Box>
 			</s:VGroup>

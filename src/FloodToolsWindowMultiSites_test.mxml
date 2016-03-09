@@ -435,14 +435,14 @@
 			
 			protected function forecastRequest(event:ResultEvent):void
 			{
-				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame') {
+				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame' && event.result.site.forecast != 'Gauge monitored seasonally - readings not available during winter months.') {
 					forecastArray = event.result.site.forecast.datum;
 				}
 			}
 			
 			protected function forecastRequest2(event:ResultEvent):void
 			{
-				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame') {
+				if (event.result.site.forecast != null && event.result.site.forecast != 'There Is No Displayable Forecast Data In The Given Time Frame' && event.result.site.forecast != 'Gauge monitored seasonally - readings not available during winter months.') {
 					forecastArray2 = event.result.site.forecast.datum;
 				}
 			}
