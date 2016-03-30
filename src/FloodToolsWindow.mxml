@@ -2256,11 +2256,11 @@
 				FlexGlobals.topLevelApplication.gridLayerIndexArrColl = gridLayerIndexArrColl;
 				
 				/* dev only */
-				/* trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
+				 trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
 				
 				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != new ArrayCollection() && gridToggle.selected) {
 					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
-				} */
+				} 
 				/* end dev only */
 				
 				if (int(siteNo) == 0) {
@@ -2353,7 +2353,7 @@
 			
 			private function gridsState(event:MouseEvent):void {
 				//dev only
-				/* trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
+				 trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				if (gridToggle.selected) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = false;
 					//Need to code for only hiding if there is a breach grid to show, otherwise show poly for fuller context for user
@@ -2363,7 +2363,7 @@
 					FlexGlobals.topLevelApplication.gridsReset(true, -1, new ArrayCollection());
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = true;
 					FlexGlobals.topLevelApplication.floodBreachDyn.visible = true;
-				}  */
+				}  
 				//end dev only
 			}
 			
@@ -2540,10 +2540,10 @@
 						<s:Label paddingTop="2" text="Adjust flood opacity" fontSize="9"/>
 					</s:HGroup>
 					<!-- dev only -->
-					<!--<s:HGroup id="gridsToggleGroup" visible="{FlexGlobals.topLevelApplication.gridLayerIndex != -1}" includeInLayout="{gridsToggleGroup.visible}" verticalAlign="middle" width="100%" horizontalAlign="center" paddingLeft="35" paddingBottom="5">
+					<s:HGroup id="gridsToggleGroup" visible="{FlexGlobals.topLevelApplication.gridLayerIndex != -1}" includeInLayout="{gridsToggleGroup.visible}" verticalAlign="middle" width="100%" horizontalAlign="center" paddingLeft="35" paddingBottom="5">
 						<s:CheckBox id="gridToggle" selected="false" click="gridsState(event)" />
 						<s:Label width="120" text="view grids"/>
-					</s:HGroup>-->
+					</s:HGroup>
 					<!-- end dev only -->
 					<!--<s:Label text="Zoom to Flood Study Area:" textAlign="center" fontWeight="bold" width="100"/>
 					<s:Button id="zoomToFeaturesButton" label="Go" click="zoomToFeatures()" />-->

@@ -167,6 +167,8 @@
 	public var add_info:String;
 	[Bindable]
 	public var study_date:String;
+	[Bindable]
+	public var grid_serv:String;
 
 	[Bindable]
 	public var currentShortName:String;
@@ -296,6 +298,9 @@
 	public var initFloodSliderValue:Number;
 	
 	private var allGridInfos:Array;
+	private var grid1Infos:Array;
+	private var grid2Infos:Array;
+	private var grid3Infos:Array;
 
 	private var threeSiteGridInfos:Array;
 
@@ -344,8 +349,22 @@
 		
 	}
 
-	private function gridsLayerComp():void {
-		allGridInfos = fimi_grids.layerInfos;
+	private function gridsLayerComp(event):void {
+		var layer:String = event.layer.id;
+		switch (layer) {
+			case "fimi_grids":
+				allGridInfos = fimi_grids.layerInfos;
+				break;
+			case "grids1":
+				grid1Infos = grids1.layerInfos;
+				break;
+			case "grids2":
+				grid2Infos = grids2.layerInfos;
+				break;
+			case "grids3":
+				grid3Infos = grids3.layerInfos;
+				break;
+		}
 	}
 
 	private function basemapUpdate():void {
@@ -436,7 +455,7 @@
 		}
 		
 		//dev only
-		//nwisSites.alpha = nwisSitesAlpha;
+		nwisSites.alpha = nwisSitesAlpha;
 		//end dev only
 		
 		//testMap.extent = map.extent;
@@ -514,6 +533,9 @@
 			identifyParameters.spatialReference = map.spatialReference;										
 			
 			identifyTask.showBusyCursor = true;
+			
+			identifyTask.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
+
 			identifyTask.execute(identifyParameters, new AsyncResponder(gridResult, gridFault));
 			
 			//Create info box for results, but don't display it yet.
@@ -704,7 +726,7 @@
 		}
 		
 		//dev only
-		/*if (nwisSites.visible) {
+		if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
 			
@@ -720,7 +742,7 @@
 			nwisIdentifyTask.showBusyCursor = true;
 			nwisIdentifyTask.execute(nwisIdentifyParameters, new AsyncResponder(nwisIdentifyResult, nwisIdentifyFault));
 			
-		}*/
+		}
 		//end dev only
 		
 	}
@@ -827,7 +849,23 @@
 	private function getGridID(id:String):String {
 		var gridID:String;
 		
-		gridID = allGridInfos[id].name.split("_")[1];
+		var gridServ:Array;
+		switch (grid_serv) {
+			case "1":
+				gridServ = grid1Infos;
+				break;
+			case "2":
+				gridServ = grid2Infos;
+				break;
+			case "3":
+				gridServ = grid3Infos;
+				break;
+			case null:
+				gridServ = null;
+				break;
+		}
+		
+		gridID = gridServ[id].name.split("_")[1];
 		
 		return gridID;
 	}
@@ -862,10 +900,10 @@
 			var vis:ArrayCollection = new ArrayCollection();
 			vis.addItem(-1);
 			//dev only
-			/*gridsDyn.visibleLayers = vis;
+			gridsDyn.visibleLayers = vis;
 			gridsDyn.refresh();
 			
-			gridsDynLegend.aLegendService.send();*/
+			gridsDynLegend.aLegendService.send();
 			//end dev only
 			
 			floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1101,6 +1139,7 @@
 					rep_series = event.currentTarget.attributes.REP_SERIES;
 					series_num = event.currentTarget.attributes.SERIES_NUM;
 					add_info = event.currentTarget.attributes.ADD_INFO;
+					grid_serv = event.currentTarget.attributes.GRID_SERV;
 					
 					var mapPoint:MapPoint;
 					if (isNaN(event.stageX) || isNaN(event.stageY)) {
@@ -1494,9 +1533,10 @@
 	
 	public function gridsReset(hideLegend:Boolean,layerIndex:Number,layerIndexArray:ArrayCollection):void {
 		//dev only
-		/*var vis:ArrayCollection = new ArrayCollection();
+		var vis:ArrayCollection = new ArrayCollection();
 		vis.addItem(layerIndex);
 		
+		gridsDyn.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
 		gridsDyn.visibleLayers = layerIndexArray;
 		gridsDyn.refresh();
 		
@@ -1506,7 +1546,7 @@
 			gridsDynLegend.visible = false;
 		} else if (hideLegend == false) {
 			gridsDynLegend.visible = true;
-		}*/
+		}
 		//end dev only
 	}
 				
@@ -2156,15 +2196,31 @@
 	
 	private function getGridInfo():void
 	{
-		if (allGridInfos != null) {
+		var gridServ:Array;
+		switch (grid_serv) {
+			case "1":
+				gridServ = grid1Infos;
+				break;
+			case "2":
+				gridServ = grid2Infos;
+				break;
+			case "3":
+				gridServ = grid3Infos;
+				break;
+			case null:
+				gridServ = null;
+				break;
+		}
+		
+		if (gridServ != null) {
 			var id:int;
 			var shortName:String;
 			var gridID:String;
-			for (var i:int = 0; i < allGridInfos.length; i++) {
-				var tempGridInfo:Array = allGridInfos[i].name.split('_');
+			for (var i:int = 0; i < gridServ.length; i++) {
+				var tempGridInfo:Array = gridServ[i].name.split('_');
 				shortName = tempGridInfo[0];
 				gridID = tempGridInfo[1];
-				id = allGridInfos[i].layerId;
+				id = gridServ[i].layerId;
 				if (shortName == currentShortName) {
 					/*var tempName:String = fimi_grids.layerInfos[i].name;
 					var tempGage:String = tempGridInfo[1] + '.' + tempGridInfo[2];
