@@ -455,7 +455,7 @@
 		}
 		
 		//dev only
-		nwisSites.alpha = nwisSitesAlpha;
+		//nwisSites.alpha = nwisSitesAlpha;
 		//end dev only
 		
 		//testMap.extent = map.extent;
@@ -670,7 +670,7 @@
 		}
 		
 		//dev only
-		if (nwisSites.visible) {
+		/*if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
 			
@@ -686,7 +686,7 @@
 			nwisIdentifyTask.showBusyCursor = true;
 			nwisIdentifyTask.execute(nwisIdentifyParameters, new AsyncResponder(nwisIdentifyResult, nwisIdentifyFault));
 			
-		}
+		}*/
 		//end dev only
 		
 	}
@@ -853,10 +853,10 @@
 			if (inSites == false) {var vis:ArrayCollection = new ArrayCollection();
 				vis.addItem(-1);
 				//dev only
-				gridsDyn.visibleLayers = vis;
+				/*gridsDyn.visibleLayers = vis;
 				gridsDyn.refresh();
 				
-				gridsDynLegend.aLegendService.send();
+				gridsDynLegend.aLegendService.send();*/
 				//end dev only
 				
 				floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1475,7 +1475,7 @@
 	
 	public function gridsReset(hideLegend:Boolean,layerIndex:Number,layerIndexArray:ArrayCollection):void {
 		//dev only
-		var vis:ArrayCollection = new ArrayCollection();
+		/*var vis:ArrayCollection = new ArrayCollection();
 		vis.addItem(layerIndex);
 		
 		gridsDyn.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
@@ -1488,7 +1488,7 @@
 			gridsDynLegend.visible = false;
 		} else if (hideLegend == false) {
 			gridsDynLegend.visible = true;
-		}
+		}*/
 		//end dev only
 	}
 				
