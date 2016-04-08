@@ -58,6 +58,7 @@
 				<fx:String>MULTI_SITE</fx:String>
 				<fx:String>HAS_BREACH</fx:String>
 				<fx:String>HAS_WEBCAM</fx:String>
+				<fx:String>SHORT_NAME</fx:String>
 				<fx:String>WEBCAM_INFO</fx:String>
 				<fx:String>STATE</fx:String>
 				<fx:String>COMMUNITY</fx:String>
@@ -108,8 +109,8 @@
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
-			import mx.events.CollectionEvent;
 			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ItemClickEvent;
 			import mx.events.SliderEvent;
@@ -197,6 +198,8 @@
 				];
 				FlexGlobals.topLevelApplication.floodMultiSitesDyn.refresh();*/
 				
+				FlexGlobals.topLevelApplication.currentShortNames = new Array();
+				
 				//Method for getting realtime info for all stream gages
 				var dataRequest:HTTPService = new HTTPService();
 				dataRequest.method = "GET";
@@ -251,6 +254,12 @@
 							ahpsID_3 = featureSet.features[i].attributes.AHPS_ID;
 						}
 						
+						var test:Array = FlexGlobals.topLevelApplication.currentShortNames
+						
+						if (test.indexOf(featureSet.features[i].attributes.SHORT_NAME) != -1) {
+							test.push(featureSet.features[i].attributes.SHORT_NAME);
+						}
+						
 						//For Breach later if needed
 						/*if (featureSet.features[0].attributes.HAS_BREACH == 0) {
 							breachToggleGroup.visible = false;
@@ -291,6 +300,10 @@
 						
 						var featureAttr:Object = featureSet.features[i].attributes;
 						
+						ahps24Data.addItemAt({}, 0);
+						ahps24Data.addItemAt({}, 1);
+						ahps24Data.addItemAt({}, 2);
+						
 						if (featureAttr.gaugelid.toLowerCase() == ahpsID) {
 							ahps24Data.addItemAt({fcsttime: featureAttr.fcsttime, forecast: featureAttr.forecast, gaugelid: featureAttr.gaugelid}, 0);
 						} else if (featureAttr.gaugelid.toLowerCase() == ahpsID_2) {
@@ -328,6 +341,10 @@
 						forecastService2.url = resourceManager.getString('urls.proxies', 'httpProxy')+"ahpsID="+ahpsID_2; //"http://water.weather.gov/ahps2/hydrograph_to_xml.php?gage="+ahpsID+"&amp;output=xml";
 						forecastService2.addEventListener(ResultEvent.RESULT, forecastRequest2);
 						forecastService2.send();
+					}
+					
+					if (FlexGlobals.topLevelApplication.currentShortNames.indexOf(featureSet.features[0].attributes.SHORT_NAME) != -1) {
+						FlexGlobals.topLevelApplication.currentShortNames.push(featureSet.features[0].attributes.SHORT_NAME);
 					}
 				}
 			}

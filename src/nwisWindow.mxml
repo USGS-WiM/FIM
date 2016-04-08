@@ -1374,7 +1374,7 @@
 					newDateTime = new Date(d[0],d[1]-1,d[2],t[0],t[1]);
 					//code to adjust for time offset
 					var hoursOffset = int(t[2].split("-")[1]);
-					if (forecastArray != null && hoursOffset == 0 && hydrographArray != null) {
+					if (forecastArray != null && hoursOffset == 0 && hydrographArray != null && hydrographArray.length != 0) {
 						hoursOffset = int(hydrographArray[0].dateTime.split("T")[1].split(":")[2].split("-")[1]);
 					
 						newDateTime.setHours(newDateTime.hours - hoursOffset);

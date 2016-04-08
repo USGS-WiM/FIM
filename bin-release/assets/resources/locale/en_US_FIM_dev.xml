@@ -25,9 +25,9 @@
   	<resource name="floodExtentsMultiLayerUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer"></resource>
   	<resource name="floodBreachMultiUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/breachMulti/MapServer/0"></resource>
   	<resource name="floodBreachMultiDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/breachMulti/MapServer"></resource>
-  	<resource name="floodExtentsThreeUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMTest/floodExtentsThreeSites/MapServer/0"></resource>
-  	<resource name="floodExtentsThreeDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMTest/floodExtentsThreeSites/MapServer"></resource>
-  	<resource name="floodExtentsThreeTableUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMTest/floodExtentsThreeSites/MapServer/1"></resource>
+  	<resource name="floodExtentsThreeUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsThreeSites/MapServer/0"></resource>
+  	<resource name="floodExtentsThreeDynUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsThreeSites/MapServer"></resource>
+  	<resource name="floodExtentsThreeTableUrl" value="http://fim.wimcloud.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsThreeSites/MapServer/1"></resource>
   	
   	<resource name="gridsIdentifyUrl" value="http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMMapper/grids/MapServer"></resource>
   	<resource name="grids1" value="http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_1/MapServer"></resource>
