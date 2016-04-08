@@ -126,7 +126,7 @@
 	private var layerExpsMaxHeight:Number;
 	[Bindable]
 	private var transLayer:String = "";
-	
+
 	[Bindable]
 	public var siteFID:String;
 	[Bindable]
@@ -486,11 +486,12 @@
 			
 			identifyParameters.returnGeometry = false;
 			identifyParameters.layerOption = "all";
-			
+		
 			for each (var floodGraphic:Graphic in  queryGraphicsLayer.graphicProvider)
 			{	
 				var graphicID:String = floodGraphic.id;
 				var index:int = sliderValue;
+				trace(index);
 				var tempValue:Number = gageValues.getItemAt(index).gageValue;
 				var id:String;
 				if (multiSite == "0") {
@@ -507,203 +508,146 @@
 						graphicIDArray = graphicID.split(siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2));
 						break;
 					}
-				}
+				} else if (multiSite == "2") {
+					var index2:int = sliderValue_2;
+					var tempValue2:Number = gageValues2.getItemAt(index2).gageValue;
+					id = siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2);
+					trace(siteNo);
+					if (graphicID.match(siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2)) != null) {
+						graphicIDArray = graphicID.split(siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2));
+					}
+				} else if (multiSite == "3") {
+					var index2:int = sliderValue_2;
+					var index3:int = sliderValue_3;
+					var tempValue2:Number = gageValues2.getItemAt(index2).gageValue;
+					var tempValue3:Number = gageValues3.getItemAt(index3).gageValue;
+					id = siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2) + tempValue3.toFixed(2);
+					if (graphicID.match(siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2) + tempValue3.toFixed(2)) != null) {
+						graphicIDArray = graphicID.split(siteNo + tempValue.toFixed(2) + tempValue2.toFixed(2) + tempValue3.toFixed(2));
+						break;
+					}
+				} 
 			}
-			
-			identifyParameters.layerIds = [];
-			gridLayerIndexArrColl = new ArrayCollection();
 				
-			for (var i:int; i < gridInfos.length; i++) {
-				if (gridInfos[i].shortname == currentShortName && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
-					identifyParameters.layerIds.push([gridInfos[i].index]);
-					gridLayerIndexArrColl.addItem([gridInfos[i].index]);
-					gridLayerIndex = gridInfos[i].index;
-				} else if (gridInfos[i].shortname == currentShortName && gridInfos[i].gridid == graphicIDArray[1]+'b') {
-					identifyParameters.layerIds.push([gridInfos[i].index]);
-					gridLayerIndexArrColl.addItem([gridInfos[i].index]);
-					gridLayerIndex = gridInfos[i].index;
-				}
-			}
-			
-			identifyParameters.width = map.width;
-			identifyParameters.height = map.height;
-			identifyParameters.geometry = event.mapPoint;
-			identifyParameters.tolerance = 1;
-			identifyParameters.mapExtent = map.extent;
-			identifyParameters.spatialReference = map.spatialReference;										
-			
-			identifyTask.showBusyCursor = true;
-			
-			identifyTask.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
-
-			identifyTask.execute(identifyParameters, new AsyncResponder(gridResult, gridFault));
-			
-			//Create info box for results, but don't display it yet.
-			infoBoxGraphic = new Graphic(event.mapPoint, infoGraphicsSymbol);
-			infoBoxGraphic.name = "infoBoxGraphic";
-			infoBoxGraphic.attributes = [];
-			infoBoxGraphic.visible = false;
-			
-			//Add info box graphic to information layer
-			infoGraphicsLayer.add(infoBoxGraphic); 	
-			
-		} else if (multiSite == "2") {
-			
-			infoGraphicsLayer.clear();
-			
-			infoGraphicsSymbol = gridSym;
-			
-			identifyParameters.returnGeometry = false;
-			identifyParameters.layerOption = "visible";
-			
-			var layerIds:Array = new Array();
-			
-			/*for (var i:int; i < threeSiteGridInfos.length; i++) {
-				var shortName:String = threeSiteGridInfos[i].name.split("_")[0];
-				if (shortName == currentShortName) {
-					layerIds.push(threeSiteGridInfos[i].layerId);
-				}
-			}*/
-			
-			var sites:Array = [siteNo, siteNo_2, siteNo_3];
-			
-			for (var k:int = 0; k < sites.length; k++) {
-				for (var j:int = 0; j < siteLayer.graphicProvider.length; j++) {
-					if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 0) {
-						shortName = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
-					} else if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 1) {
-						shortName2 = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
-					} else if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 2) {
-						shortName3 = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
+			if (multiSite == "0" || multiSite == "1" || multiSite == "3") {
+				identifyParameters.layerIds = [];
+				gridLayerIndexArrColl = new ArrayCollection();
+					
+				for (var i:int; i < gridInfos.length; i++) {
+					if (gridInfos[i].shortname == currentShortName && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
+						identifyParameters.layerIds.push([gridInfos[i].index]);
+						gridLayerIndexArrColl.addItem([gridInfos[i].index]);
+						gridLayerIndex = gridInfos[i].index;
+					} else if (gridInfos[i].shortname == currentShortName && gridInfos[i].gridid == graphicIDArray[1]+'b') {
+						identifyParameters.layerIds.push([gridInfos[i].index]);
+						gridLayerIndexArrColl.addItem([gridInfos[i].index]);
+						gridLayerIndex = gridInfos[i].index;
 					}
 				}
-				trace(k);
-			}
-			
-			var layerName:String;
-			
-			// loop through gage value pairs and determine the grid id and shortnames to work with to define the 2 layers to identify in the dynamic flood layers
-			for (i = 0; i < gagePairs.length; i++) {
-				if (gagePairs[i] != null) {
-					if (sliderGageValue == gagePairs[i].STAGE_1 && sliderGageValue_2 == gagePairs[i].STAGE_2) {
-						//define the layer to be queried here. add a second layer in the next i loop
-						//check both shortnames too and apply only the one that makes any sense.
-						for (j = 0; j < threeSiteGridInfos.length ; j++) {
-							layerName = shortName + "_" + gagePairs[i].GRIDID;
-							if (threeSiteGridInfos[j].name == layerName) {
-								layerIds.push(j);
+				
+				identifyParameters.width = map.width;
+				identifyParameters.height = map.height;
+				identifyParameters.geometry = event.mapPoint;
+				identifyParameters.tolerance = 1;
+				identifyParameters.mapExtent = map.extent;
+				identifyParameters.spatialReference = map.spatialReference;										
+				
+				identifyTask.showBusyCursor = true;
+				
+				identifyTask.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
+	
+				identifyTask.execute(identifyParameters, new AsyncResponder(gridResult, gridFault));
+				
+				//Create info box for results, but don't display it yet.
+				infoBoxGraphic = new Graphic(event.mapPoint, infoGraphicsSymbol);
+				infoBoxGraphic.name = "infoBoxGraphic";
+				infoBoxGraphic.attributes = [];
+				infoBoxGraphic.visible = false;
+				
+				//Add info box graphic to information layer
+				infoGraphicsLayer.add(infoBoxGraphic); 	
+				
+			} else if (multiSite == "2") {
+				
+				infoGraphicsLayer.clear();
+				
+				infoGraphicsSymbol = gridSym;
+				
+				identifyParameters.returnGeometry = false;
+				identifyParameters.layerOption = "visible";
+				
+				identifyParameters.layerIds = [];
+				gridLayerIndexArrColl = new ArrayCollection();
+				
+				var sites:Array = [siteNo, siteNo_2, siteNo_3];
+				
+				var tempShortNames:Array = new Array();
+				
+				for (var k:int = 0; k < sites.length; k++) {
+					for (var j:int = 0; j < siteLayer.graphicProvider.length; j++) {
+						if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 0) {
+							shortName = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
+							if (tempShortNames.indexOf(siteLayer.graphicProvider[j].attributes.SHORT_NAME) == -1) {
+								tempShortNames.push(siteLayer.graphicProvider[j].attributes.SHORT_NAME);
+							}
+						} else if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 1) {
+							shortName2 = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
+							if (tempShortNames.indexOf(siteLayer.graphicProvider[j].attributes.SHORT_NAME) == -1) {
+								tempShortNames.push(siteLayer.graphicProvider[j].attributes.SHORT_NAME);
+							}
+						} else if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 2) {
+							shortName3 = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
+							if (tempShortNames.indexOf(siteLayer.graphicProvider[j].attributes.SHORT_NAME) == -1) {
+								tempShortNames.push(siteLayer.graphicProvider[j].attributes.SHORT_NAME);
 							}
 						}
 					}
 				}
-			}
-			
-			// loop to find right layer id for second set of flood polys
-			for (i = 0; i < gagePairs2.length; i++) {
-				if (gagePairs2[i] != null) {
-					if (sliderGageValue_2 == gagePairs2[i].STAGE_1 && sliderGageValue_3 == gagePairs2[i].STAGE_2) {
-						//define the layer to be queried here. add a second layer in the next i loop
-						//check both shortnames too and apply only the one that makes any sense.
-						for (j = 0; j < threeSiteGridInfos.length ; j++) {
-							layerName = shortName2 + "_" + gagePairs2[i].GRIDID;
-							if (threeSiteGridInfos[j].name == layerName) {
-								layerIds.push(j);
+				
+				for (var h:int = 0; h < tempShortNames.length; h++) {
+					for (var i:int = 0; i < gridInfos.length; i++) {
+						//trace(gridInfos[i].shortname);
+						trace(tempShortNames[h]);
+						if (gridInfos[i].shortname == tempShortNames[h] && int(gridInfos[i].gridid) == int(graphicIDArray[1])) {
+							if (identifyParameters.layerIds.indexOf(gridInfos[i].index) == -1) {
+								identifyParameters.layerIds.push(gridInfos[i].index);
 							}
+							gridLayerIndexArrColl.addItem(gridInfos[i].index);
+							gridLayerIndex = gridInfos[i].index;
+						} else if (gridInfos[i].shortname == tempShortNames[h] && gridInfos[i].gridid == graphicIDArray[1]+'b') {
+							if (identifyParameters.layerIds.indexOf(gridInfos[i].index) == -1) {
+								identifyParameters.layerIds.push(gridInfos[i].index);
+							}
+							gridLayerIndexArrColl.addItem(gridInfos[i].index);
+							gridLayerIndex = gridInfos[i].index;
 						}
 					}
 				}
-			}
-			
-			identifyParameters.layerIds = layerIds;
-			
-			identifyParameters.width = map.width;
-			identifyParameters.height = map.height;
-			identifyParameters.geometry = event.mapPoint;
-			identifyParameters.tolerance = 1;
-			identifyParameters.mapExtent = map.extent;
-			identifyParameters.spatialReference = map.spatialReference;										
-			
-			identifyTask.showBusyCursor = true;
-			identifyTask.execute(identifyParameters, new AsyncResponder(gridResult, gridFault));
-			
-			//Create info box for results, but don't display it yet.
-			infoBoxGraphic = new Graphic(event.mapPoint, infoGraphicsSymbol);
-			infoBoxGraphic.name = "infoBoxGraphic";
-			infoBoxGraphic.attributes = [];
-			infoBoxGraphic.visible = false;
-			
-			//Add info box graphic to information layer
-			infoGraphicsLayer.add(infoBoxGraphic); 	
-		} else if (multiSite == "3") {
-			infoGraphicsLayer.clear();
-			
-			infoGraphicsSymbol = gridSym;
-			
-			identifyParameters.returnGeometry = false;
-			identifyParameters.layerOption = "visible";
-			
-			var layerIds:Array = new Array();
-			
-			/*for (var i:int; i < threeSiteGridInfos.length; i++) {
-			var shortName:String = threeSiteGridInfos[i].name.split("_")[0];
-			if (shortName == currentShortName) {
-			layerIds.push(threeSiteGridInfos[i].layerId);
-			}
-			}*/
-			
-			var sites:Array = [siteNo, siteNo_2, siteNo_3];
-			
-			for (var k:int = 0; k < sites.length; k++) {
-				for (var j:int = 0; j < siteLayer.graphicProvider.length; j++) {
-					if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 0) {
-						shortName = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
-					} else if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 1) {
-						shortName2 = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
-					} else if (siteLayer.graphicProvider[j].attributes.SITE_NO.match(sites[k]) != null && k == 2) {
-						shortName3 = siteLayer.graphicProvider[j].attributes.SHORT_NAME;
-					}
-				}
-			}
-			
-			var layerName:String;
-			
-			// loop through gage value pairs and determine the grid id and shortnames to work with to define the 2 layers to identify in the dynamic flood layers
-			for (i = 0; i < gageSet.length; i++) {
-				if (gageSet[i] != null) {
-					if (sliderGageValue == gageSet[i].STAGE_1 && sliderGageValue_2 == gageSet[i].STAGE_2 && sliderGageValue_3 == gageSet[i].STAGE_3) {
-						//define the layer to be queried here. add a second layer in the next i loop
-						//check both shortnames too and apply only the one that makes any sense.
-						for (j = 0; j < threeSiteGridInfos.length ; j++) {
-							layerName = shortName + "_" + gageSet[i].GRIDID;
-							if (threeSiteGridInfos[j].name == layerName) {
-								layerIds.push(j);
-							}
-						}
-					}
-				}
-			}
-			
-			identifyParameters.layerIds = layerIds;
-			
-			identifyParameters.width = map.width;
-			identifyParameters.height = map.height;
-			identifyParameters.geometry = event.mapPoint;
-			identifyParameters.tolerance = 1;
-			identifyParameters.mapExtent = map.extent;
-			identifyParameters.spatialReference = map.spatialReference;										
-			
-			identifyTask.showBusyCursor = true;
-			identifyTask.execute(identifyParameters, new AsyncResponder(gridResult, gridFault));
-			
-			//Create info box for results, but don't display it yet.
-			infoBoxGraphic = new Graphic(event.mapPoint, infoGraphicsSymbol);
-			infoBoxGraphic.name = "infoBoxGraphic";
-			infoBoxGraphic.attributes = [];
-			infoBoxGraphic.visible = false;
-			
-			//Add info box graphic to information layer
-			infoGraphicsLayer.add(infoBoxGraphic);
-		}
+				
+				identifyParameters.width = map.width;
+				identifyParameters.height = map.height;
+				identifyParameters.geometry = event.mapPoint;
+				identifyParameters.tolerance = 1;
+				identifyParameters.mapExtent = map.extent;
+				identifyParameters.spatialReference = map.spatialReference;										
+				
+				identifyTask.showBusyCursor = true;
+				
+				identifyTask.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
+				
+				identifyTask.execute(identifyParameters, new AsyncResponder(gridResult, gridFault));
+				
+				//Create info box for results, but don't display it yet.
+				infoBoxGraphic = new Graphic(event.mapPoint, infoGraphicsSymbol);
+				infoBoxGraphic.name = "infoBoxGraphic";
+				infoBoxGraphic.attributes = [];
+				infoBoxGraphic.visible = false;
+				
+				//Add info box graphic to information layer
+				infoGraphicsLayer.add(infoBoxGraphic); 	
+				
+			} 
+		} 
 		
 		//Methods for identifying AHPS Forecast sites
 		if (ahpsForecastMajorToggle.selected || ahpsForecastModerateToggle.selected || ahpsForecastMinorToggle.selected || ahpsForecastNormalToggle.selected || ahpsForecastActionToggle.selected || ahpsForecastOldToggle.selected) {
@@ -735,7 +679,7 @@
 			nwisIdentifyParameters.width = map.width;
 			nwisIdentifyParameters.height = map.height;
 			nwisIdentifyParameters.geometry = event.mapPoint;
-			nwisIdentifyParameters.tolerance = 10;
+			nwisIdentifyParameters.tolerance = 5;
 			nwisIdentifyParameters.mapExtent = map.extent;
 			nwisIdentifyParameters.spatialReference = map.spatialReference;										
 			
@@ -897,27 +841,6 @@
 	{	
 		if (results && results.length > 0 && siteClicked == false) {
 			
-			var vis:ArrayCollection = new ArrayCollection();
-			vis.addItem(-1);
-			//dev only
-			gridsDyn.visibleLayers = vis;
-			gridsDyn.refresh();
-			
-			gridsDynLegend.aLegendService.send();
-			//end dev only
-			
-			floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
-			floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
-			floodBreachMultiDyn.layerDefinitions = ["OBJECTID = -1"];
-			floodMultiSitesDyn.layerDefinitions = ["OBJECTID = -1"];
-			floodMultiSitesDyn2.layerDefinitions = ["OBJECTID = -1"];
-			supplementalLayers.layerDefinitions = ["OBJECTID = -1", "OBJECTID = -1"];
-			
-			infoGraphicsLayer.clear();
-			queryGraphicsLayer.clear();
-			breachGraphicsLayer.clear();
-			PopUpManager.removePopUp(_queryWindow);
-			
 			var result:com.esri.ags.tasks.supportClasses.IdentifyResult = results[0];
 			var allSites:ArrayCollection = siteLayer.graphicProvider as ArrayCollection;
 			var inSites:Boolean = false;
@@ -927,7 +850,26 @@
 				}
 			}
 			
-			if (inSites == false) {
+			if (inSites == false) {var vis:ArrayCollection = new ArrayCollection();
+				vis.addItem(-1);
+				//dev only
+				gridsDyn.visibleLayers = vis;
+				gridsDyn.refresh();
+				
+				gridsDynLegend.aLegendService.send();
+				//end dev only
+				
+				floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
+				floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
+				floodBreachMultiDyn.layerDefinitions = ["OBJECTID = -1"];
+				floodMultiSitesDyn.layerDefinitions = ["OBJECTID = -1"];
+				floodMultiSitesDyn2.layerDefinitions = ["OBJECTID = -1"];
+				supplementalLayers.layerDefinitions = ["OBJECTID = -1", "OBJECTID = -1"];
+				
+				infoGraphicsLayer.clear();
+				queryGraphicsLayer.clear();
+				breachGraphicsLayer.clear();
+				PopUpManager.removePopUp(_queryWindow);
 				
 				siteNo = result.feature.attributes.Name;
 				if (result.feature.attributes.CH5ID == "Null") {
@@ -1884,7 +1826,7 @@
 			sliderGageValue = gageValues[0].gageValue;
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			
-			gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
+			//gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
 			
 			floodMultiSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + ")"
@@ -1917,6 +1859,7 @@
 	{
 		floodExisting = new Object();
 		//trace(token.ordinal);
+		getGridInfo();
 		//getGridInfoThree();
 		siteNo = featureSet.features[0].attributes.USGSID_1;
 		siteNo_2 = featureSet.features[0].attributes.USGSID_2;
@@ -1988,6 +1931,18 @@
 			if (flag == false) {
 				altitudeValues2.addItem({altitudeValue:floodGraphic.attributes.ELEV_2});
 			}
+			
+			if (!floodExisting[graphicID])
+			{
+				floodExisting[graphicID] = 1;
+				floodGraphic.symbol = aQuerySym;
+				floodGraphic.id = graphicID;
+				floodGraphic.visible = false;
+				if(gridInfos.length > 0) {
+					floodGraphic.toolTip = "Click for estimated water depth";
+				}
+				queryGraphicsLayer.add(floodGraphic);
+			}
 			//trace('end makegagepairs');
 		}
 		
@@ -2024,7 +1979,7 @@
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			sliderGageValue_3 = gageValues3[0].gageValue;
 			
-			gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
+			//gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
 			
 			floodMultiSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + ")"
@@ -2045,7 +2000,7 @@
 	{
 		floodExisting = new Object();
 		//trace(token.ordinal);
-		//getGridInfoThree();
+		getGridInfo();
 		siteNo = featureSet.features[0].attributes.USGSID_1;
 		siteNo_2 = featureSet.features[0].attributes.USGSID_2;
 		siteNo_3 = featureSet.features[0].attributes.USGSID_3;
@@ -2128,6 +2083,18 @@
 			}
 			if (flag == false) {
 				altitudeValues3.addItem({altitudeValue:floodGraphic.attributes.ELEV_3});
+			}  
+			
+			if (!floodExisting[graphicID])
+			{
+				floodExisting[graphicID] = 1;
+				floodGraphic.symbol = aQuerySym;
+				floodGraphic.id = graphicID;
+				floodGraphic.visible = false;
+				if(gridInfos.length > 0) {
+					floodGraphic.toolTip = "Click for estimated water depth";
+				}
+				queryGraphicsLayer.add(floodGraphic);
 			}
 			//trace('end makegagesets');
 			
@@ -2166,7 +2133,7 @@
 			sliderGageValue_2 = gageValues2[0].gageValue;
 			sliderGageValue_3 = gageValues3[0].gageValue;
 			
-			gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
+			//gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
 			
 			floodThreeSitesDyn.layerDefinitions = [
 				"(USGSID_1 LIKE '%" + int(siteNo) + "%' AND STAGE_1 = " + gageValues[0].gageValue + " AND USGSID_2 LIKE '%" + int(siteNo_2) + "%' AND STAGE_2 = " + gageValues2[0].gageValue + " AND USGSID_3 LIKE '%" + int(siteNo_3) + "%' AND STAGE_3 = " + gageValues3[0].gageValue + ")"
@@ -2221,7 +2188,7 @@
 				shortName = tempGridInfo[0];
 				gridID = tempGridInfo[1];
 				id = gridServ[i].layerId;
-				if (shortName == currentShortName) {
+				if (shortName == currentShortName || shortName == "omonash" || shortName == "nashbor") {
 					/*var tempName:String = fimi_grids.layerInfos[i].name;
 					var tempGage:String = tempGridInfo[1] + '.' + tempGridInfo[2];
 					var tempGageNumber:Number = parseFloat(tempGage);
@@ -2233,25 +2200,43 @@
 		
 	}
 	
-	/*private function getGridInfoThree():void
+	public function getGridInfoThree():void
 	{
-		var id:int;
-		var shortName:String;
-		var gridID:Number;
-		for each (item:String in currentShortNames) {
-			for (var i:int = 0; i < allGridInfos.length; i++) {
-				var tempGridInfo:Array = allGridInfos[i].name.split('_');
-				shortName = tempGridInfo[0];
-				gridID = int(tempGridInfo[1]);
-				id = allGridInfos[i].layerId;
-				trace(shortName);
-				if (shortName == currentShortName) {
-					gridInfos.addItem({index: id, shortname: shortName, gridid: gridID});
+		var gridServ:Array;
+		switch (grid_serv) {
+			case "1":
+				gridServ = grid1Infos;
+				break;
+			case "2":
+				gridServ = grid2Infos;
+				break;
+			case "3":
+				gridServ = grid3Infos;
+				break;
+			case null:
+				gridServ = null;
+				break;
+		}
+		
+		if (gridServ != null) {
+			var id:int;
+			var shortName:String;
+			var gridID:Number;
+			for each (var item:String in currentShortNames) {
+				for (var i:int = 0; i < gridServ.length; i++) {
+					var tempGridInfo:Array = gridServ[i].name.split('_');
+					shortName = tempGridInfo[0];
+					gridID = int(tempGridInfo[1]);
+					id = gridServ[i].layerId;
+					trace(shortName);
+					if (shortName == currentShortName) {
+						gridInfos.addItem({index: id, shortname: shortName, gridid: gridID});
+					}
 				}
 			}
 		}
 		trace('here');
-	}*/
+	}
 	
 	private function onAHPSSitesToggle(event:MouseEvent):void {
 		if (ahpsSitesToggle.selected == true && ahpsForecastNormalToggle.selected == false && ahpsForecastMinorToggle.selected == false && ahpsForecastModerateToggle.selected == false && ahpsForecastMajorToggle.selected == false && ahpsForecastOldToggle.selected == false && ahpsForecastActionToggle.selected == false) {
