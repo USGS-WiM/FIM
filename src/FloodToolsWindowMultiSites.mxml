@@ -83,8 +83,8 @@
 			</esri:outFields>
 		</esri:RelationshipQuery>
 		
-		<esri:QueryTask id="nwsTask" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/1" disableClientCaching="true" />
-		<esri:QueryTask id="nwsTask2" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/1" disableClientCaching="true" />
+		<esri:QueryTask id="nwsTask" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/0" disableClientCaching="true" />
+		<esri:QueryTask id="nwsTask2" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/0" disableClientCaching="true" />
 		<esri:Query id="nwsQuery" returnGeometry="false">
 			<esri:outFields>
 				<fx:String>forecast</fx:String>

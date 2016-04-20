@@ -682,7 +682,7 @@
 			url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}" >
 			<esri:visibleLayers>
 				<s:ArrayCollection>
-					<fx:Number>1</fx:Number>
+					<fx:Number>0</fx:Number>
 				</s:ArrayCollection>
 			</esri:visibleLayers>
 		</esri:ArcGISDynamicMapServiceLayer>

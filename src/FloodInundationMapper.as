@@ -655,7 +655,7 @@
 			//Create query object to for currently selected layer    			
 			
 			identifyParameters.returnGeometry = true;
-			identifyParameters.layerIds = [1];
+			identifyParameters.layerIds = [0];
 			identifyParameters.layerDefinitions = ahpsForecast.layerDefinitions;
 			identifyParameters.width = map.width;
 			identifyParameters.height = map.height;
