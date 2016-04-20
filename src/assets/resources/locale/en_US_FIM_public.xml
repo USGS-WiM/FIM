@@ -44,7 +44,7 @@
   	<resource name="webCamProxy" value="http://fim.wim.usgs.gov/webCam/webCamNew/Default.aspx?webCamInfo="></resource>
   </resourceBundle>
   <resourceBundle name="urls.nonWim">
-  	<resource name="ahpsForecastUrl" value="http://gis.srh.noaa.gov/ArcGIS/rest/services/ahps_gauges/MapServer"></resource>
+  	<resource name="ahpsForecastUrl" value="http://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Observations/ahps_riv_gauges/MapServer"></resource>
   	<resource name="hazusUrl" value="http://ec2-107-21-245-18.compute-1.amazonaws.com/hazus-ws-staging/hazus.py?execute=quickass&region="></resource>
   </resourceBundle>
 
