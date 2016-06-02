@@ -982,7 +982,7 @@
 								</mx:VBox>
 								<s:HGroup id="breachToggleGroup" visible="false" includeInLayout="false" paddingLeft="50" paddingTop="25">
 									<s:CheckBox id="breachToggle" click="breachMultiQueryFunction(event)"/>
-									<s:Label  text="Include area of uncertainty due to levee"/>
+									<s:Label  text="Include area of uncertainty"/>
 								</s:HGroup>
 							</s:HGroup>
 							<mx:HBox horizontalGap="0">
