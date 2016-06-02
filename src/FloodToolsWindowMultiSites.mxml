@@ -694,7 +694,7 @@
 								<s:VGroup>
 									<s:HGroup id="breachToggleGroup" paddingLeft="50" paddingTop="25" visible="{(siteInfo.getItemAt(0).has_breach == 1) ? true : false}" includeInLayout="{(siteInfo.getItemAt(0).has_breach == 1) ? true : false}">
 										<s:CheckBox id="breachToggle" selected="true" click="breachVisFunction(event)"/>
-										<s:Label  text="Include area of uncertainty due to levee"/>
+										<s:Label  text="Include area of uncertainty"/>
 									</s:HGroup>
 									<s:Label id="sliderAdjustWarning" paddingLeft="50" paddingTop="15" width="350" visible="false" color="red" showEffect="{fadeIn}" hideEffect="{fadeOut}" text="Your selection was not modeled. The sliders were adjusted to show the nearest available map." />
 								</s:VGroup>

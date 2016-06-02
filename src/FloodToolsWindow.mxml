@@ -2256,11 +2256,11 @@
 				FlexGlobals.topLevelApplication.gridLayerIndexArrColl = gridLayerIndexArrColl;
 				
 				/* dev only */
-				 /* trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
+				/* trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
 				
 				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != new ArrayCollection() && gridToggle.selected) {
 					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
-				}  */
+				}  */ 
 				/* end dev only */
 				
 				if (int(siteNo) == 0) {
@@ -2353,7 +2353,7 @@
 			
 			private function gridsState(event:MouseEvent):void {
 				//dev only
-				/*  trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
+				/* trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				if (gridToggle.selected) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = false;
 					//Need to code for only hiding if there is a breach grid to show, otherwise show poly for fuller context for user
@@ -2363,7 +2363,7 @@
 					FlexGlobals.topLevelApplication.gridsReset(true, -1, new ArrayCollection());
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = true;
 					FlexGlobals.topLevelApplication.floodBreachDyn.visible = true;
-				}   */
+				}   */ 
 				//end dev only
 			}
 			
@@ -2563,7 +2563,7 @@
 						</mx:VBox>
 						<s:HGroup id="breachToggleGroup" verticalAlign="middle" paddingTop="10">
 							<s:CheckBox id="breachToggle" selected="true" click="breachVisFunction(event)"/>
-							<s:Label width="120" text="Include area of uncertainty due to levee"/>
+							<s:Label width="120" text="Include area of uncertainty"/>
 						</s:HGroup>
 						<s:HGroup>
 							<s:Label id="hasGridsText" visible="false" textAlign="left" width="150" fontWeight="bold" paddingTop="10" paddingLeft="5" paddingRight="5" text="Click on map for estimated water depth" />

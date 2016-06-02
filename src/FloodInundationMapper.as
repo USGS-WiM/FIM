@@ -42,6 +42,7 @@
 	import com.esri.ags.geod.proj.Mercator;
 	import com.esri.ags.geometry.Extent;
 	import com.esri.ags.geometry.MapPoint;
+	import com.esri.ags.layers.ArcGISDynamicMapServiceLayer;
 	import com.esri.ags.layers.TiledMapServiceLayer;
 	import com.esri.ags.symbols.InfoSymbol;
 	import com.esri.ags.tasks.FindTask;
@@ -554,7 +555,9 @@
 				
 				identifyTask.showBusyCursor = true;
 				
-				identifyTask.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
+				identifyTask.url = "http://gis.wim.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "_test/MapServer";
+				identifyTask.url = resourceManager.getString('urls', 'grids' + grid_serv);
+				
 	
 				identifyTask.execute(identifyParameters, new AsyncResponder(gridResult, gridFault));
 				
@@ -633,7 +636,9 @@
 				
 				identifyTask.showBusyCursor = true;
 				
-				identifyTask.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
+				identifyTask.url = "http://gis.wim.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "_test/MapServer";
+				identifyTask.url = resourceManager.getString('urls', 'grids' + grid_serv);
+				
 				
 				identifyTask.execute(identifyParameters, new AsyncResponder(gridResult, gridFault));
 				
@@ -1475,19 +1480,36 @@
 	
 	public function gridsReset(hideLegend:Boolean,layerIndex:Number,layerIndexArray:ArrayCollection):void {
 		//dev only
-		/*var vis:ArrayCollection = new ArrayCollection();
+		var vis:ArrayCollection = new ArrayCollection();
 		vis.addItem(layerIndex);
 		
-		gridsDyn.url = "http://fim.wimcloud.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "/MapServer";
+		//gridsDyn.url = "http://gis.wim.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "_test/MapServer";
+		/*gridsDyn.url = resourceManager.getString('urls', 'grids' + grid_serv);
 		gridsDyn.visibleLayers = layerIndexArray;
 		gridsDyn.refresh();
 		
+		//var gridLayer:ArcGISDynamicMapServiceLayer = map.getLayer('grids' + grid_serv) as ArcGISDynamicMapServiceLayer;
+		//gridsDynLegend.serviceLayer = gridLayer;
 		gridsDynLegend.aLegendService.send();
 		//gridsDyn.visibleLayers = layerIndexArray;
+		
+		grids1.visibleLayers = layerIndexArray;
+		grids1.refresh();
+		
+		//var gridLayer:ArcGISDynamicMapServiceLayer = map.getLayer('grids' + grid_serv) as ArcGISDynamicMapServiceLayer;
+		//gridsDynLegend.serviceLayer = gridLayer;
+		grids1Legend.aLegendService.send();
+		
 		if (hideLegend == true) {
 			gridsDynLegend.visible = false;
 		} else if (hideLegend == false) {
 			gridsDynLegend.visible = true;
+		}
+		
+		if (hideLegend == true) {
+			grids1Legend.visible = false;
+		} else if (hideLegend == false) {
+			grids1Legend.visible = true;
 		}*/
 		//end dev only
 	}

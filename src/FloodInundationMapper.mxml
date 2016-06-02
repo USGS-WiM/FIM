@@ -516,19 +516,19 @@
 			url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}" />
 		<esri:ArcGISDynamicMapServiceLayer
 			id="grids1"
-			alpha="0.35"
+			alpha="0.65"
 			visible="false" 
 			load="gridsLayerComp(event)"
 			url="{resourceManager.getString('urls', 'grids1')}" />
 		<esri:ArcGISDynamicMapServiceLayer
 			id="grids2"
-			alpha="0.35"
+			alpha="0.65"
 			visible="false" 
 			load="gridsLayerComp(event)"
 			url="{resourceManager.getString('urls', 'grids2')}" />
 		<esri:ArcGISDynamicMapServiceLayer
 			id="grids3"
-			alpha="0.35"
+			alpha="0.65"
 			visible="false" 
 			load="gridsLayerComp(event)"
 			url="{resourceManager.getString('urls', 'grids3')}" />
@@ -560,7 +560,12 @@
 			 visible="{warningsToggle.selected}"
 			 creationComplete="{ warningsToggle.selected=false; }"
 			 fault="weather_faultHandler(event)"
-			 url="http://gis.srh.noaa.gov/ArcGIS/rest/services/watchWarn/MapServer" >
+			 url="{resourceManager.getString('urls.nonWim', 'watchWarnUrl')}" >
+			<esri:visibleLayers>
+				<s:ArrayCollection>
+					<fx:Number>1</fx:Number>
+				</s:ArrayCollection>
+			</esri:visibleLayers>
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:ArcGISDynamicMapServiceLayer
 			id="weather"
@@ -585,7 +590,7 @@
 		<!-- end dev only -->
 		<esri:ArcGISDynamicMapServiceLayer 
 			id="floodExtentsDyn"
-			alpha="0.35"
+			alpha="0.75"
 			url="{resourceManager.getString('urls', 'floodExtentsDynUrl')}" >
 			<esri:visibleLayers>
 				<s:ArrayCollection>
@@ -611,7 +616,7 @@
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:ArcGISDynamicMapServiceLayer 
 			id="floodMultiSitesDyn"
-			alpha="0.35"
+			alpha="0.75"
 			url="{resourceManager.getString('urls', 'floodExtentsMultiLayerUrl')}" >
 			<esri:visibleLayers>
 				<s:ArrayCollection>
@@ -950,9 +955,10 @@
 				<mx:Box id="legendContainer" backgroundColor="black" width="100%" bottom="20" visible="{ahpsForecastLegend.visible || supplementalLayers.visible || sitesLegend.visible}" includeInLayout="{ahpsForecastLegend.visible || supplementalLayers.visible || sitesLegend.visible}" maxHeight="{FlexGlobals.topLevelApplication.height-layerToggles.height-180}" verticalScrollPolicy="{(legendContainer.height == legendContainer.maxHeight) ? 'on' : 'off'}" >
 					<s:VGroup paddingTop="5" paddingLeft="5" paddingBottom="10" gap="0">
 						<localControls:MapServiceLegend id="floodExtentLegend" map="{map}" legendTitle="Flood-inundation area" serviceLayer="{floodExtentsDyn}" needsUpdates="false" visible="false" includeInLayout="{floodExtentLegend.visible}" legendWidth="260" />
-						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty due to levee (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
+						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
 						<!-- dev only -->
 						<!--<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Flood depths" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
+						<localControls:MapServiceLegend id="grids1Legend" map="{map}" legendTitle="Flood depths" serviceLayer="{grids1}" needsUpdates="true" visible="false" includeInLayout="{grids1Legend.visible}" legendWidth="260" />
 						--><!-- end dev only -->
 						<localControls:MapServiceLegend id="sitesLegend" map="{map}" legendTitle="USGS FIM sites (NWS forecast category)" serviceLayer="{sitesLegendLayer}" needsUpdates="false" visible="true" includeInLayout="true" legendWidth="260" />
 						<!-- dev only -->

@@ -77,13 +77,7 @@
 		<esri:QueryTask id="nwsTask" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/0" disableClientCaching="true" />    
 		<esri:QueryTask id="nwsTask2" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/0" disableClientCaching="true" />   
 		<esri:QueryTask id="nwsTask3" url="{resourceManager.getString('urls.nonWim', 'ahpsForecastUrl')}/0" disableClientCaching="true" />   
-		<esri:Query id="nwsQuery" returnGeometry="false">
-			<esri:outFields>
-				<fx:String>GaugeLID</fx:String>
-				<fx:String>forecast</fx:String>
-				<fx:String>fcsttime</fx:String>
-			</esri:outFields>
-		</esri:Query>
+		<esri:Query id="nwsQuery" returnGeometry="false" outFields="*"></esri:Query>
 	
 		<mx:Fade id="fadeOut" duration="1000" alphaFrom="1.0" alphaTo="0.0"/>
 		<mx:Fade id="fadeIn" duration="5000" alphaFrom="1.0" alphaTo="1.0"/>
@@ -217,7 +211,7 @@
 					
 					//siteQuery.geometry = FlexGlobals.topLevelApplication.map.extent;
 					siteQuery.where = "SITE_NO = '" + siteNo + "' OR SITE_NO = '" + siteNo_2 + "' OR SITE_NO = '" + siteNo_3 + "'";
-					siteTask.execute(siteQuery,new AsyncResponder(siteResult, infoFault));
+					siteTask.execute(siteQuery,new AsyncResponder(siteResult, infoFault, {type: 'siteQuery'}));
 					
 					maximizeButton.visible = false;
 					maximizeButton.includeInLayout = false;
@@ -268,7 +262,7 @@
 					if (ahpsID != null && ahpsID_3 != null) {
 						nwsQuery.where = "GaugeLID = '" + ahpsID.toUpperCase() + "' OR GaugeLID = '" + ahpsID_2.toUpperCase() + "' OR GaugeLID = '" + ahpsID_3.toUpperCase() + "'";
 						nwsTask.useAMF = false;
-						nwsTask.execute(nwsQuery, new AsyncResponder(nwsResult, infoFault));
+						nwsTask.execute(nwsQuery, new AsyncResponder(nwsResult, infoFault, {type: 'nwsQuery'}));
 					}
 					
 				}
@@ -966,7 +960,7 @@
 				if (breachToggle.selected && FlexGlobals.topLevelApplication.breachGraphicsLayer.graphicProvider.length == 0) {
 					FlexGlobals.topLevelApplication.breachMultiQuery.geometry = FlexGlobals.topLevelApplication.map.extent;
 					FlexGlobals.topLevelApplication.breachMultiQuery.where = "USGSID_1 = '" + siteNo + "'";
-					FlexGlobals.topLevelApplication.breachMultiTask.execute(FlexGlobals.topLevelApplication.breachMultiQuery,new AsyncResponder(breachMultiResult, infoFault));
+					FlexGlobals.topLevelApplication.breachMultiTask.execute(FlexGlobals.topLevelApplication.breachMultiQuery,new AsyncResponder(breachMultiResult, infoFault, {type: 'breachMulti'}));
 				} else if (breachToggle.selected && FlexGlobals.topLevelApplication.breachGraphicsLayer.graphicProvider.length > 0) {
 					FlexGlobals.topLevelApplication.breachGraphicsLayer.visible = true;
 				} else {
@@ -1062,7 +1056,7 @@
 								</mx:VBox>
 								<s:HGroup id="breachToggleGroup" visible="false" includeInLayout="false" paddingLeft="50" paddingTop="25">
 									<s:CheckBox id="breachToggle" click="breachMultiQueryFunction(event)"/>
-									<s:Label  text="Include area of uncertainty due to levee"/>
+									<s:Label  text="Include area of uncertainty"/>
 								</s:HGroup>
 							</s:HGroup>
 							<mx:HBox horizontalGap="0">
