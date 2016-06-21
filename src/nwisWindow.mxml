@@ -260,6 +260,8 @@
 			private var siteLat:Number;
 			[Bindable]
 			private var siteLng:Number;
+			[Bindable]
+			private var siteStateCode:String = "";
 			
 			[Bindable]
 			private var hasBreach:int;
@@ -567,9 +569,9 @@
 									navigateToURL(new URLRequest(event.currentTarget.toolTip));
 								}); */
 							}
-							coopLogoBox.addChild(logo);
+							/* coopLogoBox.addChild(logo);
 							coopLogoBox.visible = true;
-							coopLogoBox.includeInLayout = true;
+							coopLogoBox.includeInLayout = true; */
 						}
 					}
 				}
@@ -605,6 +607,8 @@
 				siteName = event.result.mapper.sites.site.sna;
 				siteLat = event.result.mapper.sites.site.lat;
 				siteLng = event.result.mapper.sites.site.lng;
+				var siteStateArray:Array = event.result.mapper.sites.site.sna.split(" ");
+				siteStateCode = siteStateArray[siteStateArray.length-1].toLowerCase();
 			}
 			
 			protected function hazusResult(event:ResultEvent):void
@@ -1846,7 +1850,7 @@
 							<s:Label text="... Loading ..." fontSize="16" fontWeight="normal" color="blue" visible="{(int(siteNo) != 0) ? true : false}" includeInLayout="{(int(siteNo) != 0) ? true : false}"  />
 						</s:BorderContainer>
 					</mx:Box>
-					<mx:VBox id="servicesAndData" label="Services and Data" paddingBottom="10" paddingLeft="10" paddingRight="10" horizontalAlign="left" styleName="siteContain" creationComplete="servicesAndData_creationCompleteHandler(event)" >
+					<mx:VBox id="servicesAndData" label="Services and Data" paddingBottom="10" paddingLeft="10" paddingRight="10" horizontalAlign="left" styleName="servicesAndDataSiteContain" creationComplete="servicesAndData_creationCompleteHandler(event)" >
 						<mx:HBox width="100%" creationComplete="projInfoGet(event)">
 							<mx:VBox>
 								<mx:VBox verticalGap="0">
@@ -1855,7 +1859,8 @@
 									<mx:Text htmlText="simply subscribe to &lt;a href=&quot;http://water.usgs.gov/wateralert/subscribe/?fim=1&amp;intro=1&amp;site_no={siteNo}&amp;agency_cd=USGS&amp;type_cd=st&amp;parms=00065&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;WaterAlert!&lt;/u&gt;&lt;/a&gt;" toolTip="Sign up for WaterAlert for this site" fontSize="12"  fontWeight="bold" />
 								</mx:VBox>
 								<mx:VBox>
-									<mx:Text paddingTop="15" text="Project Contacts for more information" fontSize="18" fontWeight="bold" />
+									<mx:Text paddingTop="15" text="Contacts for more information" fontSize="18" fontWeight="bold" />
+									<mx:Text text="http://{siteStateCode}.water.usgs.gov" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="visit for more info" click="navigateToURL(new URLRequest('http://' + siteStateCode + '.water.usgs.gov'))" />
 									<mx:VBox id="createdByBox" verticalGap="0" visible="false" includeInLayout="false">
 									</mx:VBox>
 									<mx:VBox id="reviewedByBox" visible="false" includeInLayout="false" verticalGap="0" paddingTop="15">
@@ -1863,37 +1868,13 @@
 								</mx:VBox>
 							</mx:VBox>											
 							<mx:HBox horizontalAlign="right" width="100%">
-								<mx:Image source="./assets/images/IWRSSlogo.jpg" />
+								<mx:Image source="./assets/images/usgsGreen.gif" />
 							</mx:HBox>
 						</mx:HBox>					
 						<mx:HBox paddingTop="25">
 							<mx:VBox>
-								<mx:Text text="Data Downloads and Metadata" width="200" fontSize="18" fontWeight="bold" />
-								<mx:Text width="200" text="No downloads are currently available for this site" includeInLayout="{(siteInfo.getItemAt(0).data_link == 'NONE') ? true : false}" visible="{(siteInfo.getItemAt(0).data_link == 'NONE') ? true : false}" />
-								<mx:Text text="Download Data" visible="{(siteInfo.getItemAt(0).data_link != 'NONE') ? true : false}" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Data Download" click="navigateToURL(new URLRequest(siteInfo.getItemAt(0).data_link))" />
+								<mx:Text text="Download Data" styleName="line" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Data Download" click="navigateToURL(new URLRequest('http://waterdata.usgs.gov/nwis/uv?site_no=' + siteNo))" />
 							</mx:VBox>
-							<mx:HBox>
-								<mx:Image id="repthumb" visible="{(siteInfo.getItemAt(0).report_link != 'NONE') ? true : false}" width="125" height="161" source="{siteInfo.getItemAt(0).report_link + 'images/' + siteInfo.getItemAt(0).rep_thumb}" />
-								<mx:VBox>
-									<mx:Text text="References" fontSize="18" fontWeight="bold"/>
-									<mx:Text width="200" text="Report not currently available for this site" includeInLayout="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" visible="{(siteInfo.getItemAt(0).report_link == 'NONE' &amp;&amp; siteInfo.getItemAt(0).report_title == 'NONE') ? true : false}" />
-									<mx:Text text="Download Report" styleName="line" visible="{(siteInfo.getItemAt(0).report_title != 'NONE') ? true : false}" useHandCursor="true" buttonMode="true" mouseChildren="false" toolTip="Go to Report" click="navigateToURL(new URLRequest(siteInfo.getItemAt(0).report_link))" fontSize="12" fontWeight="bold" />
-								</mx:VBox>
-							</mx:HBox>
-						</mx:HBox>					
-						<mx:HBox verticalAlign="bottom" width="100%" paddingTop="12">
-							<mx:HBox id="coopLogoBox" horizontalAlign="left" width="50%">
-							</mx:HBox>
-							<mx:HBox horizontalAlign="right" width="50%" paddingRight="10">
-								<mx:Image source="./assets/images/noaaLogo.png" />
-								<mx:Image source="./assets/images/usgsGreen.gif" />
-							</mx:HBox>
-						</mx:HBox>
-						<mx:HBox horizontalAlign="right" width="100%" paddingRight="10">
-							<s:VGroup>
-								<s:Label text="Disclaimer" toolTip="Click for more information" styleName="line" buttonMode="true" height="12" left="3" top="10" right="5" verticalAlign="bottom" click="FlexGlobals.topLevelApplication.mainDisclaimer.visible = true;" />	
-								<s:Label text="NWS Feedback Form" styleName="line" buttonMode="true" height="12" left="3" top="10" right="5" verticalAlign="bottom" click="navigateToURL(new URLRequest('http://www.nws.noaa.gov/survey/nws-survey.php?code=inundate'))" />	
-							</s:VGroup>
 						</mx:HBox>
 					</mx:VBox>
 					<mx:VBox id="moreInfoTab" includeIn="info,hazusAndInfo" label="More Info" paddingBottom="10" paddingLeft="20" paddingRight="10" horizontalAlign="left" styleName="siteContain" >

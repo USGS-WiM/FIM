@@ -94,6 +94,14 @@
 	font-weight: bold;
 }
 
+.servicesAndDataSiteContain
+{
+	color: black;
+	horizontal-align: center;
+	font-size: 12px;
+	font-weight: bold;
+}
+
 .noline
 {
 	text-decoration: none;

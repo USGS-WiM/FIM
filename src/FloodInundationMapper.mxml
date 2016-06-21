@@ -250,7 +250,7 @@
 		<esri:IdentifyTask id="identifyTask"            
 						   concurrency="last"        
 						   showBusyCursor="true"    
-						   url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}"
+						   url="{resourceManager.getString('urls', 'grids1')}"
 						   disableClientCaching="true"/>
 		
 		<esri:IdentifyTask id="ahpsIdentifyTask"            
@@ -507,13 +507,13 @@
 		<!--<esri:ArcGISDynamicMapServiceLayer
 			id="nwis_sw_sites"
 			alpha="1.0"
-			url="http://137.227.233.147/ArcGIS/rest/services/NWIS/nwis_sw_sites/MapServer" />-->
+			url="http://137.227.233.147/ArcGIS/rest/services/NWIS/nwis_sw_sites/MapServer" />
 		<esri:ArcGISDynamicMapServiceLayer
 			id="fimi_grids"
 			alpha="0.35"
 			visible="false" 
 			load="gridsLayerComp(event)"
-			url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}" />
+			url="{resourceManager.getString('urls', 'grids1')}" />-->
 		<esri:ArcGISDynamicMapServiceLayer
 			id="grids1"
 			alpha="0.65"
@@ -541,7 +541,7 @@
 				</esri:visibleLayers>
 		</esri:WMSLayer>
 		<!-- dev only -->
-		<!--<esri:ArcGISDynamicMapServiceLayer
+		<esri:ArcGISDynamicMapServiceLayer
 			id="qpf"
 			visible="{qpfToggle.selected}"
 			alpha="0.7"
@@ -551,7 +551,7 @@
 					<fx:Number>0</fx:Number>                
 				</mx:ArrayCollection>            
 			</esri:visibleLayers>
-		</esri:ArcGISDynamicMapServiceLayer>-->
+		</esri:ArcGISDynamicMapServiceLayer>
 		<!-- end dev only -->
 		<esri:ArcGISDynamicMapServiceLayer
 			 id="warningsTest"
@@ -577,16 +577,11 @@
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:GraphicsLayer id="queryGraphicsLayer" alpha="0.35"/>
 		<!-- dev only -->
-		<!--<esri:ArcGISDynamicMapServiceLayer 
+		<esri:ArcGISDynamicMapServiceLayer 
 			id="gridsDyn"
 			alpha="0.75"
-			url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}" >
-			<esri:visibleLayers>
-				<s:ArrayCollection>
-					<fx:Number>0</fx:Number>
-				</s:ArrayCollection>
-			</esri:visibleLayers>
-		</esri:ArcGISDynamicMapServiceLayer>-->
+			url="{resourceManager.getString('urls', 'grids1')}" >
+		</esri:ArcGISDynamicMapServiceLayer>
 		<!-- end dev only -->
 		<esri:ArcGISDynamicMapServiceLayer 
 			id="floodExtentsDyn"
@@ -692,7 +687,7 @@
 			</esri:visibleLayers>
 		</esri:ArcGISDynamicMapServiceLayer>
 		<!-- dev only -->
-		<!--<esri:ArcGISDynamicMapServiceLayer
+		<esri:ArcGISDynamicMapServiceLayer
 			id="nwisSites"
 			visible="{nwisToggle.selected}"
 			alpha="0.5"
@@ -703,7 +698,7 @@
 					<fx:Number>{(map.scale > 1000000) ? '0' : '1'}</fx:Number>
 				</s:ArrayCollection>
 			</esri:visibleLayers>
-		</esri:ArcGISDynamicMapServiceLayer>-->
+		</esri:ArcGISDynamicMapServiceLayer>
 		<!-- end dev only -->
 		<esri:GraphicsLayer
 			id="siteLayer" 
@@ -897,8 +892,8 @@
 							<wim:LayerToggle id="weatherToggle" layerID="0" serviceLayerID="weather" layerTitle="National Weather Service Radars" selected="{weather.visible}" />
 							<wim:LayerToggle id="warningsToggle" layerID="0" serviceLayerID="warningsTest" layerTitle="Flood Watches/Warnings" selected="{warningsTest.visible}" />
 							<!-- dev only -->
-							<!--<wim:LayerToggle id="nwisToggle" layerID="0" serviceLayerID="nwisSites" layerTitle="NWIS gages" selected="{nwisSites.visible}" />
-							--><!-- end dev only -->
+							<wim:LayerToggle id="nwisToggle" layerID="0" serviceLayerID="nwisSites" layerTitle="NWIS gages" selected="{nwisSites.visible}" />
+							<!-- end dev only -->
 							<s:HGroup>
 								<s:HGroup paddingTop="2">
 									<wim:OpacityControl opacityElement="{ahpsForecast}" />
@@ -915,39 +910,34 @@
 								<wim:LayerToggle id="ahpsForecastOldToggle" serviceLayerID="ahpsForecastOld" click="onAHPSLayerToggle(event)" layerTitle="{(isNaN(oldCount)) ? 'Observation > 24 hrs old' : 'Observation > 24 hrs old ('+oldCount+')'}" selected="false" adjustOpacity="false" />
 							</s:VGroup>
 							<!-- dev only -->
-							<!--<wim:LayerToggle id="qpfToggle" adjustOpacity="true" serviceLayerID="qpf" layerTitle="Quantitative Precipitation Forecast" selected="{qpf.visible}" creationComplete="{qpfToggle.selected = false}" />
+							<wim:LayerToggle id="qpfToggle" adjustOpacity="true" serviceLayerID="qpf" layerTitle="Quantitative Precipitation Forecast" selected="{qpf.visible}" creationComplete="{qpfToggle.selected = false}" />
 							<s:VGroup paddingLeft="40">
 								<s:RadioButton group="{qpfOpt}"
 											   id="day1"
 											   selected="true"
-											   label="Day 1" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(0); qpf.refresh();}"
-											   value="emulsion"/>
+											   label="24 Hours Day 1" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(1); qpf.refresh();}"/>
 								<s:RadioButton group="{qpfOpt}"
 											   id="day2"
 											   selected="false"
-											   label="Day 2" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(1); qpf.refresh();}"
-											   value="emulsion"/>
+											   label="24 Hours Day 2" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(2); qpf.refresh();}"/>
 								<s:RadioButton group="{qpfOpt}"
 											   id="day3"
 											   selected="false"
-											   label="Day 3" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(2); qpf.refresh();}"
-											   value="emulsion"/>
+											   label="24 Hours Day 3" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(3); qpf.refresh();}"/>
 								<s:RadioButton group="{qpfOpt}"
 											   id="day4"
 											   selected="false"
-											   label="Day 4" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(3); qpf.refresh();}"
-											   value="emulsion"/>
+											   label="48 Hours Day 4-5" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(4); qpf.refresh();}"/>
 								<s:RadioButton group="{qpfOpt}"
 											   id="day5"
 											   selected="false"
-											   label="Day 5" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(4); qpf.refresh();}"
-											   value="emulsion"/>
-							</s:VGroup>-->
+											   label="48 Hours Day 6-7" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(5); qpf.refresh();}"/>
+							</s:VGroup>
 							<!-- end dev only -->
 						</s:VGroup>
 					</s:VGroup>
@@ -957,18 +947,18 @@
 						<localControls:MapServiceLegend id="floodExtentLegend" map="{map}" legendTitle="Flood-inundation area" serviceLayer="{floodExtentsDyn}" needsUpdates="false" visible="false" includeInLayout="{floodExtentLegend.visible}" legendWidth="260" />
 						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
 						<!-- dev only -->
-						<!--<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Flood depths" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
-						<localControls:MapServiceLegend id="grids1Legend" map="{map}" legendTitle="Flood depths" serviceLayer="{grids1}" needsUpdates="true" visible="false" includeInLayout="{grids1Legend.visible}" legendWidth="260" />
+						<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Flood depths (in feet)" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
+						<!--<localControls:MapServiceLegend id="grids1Legend" map="{map}" legendTitle="Flood depths (in feet)" serviceLayer="{grids1}" needsUpdates="true" visible="false" includeInLayout="{grids1Legend.visible}" legendWidth="260" />
 						--><!-- end dev only -->
 						<localControls:MapServiceLegend id="sitesLegend" map="{map}" legendTitle="USGS FIM sites (NWS forecast category)" serviceLayer="{sitesLegendLayer}" needsUpdates="false" visible="true" includeInLayout="true" legendWidth="260" />
 						<!-- dev only -->
-						<!--<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
-						--><!-- end dev only -->
+						<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
+						<!-- end dev only -->
 						<localControls:MapServiceLegend id="ahpsForecastLegend" map="{map}" serviceLayer="{ahpsForecast}" needsUpdates="false" visible="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" includeInLayout="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" legendWidth="260" />
 						<localControls:MapServiceLegend id="supplementalLayersLegend" map="{map}" serviceLayer="{supplementalLayers}" needsUpdates="false" visible="{supplementalLayers.visible}" includeInLayout="{supplementalLayersLegend.visible}" legendWidth="260" />
 						<!-- dev only -->
-						<!--<localControls:MapServiceLegend id="qpfLegend" map="{map}" legendTitle="QPF" serviceLayer="{qpf}" legendWidth="260" needsUpdates="true"/>
-						--><!-- end dev only -->
+						<localControls:MapServiceLegend id="qpfLegend" map="{map}" legendTitle="QPF" serviceLayer="{qpf}" legendWidth="260" needsUpdates="true"/>
+						<!-- end dev only -->
 					</s:VGroup>
 				</mx:Box>
 			</s:VGroup>

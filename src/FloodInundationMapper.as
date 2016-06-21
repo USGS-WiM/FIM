@@ -353,9 +353,9 @@
 	private function gridsLayerComp(event):void {
 		var layer:String = event.layer.id;
 		switch (layer) {
-			case "fimi_grids":
+			/*case "fimi_grids":
 				allGridInfos = fimi_grids.layerInfos;
-				break;
+				break;*/
 			case "grids1":
 				grid1Infos = grids1.layerInfos;
 				break;
@@ -456,7 +456,7 @@
 		}
 		
 		//dev only
-		//nwisSites.alpha = nwisSitesAlpha;
+		nwisSites.alpha = nwisSitesAlpha;
 		//end dev only
 		
 		//testMap.extent = map.extent;
@@ -675,7 +675,7 @@
 		}
 		
 		//dev only
-		/*if (nwisSites.visible) {
+		if (nwisSites.visible) {
 			
 			//Create query object to for currently selected layer    			
 			
@@ -691,7 +691,7 @@
 			nwisIdentifyTask.showBusyCursor = true;
 			nwisIdentifyTask.execute(nwisIdentifyParameters, new AsyncResponder(nwisIdentifyResult, nwisIdentifyFault));
 			
-		}*/
+		}
 		//end dev only
 		
 	}
@@ -858,10 +858,10 @@
 			if (inSites == false) {var vis:ArrayCollection = new ArrayCollection();
 				vis.addItem(-1);
 				//dev only
-				/*gridsDyn.visibleLayers = vis;
+				gridsDyn.visibleLayers = vis;
 				gridsDyn.refresh();
 				
-				gridsDynLegend.aLegendService.send();*/
+				gridsDynLegend.aLegendService.send();
 				//end dev only
 				
 				floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1038,7 +1038,7 @@
 					
 					var tempAC = new ArrayCollection();
 					
-					gridsReset(false, -1, tempAC);
+					gridsReset(true, -1, tempAC);
 					
 					floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
 					floodBreachDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1484,21 +1484,25 @@
 		vis.addItem(layerIndex);
 		
 		//gridsDyn.url = "http://gis.wim.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "_test/MapServer";
-		/*gridsDyn.url = resourceManager.getString('urls', 'grids' + grid_serv);
+		gridsDyn.url = resourceManager.getString('urls', 'grids' + grid_serv);
 		gridsDyn.visibleLayers = layerIndexArray;
 		gridsDyn.refresh();
 		
+		if (grid_serv != null) {
+			//var gridLayer:ArcGISDynamicMapServiceLayer = map.getLayer('grids' + grid_serv) as ArcGISDynamicMapServiceLayer;
+			//gridLayer.visibleLayers = layerIndexArray;
+			//gridsDynLegend.serviceLayer = gridLayer;
+			var url:String = resourceManager.getString('urls', 'grids' + grid_serv);
+			gridsDynLegend.aLegendService.url = url + "/legend?f=json";
+			gridsDynLegend.aLegendService.send();
+		}
+			
+		//grids1.visibleLayers = layerIndexArray;
+		//grids1.refresh();
+		
 		//var gridLayer:ArcGISDynamicMapServiceLayer = map.getLayer('grids' + grid_serv) as ArcGISDynamicMapServiceLayer;
 		//gridsDynLegend.serviceLayer = gridLayer;
-		gridsDynLegend.aLegendService.send();
-		//gridsDyn.visibleLayers = layerIndexArray;
-		
-		grids1.visibleLayers = layerIndexArray;
-		grids1.refresh();
-		
-		//var gridLayer:ArcGISDynamicMapServiceLayer = map.getLayer('grids' + grid_serv) as ArcGISDynamicMapServiceLayer;
-		//gridsDynLegend.serviceLayer = gridLayer;
-		grids1Legend.aLegendService.send();
+		//grids1Legend.aLegendService.send();
 		
 		if (hideLegend == true) {
 			gridsDynLegend.visible = false;
@@ -1506,7 +1510,7 @@
 			gridsDynLegend.visible = true;
 		}
 		
-		if (hideLegend == true) {
+		/*if (hideLegend == true) {
 			grids1Legend.visible = false;
 		} else if (hideLegend == false) {
 			grids1Legend.visible = true;
@@ -2285,7 +2289,7 @@
 	}
 	
 	private function updateAHPSLayer():void {
-		var ahpsLayerDefs:String = "Status = '-1'";
+		var ahpsLayerDefs:String = "status = '-1'";
 		ahpsForecast.visible = true;
 		
 		if (ahpsInfoLayer.graphicProvider.length > 0) {
@@ -2296,32 +2300,32 @@
 		if (ahpsForecastNormalToggle.selected) {
 			ahpsSitesToggle.selected = true;
 			if (infoBoxType == 'normal') { infoBoxRemain = 1 }
-			ahpsLayerDefs += " OR Status = 'normal' OR Status = 'no_flooding'";
+			ahpsLayerDefs += " OR status = 'normal' OR status = 'no_flooding'";
 		}
 		if (ahpsForecastMinorToggle.selected) {
 			ahpsSitesToggle.selected = true;
 			if (infoBoxType == 'minor') { infoBoxRemain = 1 }
-			ahpsLayerDefs += " OR Status = 'minor'";
+			ahpsLayerDefs += " OR status = 'minor'";
 		}
 		if (ahpsForecastModerateToggle.selected) {
 			ahpsSitesToggle.selected = true;
 			if (infoBoxType == 'moderate') { infoBoxRemain = 1 }
-			ahpsLayerDefs += " OR Status = 'moderate'";
+			ahpsLayerDefs += " OR status = 'moderate'";
 		}
 		if (ahpsForecastMajorToggle.selected) {
 			ahpsSitesToggle.selected = true;
 			if (infoBoxType == 'major') { infoBoxRemain = 1 }
-			ahpsLayerDefs += " OR Status = 'major'";
+			ahpsLayerDefs += " OR status = 'major'";
 		}
 		if (ahpsForecastOldToggle.selected) {
 			ahpsSitesToggle.selected = true;
 			if (infoBoxType == 'old') { infoBoxRemain = 1 }
-			ahpsLayerDefs += " OR Status = 'old'";
+			ahpsLayerDefs += " OR status = 'old'";
 		}
 		if (ahpsForecastActionToggle.selected) {
 			ahpsSitesToggle.selected = true;
 			if (infoBoxType == 'action') { infoBoxRemain = 1 }
-			ahpsLayerDefs += " OR Status = 'action'";
+			ahpsLayerDefs += " OR status = 'action'";
 		}
 		
 		if (infoBoxRemain == 0) {
@@ -2330,7 +2334,7 @@
 		
 		ahpsForecast.layerDefinitions = 
 		[
-			'1=2', ahpsLayerDefs
+			ahpsLayerDefs
 		];
 		
 	}

@@ -996,6 +996,21 @@
 							coopLogoBox.visible = true;
 							coopLogoBox.includeInLayout = true;
 						}
+						if (featureSet.attributes[i].TYPE == "F") {
+							var logo:Image = new Image();
+							logo.source = "https://s3.amazonaws.com/wimcloud.usgs.gov/FIM/logos/" + featureSet.attributes[i].ENTITY;
+							var logoLinkUrl:String = featureSet.attributes[i].URL;
+							logo.scaleX = .6;
+							logo.scaleY = .6;
+							//logo.toolTip = logoLinkUrl;
+							if (logoLinkUrl != 'NONE') {
+								/* logo.addEventListener(MouseEvent.CLICK, function click(event:MouseEvent):void {
+								navigateToURL(new URLRequest(event.currentTarget.toolTip));
+								}); */
+							}
+							floodToolsLogo.addChild(logo);
+							floodToolsLogo.removeChild(usgsDefaultLogo);
+						}
 					}
 				}
 			}
@@ -2256,11 +2271,11 @@
 				FlexGlobals.topLevelApplication.gridLayerIndexArrColl = gridLayerIndexArrColl;
 				
 				/* dev only */
-				/* trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
+				trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
 				
 				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != new ArrayCollection() && gridToggle.selected) {
 					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
-				}  */ 
+				}
 				/* end dev only */
 				
 				if (int(siteNo) == 0) {
@@ -2353,17 +2368,17 @@
 			
 			private function gridsState(event:MouseEvent):void {
 				//dev only
-				/* trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
+				trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				if (gridToggle.selected) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = false;
 					//Need to code for only hiding if there is a breach grid to show, otherwise show poly for fuller context for user
-					FlexGlobals.topLevelApplication.floodBreachDyn.visible = false;
+					//FlexGlobals.topLevelApplication.floodBreachDyn.visible = false;
 					FlexGlobals.topLevelApplication.gridsReset(false, FlexGlobals.topLevelApplication.gridLayerIndex, FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				} else if (!gridToggle.selected) {
 					FlexGlobals.topLevelApplication.gridsReset(true, -1, new ArrayCollection());
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = true;
 					FlexGlobals.topLevelApplication.floodBreachDyn.visible = true;
-				}   */ 
+				}    
 				//end dev only
 			}
 			
@@ -2540,10 +2555,10 @@
 						<s:Label paddingTop="2" text="Adjust flood opacity" fontSize="9"/>
 					</s:HGroup>
 					<!-- dev only -->
-					<!--<s:HGroup id="gridsToggleGroup" visible="{FlexGlobals.topLevelApplication.gridLayerIndex != -1}" includeInLayout="{gridsToggleGroup.visible}" verticalAlign="middle" width="100%" horizontalAlign="center" paddingLeft="35" paddingBottom="5">
+					<s:HGroup id="gridsToggleGroup" visible="{FlexGlobals.topLevelApplication.gridLayerIndex != -1}" includeInLayout="{gridsToggleGroup.visible}" verticalAlign="middle" width="100%" horizontalAlign="center" paddingLeft="35" paddingBottom="5">
 						<s:CheckBox id="gridToggle" selected="false" click="gridsState(event)" />
 						<s:Label width="120" text="view grids"/>
-					</s:HGroup>-->
+					</s:HGroup>
 					<!-- end dev only -->
 					<!--<s:Label text="Zoom to Flood Study Area:" textAlign="center" fontWeight="bold" width="100"/>
 					<s:Button id="zoomToFeaturesButton" label="Go" click="zoomToFeatures()" />-->
@@ -2570,8 +2585,8 @@
 						</s:HGroup>
 					</mx:Box>
 					
-					<mx:Box visible="{siteNo != '13206000'}" includeInLayout="{siteNo != '13206000'}" paddingTop="15">
-						<mx:Image source="./assets/images/usgsLogoSm.jpg" toolTip="USGS" />
+					<mx:Box id="floodToolsLogo" paddingTop="15">
+						<mx:Image id="usgsDefaultLogo" source="./assets/images/usgsLogoSm.jpg" toolTip="USGS" />
 					</mx:Box>
 					
 					<mx:VBox id="pretendAddBox" visible="{FlexGlobals.topLevelApplication.pretendAddBoxVis}" includeInLayout="{FlexGlobals.topLevelApplication.pretendAddBoxVis}">
