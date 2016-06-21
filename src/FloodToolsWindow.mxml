@@ -1394,10 +1394,29 @@
 						
 						gageValuesStages.sortOn("stage", Array.NUMERIC);
 						
-						if (data.TOP_CURVE != null) {
+						if (data.TOP_CURVE != null && topCurveCheck(data.TOP_CURVE) != false) {
 							sigLevels["topcurve"] = {"value": Number(data.TOP_CURVE) };
 						} else {
 							sigLevels["topcurve"] = {"value": 10000 };
+						}
+						
+						function topCurveCheck(topCurve:Number):Boolean {
+							var topCurveOK:Boolean = true;
+							
+							if (sigLevels.action != null && sigLevels.action.value >= topCurve) {
+								topCurveOK = false;
+							}
+							if (sigLevels.flood != null && sigLevels.flood.value >= topCurve) {
+								topCurveOK = false;
+							}
+							if (sigLevels.moderate != null && sigLevels.moderate.value >= topCurve) {
+								topCurveOK = false;
+							}
+							if (sigLevels.major != null && sigLevels.major.value >= topCurve) {
+								topCurveOK = false;
+							}
+							
+							return topCurveOK;
 						}
 						
 						var actionVal:Number = 0;
