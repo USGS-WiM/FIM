@@ -954,7 +954,7 @@
 						<!-- dev only -->
 						<!--<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
 						--><!-- end dev only -->
-						<localControls:MapServiceLegend id="ahpsForecastLegend" map="{map}" serviceLayer="{ahpsForecast}" needsUpdates="false" visible="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" includeInLayout="{(ahpsForecast.layerDefinitions[0] != 'Stage = \'-1\'')}" legendWidth="260" />
+						<localControls:MapServiceLegend id="ahpsForecastLegend" map="{map}" serviceLayer="{ahpsForecast}" needsUpdates="false" visible="{(ahpsForecast.layerDefinitions[0] != 'status = \'-1\'')}" includeInLayout="{(ahpsForecast.layerDefinitions[0] != 'status = \'-1\'')}" legendWidth="260" />
 						<localControls:MapServiceLegend id="supplementalLayersLegend" map="{map}" serviceLayer="{supplementalLayers}" needsUpdates="false" visible="{supplementalLayers.visible}" includeInLayout="{supplementalLayersLegend.visible}" legendWidth="260" />
 						<!-- dev only -->
 						<!--<localControls:MapServiceLegend id="qpfLegend" map="{map}" legendTitle="QPF" serviceLayer="{qpf}" legendWidth="260" needsUpdates="true"/>
