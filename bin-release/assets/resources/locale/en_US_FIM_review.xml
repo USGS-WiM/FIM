@@ -46,6 +46,7 @@
   <resourceBundle name="urls.nonWim">
   	<resource name="ahpsForecastUrl" value="http://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Observations/ahps_riv_gauges/MapServer"></resource>
   	<resource name="watchWarnUrl" value="http://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/watch_warn_adv/MapServer"></resource>
+  	<resource name="qpfUrl" value="http://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/wpc_qpf/MapServer"></resource>
   	<resource name="hazusUrl" value="http://ec2-107-21-245-18.compute-1.amazonaws.com//hazus-ws-staging/hazus.py?execute=quickass&region="></resource>
   </resourceBundle>
 
