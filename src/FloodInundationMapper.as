@@ -1495,7 +1495,8 @@
 			var url:String = resourceManager.getString('urls', 'grids' + grid_serv);
 			gridsDynLegend.aLegendService.url = url + "/legend?f=json";
 			gridsDynLegend.aLegendService.send();
-		}
+		}*/
+		//end dev only
 			
 		//grids1.visibleLayers = layerIndexArray;
 		//grids1.refresh();
@@ -1504,18 +1505,20 @@
 		//gridsDynLegend.serviceLayer = gridLayer;
 		//grids1Legend.aLegendService.send();
 		
-		if (hideLegend == true) {
+		//dev only
+		/*if (hideLegend == true) {
 			gridsDynLegend.visible = false;
 		} else if (hideLegend == false) {
 			gridsDynLegend.visible = true;
 		}*/
+		//end dev only
 		
 		/*if (hideLegend == true) {
 			grids1Legend.visible = false;
 		} else if (hideLegend == false) {
 			grids1Legend.visible = true;
 		}*/
-		//end dev only
+		
 	}
 				
 	private function queryFault(info:Object, token:Object = null):void

@@ -2290,11 +2290,11 @@
 				FlexGlobals.topLevelApplication.gridLayerIndexArrColl = gridLayerIndexArrColl;
 				
 				/* dev only */
-				/* trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
+				/*  trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
 				
 				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != new ArrayCollection() && gridToggle.selected) {
 					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
-				} */
+				}   */
 				/* end dev only */
 				
 				if (int(siteNo) == 0) {
@@ -2397,7 +2397,7 @@
 					FlexGlobals.topLevelApplication.gridsReset(true, -1, new ArrayCollection());
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = true;
 					FlexGlobals.topLevelApplication.floodBreachDyn.visible = true;
-				}    */ 
+				}   */ 
 				//end dev only
 			}
 			
