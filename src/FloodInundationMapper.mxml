@@ -285,7 +285,7 @@
 						</fx:Script>
 						<mx:VBox styleName="siteContain" width="100%" textAlign="center">
 							<mx:HBox horizontalGap="0">
-								<mx:Text text="Water Depth: " color="white" fontWeight="bold" />
+								<mx:Text text="Water depth: " color="white" fontWeight="bold" />
 								<mx:Text color="white" text="{(data.value != 'NoData') ? data.value + ' ft' : '...'}" />
 								<s:HGroup paddingLeft="5" visible="{(data.currentRepLink != 'NONE') ? true : false}" includeInLayout="{(data.currentRepLink != 'NONE') ? true : false}">
 									<s:Group>
@@ -548,7 +548,7 @@
 			url="{resourceManager.getString('urls.nonWim', 'qpfUrl')}">
 			<esri:visibleLayers>                
 				<mx:ArrayCollection id="qpfVis">                    
-					<fx:Number>0</fx:Number>                
+					<fx:Number>7</fx:Number>                
 				</mx:ArrayCollection>            
 			</esri:visibleLayers>
 		</esri:ArcGISDynamicMapServiceLayer>-->
@@ -573,7 +573,7 @@
 			creationComplete="{ weatherToggle.selected=true; }"
 			alpha="0.65"
 		    fault="weather_faultHandler(event)"
-			url="http://gis.srh.noaa.gov/ArcGIS/rest/services/RIDGERadar/MapServer" >
+			url="http://gis.srh.noaa.gov/ArcGIS/rest/services/RIDGERadar/MapServer" ><!--url="http://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Observations/radar_base_reflectivity/MapServer" >-->
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:GraphicsLayer id="queryGraphicsLayer" alpha="0.35"/>
 		<!-- dev only -->
@@ -915,28 +915,23 @@
 								<s:RadioButton group="{qpfOpt}"
 											   id="day1"
 											   selected="true"
-											   label="24 Hours Day 1" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(1); qpf.refresh();}"/>
+											   label="6 Hours Day 1" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(7); qpf.refresh();}"/>
 								<s:RadioButton group="{qpfOpt}"
 											   id="day2"
 											   selected="false"
-											   label="24 Hours Day 2" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(2); qpf.refresh();}"/>
+											   label="48 Hours Day 1-2" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(8); qpf.refresh();}"/>
 								<s:RadioButton group="{qpfOpt}"
 											   id="day3"
 											   selected="false"
-											   label="24 Hours Day 3" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(3); qpf.refresh();}"/>
+											   label="120 Hours Day 1-5" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(9); qpf.refresh();}"/>
 								<s:RadioButton group="{qpfOpt}"
 											   id="day4"
 											   selected="false"
-											   label="48 Hours Day 4-5" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(4); qpf.refresh();}"/>
-								<s:RadioButton group="{qpfOpt}"
-											   id="day5"
-											   selected="false"
-											   label="48 Hours Day 6-7" 
-											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(5); qpf.refresh();}"/>
+											   label="168 Hours Day 1-7" 
+											   click="{qpfVis.removeItemAt(0); qpfVis.addItem(10); qpf.refresh();}"/>
 							</s:VGroup>-->
 							<!-- end dev only -->
 						</s:VGroup>
@@ -947,9 +942,10 @@
 						<localControls:MapServiceLegend id="floodExtentLegend" map="{map}" legendTitle="Flood-inundation area" serviceLayer="{floodExtentsDyn}" needsUpdates="false" visible="false" includeInLayout="{floodExtentLegend.visible}" legendWidth="260" />
 						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
 						<!-- dev only -->
-						<!--<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Flood depths (in feet)" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
-						--><!--<localControls:MapServiceLegend id="grids1Legend" map="{map}" legendTitle="Flood depths (in feet)" serviceLayer="{grids1}" needsUpdates="true" visible="false" includeInLayout="{grids1Legend.visible}" legendWidth="260" />
+						<!--<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Water depth (in feet)" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
 						--><!-- end dev only -->
+						<!--<localControls:MapServiceLegend id="grids1Legend" map="{map}" legendTitle="Water depth (in feet)" serviceLayer="{grids1}" needsUpdates="true" visible="false" includeInLayout="{grids1Legend.visible}" legendWidth="260" />
+						-->
 						<localControls:MapServiceLegend id="sitesLegend" map="{map}" legendTitle="USGS FIM sites (NWS forecast category)" serviceLayer="{sitesLegendLayer}" needsUpdates="false" visible="true" includeInLayout="true" legendWidth="260" />
 						<!-- dev only -->
 						<!--<localControls:MapServiceLegend id="nwisSitesLegend" map="{map}" legendTitle="NWIS gages" serviceLayer="{nwisSites}" needsUpdates="true" visible="true" includeInLayout="true" legendWidth="260" />
@@ -1081,7 +1077,7 @@
 			visible="{gridsDyn.visible}"
 			alpha="{gridsDyn.alpha}" 
 			visibleLayers="{gridsDyn.visibleLayers}"
-			url="{resourceManager.getString('urls', 'gridsIdentifyUrl')}" >
+			url="{gridsDyn.url}" >
 		</esri:ArcGISDynamicMapServiceLayer>-->
 		<!-- end dev only -->
 		<esri:ArcGISDynamicMapServiceLayer

@@ -137,6 +137,10 @@
 			[Bindable]
 			private var siteNo_2:String = FlexGlobals.topLevelApplication.siteNo_2;
 			[Bindable]
+			private var siteComm:String;
+			[Bindable]
+			private var siteComm_2:String;
+			[Bindable]
 			private var ahpsID:String;
 			[Bindable]
 			private var ahpsID_2:String;
@@ -248,6 +252,8 @@
 						community: featureSet.features[0].attributes.COMMUNITY
 					});
 					
+					siteComm = siteInfo.getItemAt(0).community;
+					
 					if (featureSet.features[0].attributes.HAS_BREACH == 0) {
 						breachToggleGroup.visible = false;
 						breachToggleGroup.includeInLayout = false;
@@ -303,6 +309,9 @@
 						state: featureSet.features[0].attributes.STATE, 
 						community: featureSet.features[0].attributes.COMMUNITY
 					});
+					
+					siteComm_2 = siteInfo2.getItemAt(0).community;
+					
 					nwsTask2.executeLastResult = null;
 					ahpsID_2 = featureSet.features[0].attributes.AHPS_ID;
 					if (ahpsID_2 != null && ahpsID_2 != "NONE") {
@@ -709,6 +718,7 @@
 											</mx:HBox>
 										</mx:VBox>
 										<mx:VBox horizontalAlign="center" verticalAlign="top" >
+											<mx:Text text="{siteComm}" fontSize="14" fontWeight="bold" width="175" textAlign="center"/>
 											<mx:Text text="Site No: {siteNo}" fontSize="14" fontWeight="bold"/>
 											<mx:Text text="Selected Values" fontSize="10" fontWeight="bold" paddingTop="5" />
 											<mx:HBox id="currentValue" horizontalGap="0" >
@@ -749,6 +759,7 @@
 											<!--<s:Button id="zoomToFeaturesButton"  label="Zoom To Flood Extent" click="zoomToFeatures()" />-->								
 										</mx:VBox>
 										<mx:VBox horizontalAlign="center" verticalAlign="middle" >
+											<mx:Text text="{siteComm_2}" fontSize="14" fontWeight="bold" width="175" textAlign="center"/>
 											<mx:Text text="Site No: {siteNo_2}" fontSize="14" fontWeight="bold"/>
 											<mx:Text text="Selected Values" fontSize="10" fontWeight="bold" paddingTop="5" />
 											<mx:HBox id="currentValue2" horizontalGap="0" >
