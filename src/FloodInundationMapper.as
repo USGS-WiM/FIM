@@ -375,7 +375,7 @@
 			if (appVersion != null && appVersion == "") {
 				siteQuery.where = "Public = 1";
 			} else if (appVersion != null && (appVersion == "FOR DEVELOPMENT ONLY, NOT FOR PUBLIC DISTRIBUTION" || appVersion == "FOR REVIEW ONLY, NOT FOR PUBLIC DISTRIBUTION")) {
-				siteQuery.where = "";
+				siteQuery.where = "Public = 0 OR Public = 1";
 			}
 			siteTask.execute(siteQuery,new AsyncResponder(siteResult, infoFault, {type: 'siteTask'}));
 			
@@ -858,10 +858,10 @@
 			if (inSites == false) {var vis:ArrayCollection = new ArrayCollection();
 				vis.addItem(-1);
 				//dev only
-				/*gridsDyn.visibleLayers = vis;
+				gridsDyn.visibleLayers = vis;
 				gridsDyn.refresh();
 				
-				gridsDynLegend.aLegendService.send();*/
+				gridsDynLegend.aLegendService.send();
 				//end dev only
 				
 				floodExtentsDyn.layerDefinitions = ["OBJECTID = -1"];
@@ -1480,7 +1480,7 @@
 	
 	public function gridsReset(hideLegend:Boolean,layerIndex:Number,layerIndexArray:ArrayCollection):void {
 		//dev only
-		/*var vis:ArrayCollection = new ArrayCollection();
+		var vis:ArrayCollection = new ArrayCollection();
 		vis.addItem(layerIndex);
 		
 		//gridsDyn.url = "http://gis.wim.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "_test/MapServer";
@@ -1495,7 +1495,7 @@
 			var url:String = resourceManager.getString('urls', 'grids' + grid_serv);
 			gridsDynLegend.aLegendService.url = url + "/legend?f=json";
 			gridsDynLegend.aLegendService.send();
-		}*/
+		}
 		//end dev only
 			
 		//grids1.visibleLayers = layerIndexArray;
@@ -1506,11 +1506,11 @@
 		//grids1Legend.aLegendService.send();
 		
 		//dev only
-		/*if (hideLegend == true) {
+		if (hideLegend == true) {
 			gridsDynLegend.visible = false;
 		} else if (hideLegend == false) {
 			gridsDynLegend.visible = true;
-		}*/
+		}
 		//end dev only
 		
 		/*if (hideLegend == true) {
@@ -1639,6 +1639,7 @@
 				"(USGSID LIKE '%" + int(siteNo) + "%' AND STAGE = " + gageValues[0].gageValue + ")"
 			];
 		}
+		floodExtentsDyn.visible = true;
 		floodExtentsDyn.refresh();
 		
 		
@@ -1651,6 +1652,7 @@
 				"(USGSID LIKE '%" + int(siteNo) + "%' AND STAGE = " + gageValues[0].gageValue + ")"
 			];
 		}
+		floodBreachDyn.visible = true;
 		floodBreachDyn.refresh();
 		
 		trace(gageValues[0].gageValue);

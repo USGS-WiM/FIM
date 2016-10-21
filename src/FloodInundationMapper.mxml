@@ -9,7 +9,6 @@
 <!-- 08.14.12 - NE - Added layer for supplemental info such as levee locations and flood study area boundaries. -->
 <!-- 08.06.12 - NE - Added line to access header title from resource file. -->
 <!-- 07.13.12 - NE - Edited labels for AHPS layer toggles to match layer names on legend. -->
-<!-- 07.11.12 - NE - Added legend for AHPS sites. -->
 <!-- 07.11.12 - NE - Removed AHPS marker symbology and feature layers. Replaced with dynamic layer from same NWS service that will show all points and use NWS symbology. -->
 <!-- 07.09.12 - NE - Updated code to use resource file. -->
 <!-- 05.17.12 - NE - Reverted to original header with USGS logo. -->
@@ -577,11 +576,11 @@
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:GraphicsLayer id="queryGraphicsLayer" alpha="0.35"/>
 		<!-- dev only -->
-		<!--<esri:ArcGISDynamicMapServiceLayer 
+		<esri:ArcGISDynamicMapServiceLayer 
 			id="gridsDyn"
 			alpha="0.75"
 			url="{resourceManager.getString('urls', 'grids1')}" >
-		</esri:ArcGISDynamicMapServiceLayer>-->
+		</esri:ArcGISDynamicMapServiceLayer>
 		<!-- end dev only -->
 		<esri:ArcGISDynamicMapServiceLayer 
 			id="floodExtentsDyn"
@@ -940,10 +939,11 @@
 				<mx:Box id="legendContainer" backgroundColor="black" width="100%" bottom="20" visible="{ahpsForecastLegend.visible || supplementalLayers.visible || sitesLegend.visible}" includeInLayout="{ahpsForecastLegend.visible || supplementalLayers.visible || sitesLegend.visible}" maxHeight="{FlexGlobals.topLevelApplication.height-layerToggles.height-180}" verticalScrollPolicy="{(legendContainer.height == legendContainer.maxHeight) ? 'on' : 'off'}" >
 					<s:VGroup paddingTop="5" paddingLeft="5" paddingBottom="10" gap="0">
 						<localControls:MapServiceLegend id="floodExtentLegend" map="{map}" legendTitle="Flood-inundation area" serviceLayer="{floodExtentsDyn}" needsUpdates="false" visible="false" includeInLayout="{floodExtentLegend.visible}" legendWidth="260" />
-						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
 						<!-- dev only -->
-						<!--<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Water depth (in feet)" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
-						--><!-- end dev only -->
+						<s:Label text="Flood depth (in feet)" backgroundColor="#f4f1dd" width="100%" color="black" fontSize="12" paddingLeft="10" paddingTop="10" fontWeight="bold" visible="{gridsDynLegend.visible}" includeInLayout="{gridsDynLegend.includeInLayout}" />
+						<localControls:MapServiceLegend id="gridsDynLegend" map="{map}" legendTitle="Area in floodplain" serviceLayer="{gridsDyn}" needsUpdates="true" visible="false" includeInLayout="{gridsDynLegend.visible}" legendWidth="260" />
+						<!-- end dev only -->
+						<localControls:MapServiceLegend id="breachLegend" map="{map}" legendTitle="Area of uncertainty (where applicable)" serviceLayer="{floodBreachDyn}" needsUpdates="false" visible="false" includeInLayout="{breachLegend.visible}" legendWidth="260" />
 						<!--<localControls:MapServiceLegend id="grids1Legend" map="{map}" legendTitle="Water depth (in feet)" serviceLayer="{grids1}" needsUpdates="true" visible="false" includeInLayout="{grids1Legend.visible}" legendWidth="260" />
 						-->
 						<localControls:MapServiceLegend id="sitesLegend" map="{map}" legendTitle="USGS FIM sites (NWS forecast category)" serviceLayer="{sitesLegendLayer}" needsUpdates="false" visible="true" includeInLayout="true" legendWidth="260" />

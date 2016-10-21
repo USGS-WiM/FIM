@@ -99,6 +99,7 @@
 				<fx:String>HAS_WEBCAM</fx:String>
 				<fx:String>HAS_HAZUS</fx:String>
 				<fx:String>HAS_GRIDS</fx:String>
+				<fx:String>HAS_BREACH_GRID</fx:String>
 				<fx:String>HAZUS_REG</fx:String>
 				<fx:String>WEBCAM_INFO</fx:String>
 				<fx:String>WEBCAM_CAP</fx:String>
@@ -258,6 +259,8 @@
 			
 			[Bindable]
 			private var hasBreach:int;
+			[Bindable]
+			private var hasBreachGrids:int;
 			
 			private var breachExisting:Object = new Object();
 			
@@ -845,6 +848,7 @@
 						data_link: featureSet.features[0].attributes.DATA_LINK, 
 						study_date: featureSet.features[0].attributes.STUDY_DATE,
 						rep_thumb: featureSet.features[0].attributes.REP_THUMB, 
+						hasBreachGrids: featureSet.features[0].attributes.HAS_BREACH_GRID,
 						has_hazus: featureSet.features[0].attributes.HAS_HAZUS, 
 						hazus_region: featureSet.features[0].attributes.HAZUS_REG, 
 						has_webcam: featureSet.features[0].attributes.HAS_WEBCAM, 
@@ -2290,11 +2294,11 @@
 				FlexGlobals.topLevelApplication.gridLayerIndexArrColl = gridLayerIndexArrColl;
 				
 				/* dev only */
-				/*  trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
+				trace(FlexGlobals.topLevelApplication.gridsDyn.visibleLayers);
 				
 				if (FlexGlobals.topLevelApplication.gridsDyn.visibleLayers != new ArrayCollection() && gridToggle.selected) {
 					FlexGlobals.topLevelApplication.gridsReset(false, gridLayerIndex, gridLayerIndexArrColl);
-				}   */
+				}
 				/* end dev only */
 				
 				if (int(siteNo) == 0) {
@@ -2387,17 +2391,19 @@
 			
 			private function gridsState(event:MouseEvent):void {
 				//dev only
-				/* trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
+				trace(FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				if (gridToggle.selected) {
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = false;
 					//Need to code for only hiding if there is a breach grid to show, otherwise show poly for fuller context for user
-					//FlexGlobals.topLevelApplication.floodBreachDyn.visible = false;
+					if (siteInfo[0].hasBreachGrids == 1) {
+						FlexGlobals.topLevelApplication.floodBreachDyn.visible = false;
+					}
 					FlexGlobals.topLevelApplication.gridsReset(false, FlexGlobals.topLevelApplication.gridLayerIndex, FlexGlobals.topLevelApplication.gridLayerIndexArrColl);
 				} else if (!gridToggle.selected) {
 					FlexGlobals.topLevelApplication.gridsReset(true, -1, new ArrayCollection());
 					FlexGlobals.topLevelApplication.floodExtentsDyn.visible = true;
 					FlexGlobals.topLevelApplication.floodBreachDyn.visible = true;
-				}   */ 
+				}
 				//end dev only
 			}
 			
@@ -2574,10 +2580,10 @@
 						<s:Label paddingTop="2" text="Adjust flood opacity" fontSize="9"/>
 					</s:HGroup>
 					<!-- dev only -->
-					<!--<s:HGroup id="gridsToggleGroup" visible="{FlexGlobals.topLevelApplication.gridLayerIndex != -1}" includeInLayout="{gridsToggleGroup.visible}" verticalAlign="middle" width="100%" horizontalAlign="center" paddingLeft="35" paddingBottom="5">
+					<s:HGroup id="gridsToggleGroup" visible="{FlexGlobals.topLevelApplication.gridLayerIndex != -1}" includeInLayout="{gridsToggleGroup.visible}" verticalAlign="middle" width="100%" horizontalAlign="center" paddingLeft="35" paddingBottom="5">
 						<s:CheckBox id="gridToggle" selected="false" click="gridsState(event)" />
 						<s:Label width="120" text="view grids"/>
-					</s:HGroup>-->
+					</s:HGroup>
 					<!-- end dev only -->
 					<!--<s:Label text="Zoom to Flood Study Area:" textAlign="center" fontWeight="bold" width="100"/>
 					<s:Button id="zoomToFeaturesButton" label="Go" click="zoomToFeatures()" />-->
@@ -2625,7 +2631,11 @@
 				<mx:TabNavigator id="floodTabs" color="black" width="580" height="525" textFieldClass="tabTextWrap" paddingLeft="0" creationPolicy="all"> <!--tabHeight="50" -->
 					<mx:HBox id="floodToolsDeluxe" label="Flood Tools" width="100%" height="100%">
 						<mx:VBox id="floodSliderBoxDeluxe" height="{floodToolsDeluxe.height}" width="{floodToolsDeluxe.width}" includeInLayout="false" verticalAlign="middle" horizontalAlign="center" verticalGap="0">
-							<mx:Label id="siteDescription" text="{siteName}" fontWeight="bold" fontSize="16" />
+							<!--<mx:VBox horizontalAlign="center" includeInLayout="false">
+								<localControls:AnimatedGIF id="nwsLoadImage" scaleX="0.5" scaleY="0.5" source="assets/images/slider-loader.gif" />
+								<mx:Label text="NWS Loading ..." fontWeight="bold" color="blue" />
+							</mx:VBox>-->
+							<mx:Label id="siteDescription" text="{siteName}" fontWeight="bold" fontSize="16"/>
 							<mx:Label id="siteStatus" text="Provisional and subject to revision" paddingBottom="2" fontWeight="bold" visible="false"/>
 							<mx:AreaChart id="hydrograph" width="95%" height="65%"
 										  showDataTips="true" itemClick="hydroClick(event)" dataTipFunction="dataTipFunction">

@@ -137,11 +137,23 @@ package controls
 							//if singleTitle is not specified, Add name with USGS capitalization, first letter only
 							if (singleTitle == null) {
 								var layerName:String;
-								if (legendTitle == null && legendResults[i]["layerName"] != "FWS Refuge Labels") {
-									layerName = legendResults[i]["layerName"];
+								
+								if (serviceLayer.id == "gridsDyn") {
+									trace('stop');
+									var splitName:Array = legendResults[i]["layerName"].split("_");
+									if (splitName[1].search("b") != -1) {
+										layerName = "Area of uncertainty";
+									} else {
+										layerName = "Area in floodplain";
+									}
 								} else {
-									layerName = legendTitle;
+									if (legendTitle == null && legendResults[i]["layerName"] != "FWS Refuge Labels") {
+										layerName = legendResults[i]["layerName"];
+									} else {
+										layerName = legendTitle;
+									}
 								}
+								
 								groupDescription.text = layerName; //.charAt(0).toUpperCase() + layerName.substr(1, layerName.length-1).toLowerCase();
 								//TODO: Move this to a single style
 								groupDescription.setStyle("verticalAlign", "middle");
