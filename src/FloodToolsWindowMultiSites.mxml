@@ -858,7 +858,7 @@
 							</mx:VBox>
 						</mx:VBox>											
 						<mx:HBox horizontalAlign="right" width="100%">
-							<mx:Image source="./assets/images/IWRSSLogo.jpg" />
+							<mx:Image source="./assets/images/IWRSSlogo.jpg" />
 						</mx:HBox>
 					</mx:HBox>					
 					<mx:HBox paddingTop="25">
