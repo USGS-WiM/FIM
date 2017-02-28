@@ -572,7 +572,7 @@
 			creationComplete="{ weatherToggle.selected=true; }"
 			alpha="0.65"
 		    fault="weather_faultHandler(event)"
-			url="http://gis.srh.noaa.gov/ArcGIS/rest/services/RIDGERadar/MapServer" ><!--url="http://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Observations/radar_base_reflectivity/MapServer" >-->
+			url="https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Observations/radar_base_reflectivity/MapServer" ><!--url="http://gis.srh.noaa.gov/ArcGIS/rest/services/RIDGERadar/MapServer" >-->
 		</esri:ArcGISDynamicMapServiceLayer>
 		<esri:GraphicsLayer id="queryGraphicsLayer" alpha="0.35"/>
 		<!-- dev only -->
