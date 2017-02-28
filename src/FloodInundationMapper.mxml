@@ -82,7 +82,7 @@
 		
 		<esri:Locator id="locator"
 					  outSpatialReference="{map.spatialReference}"
-					  url="http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"/>
+					  url="https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"/>
 		
 		<esri:SimpleFillSymbol id="aQuerySym" style="solid" color="0x0000FF" alpha="1.00">
 			<esri:outline>
@@ -472,37 +472,37 @@
 			visible="{baseLayers.selectedLayer == 'Streets'}"     
 			show="baseSwitch(event)"    
 			updateEnd="basemapUpdate()"
-			url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer" />
+			url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer" />
 		<esri:ArcGISTiledMapServiceLayer            
 			visible="{baseLayers.selectedLayer == 'Imagery/Labels'}"            
 			show="baseSwitch(event)"       
 			updateEnd="basemapUpdate()"       
-			url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" />
+			url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" />
 		<esri:ArcGISTiledMapServiceLayer            
 			visible="{baseLayers.selectedLayer == 'Imagery/Labels'}"            
 			show="baseSwitch(event)"       
 			updateEnd="basemapUpdate()"       
-			url="http://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer" />
+			url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer" />
 		<esri:ArcGISTiledMapServiceLayer            
 			visible="{baseLayers.selectedLayer == 'Topo'}"            
 			show="baseSwitch(event)"      
 			updateEnd="basemapUpdate()"        
-			url="http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" />
+			url="https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" />
 		<esri:ArcGISTiledMapServiceLayer            
 			visible="{baseLayers.selectedLayer == 'Gray'}"            
 			show="baseSwitch(event)"      
 			updateEnd="basemapUpdate()"        
-			url="http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer" />
+			url="https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer" />
 		<esri:ArcGISTiledMapServiceLayer            
 			visible="{baseLayers.selectedLayer == 'Gray'}"            
 			show="baseSwitch(event)"      
 			updateEnd="basemapUpdate()"        
-			url="http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer" />
+			url="https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer" />
 		<esri:ArcGISTiledMapServiceLayer            
 			visible="{baseLayers.selectedLayer == 'The National Map'}"            
 			show="baseSwitch(event)"      
 			updateEnd="basemapUpdate()"        
-			url="http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer" />
+			url="https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer" />
 		<!--<esri:ArcGISDynamicMapServiceLayer
 			id="nwis_sw_sites"
 			alpha="1.0"
@@ -532,7 +532,7 @@
 			load="gridsLayerComp(event)"
 			url="{resourceManager.getString('urls', 'grids3')}" />
 		<esri:WMSLayer id="hazusWMS" skipGetCapabilities="true" version="1.1.1" alpha="0.8" visible="false" imageFormat="png"
-					   url="http://ec2-107-21-245-18.compute-1.amazonaws.com/geoserver-gfp/fim/gwc/service/wms?CQL_FILTER=stage={gageValues.getItemAt(sliderValue).gageValue}{hazus_cql}&amp;SLD=http://ec2-107-21-245-18.compute-1.amazonaws.com/hazus-ws-staging/hazus.py?execute=sld_fim%26layername=fim:{ahpsID}{(ahpsID == 'iowi4') ? 'l2' : ''}{hazus_layers}%26sldtpl=sld_fim.tpl%26sldrules={ahpsID}{(ahpsID == 'iowi4') ? 'l2' : ''}_rules{encodeURIComponent(hazus_sld)}" >
+					   url="https://ec2-107-21-245-18.compute-1.amazonaws.com/geoserver-gfp/fim/gwc/service/wms?CQL_FILTER=stage={gageValues.getItemAt(sliderValue).gageValue}{hazus_cql}&amp;SLD=http://ec2-107-21-245-18.compute-1.amazonaws.com/hazus-ws-staging/hazus.py?execute=sld_fim%26layername=fim:{ahpsID}{(ahpsID == 'iowi4') ? 'l2' : ''}{hazus_layers}%26sldtpl=sld_fim.tpl%26sldrules={ahpsID}{(ahpsID == 'iowi4') ? 'l2' : ''}_rules{encodeURIComponent(hazus_sld)}" >
 				<esri:visibleLayers>
 					<s:ArrayList>
 						<fx:String>fim:{ahpsID}{(ahpsID == 'iowi4') ? 'l2' : ''}{hazus_layers}</fx:String>
@@ -1047,10 +1047,10 @@
 			url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer" />-->
 		<esri:ArcGISTiledMapServiceLayer            
 			visible="true"            
-			url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" />
+			url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" />
 		<esri:ArcGISTiledMapServiceLayer            
 			visible="true"            
-			url="http://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer" />
+			url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer" />
 		<!--<esri:ArcGISTiledMapServiceLayer            
 			url="http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" />
 		<esri:ArcGISTiledMapServiceLayer            
