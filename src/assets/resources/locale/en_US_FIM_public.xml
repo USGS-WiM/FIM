@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!-- FOR: FIMMapServer, public -->
+<!-- 06.01.12 - NE - Start as FIMI Mapper resource file. -->
+<!-- 02.23.12 - NE - Created. -->
+<!--
+*************************
+ ENGLISH RESOURCES
+************************* 
+ -->
+<resources>
+  <!-- Settings -->
+  
+  <!--  URLs -->
+  <resourceBundle name="urls">
+	<resource name="fimiSitesUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/sites/MapServer/0"/>
+	<resource name="fimiSitesDynUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/sites/MapServer"/>
+	<resource name="fimiSitesLegendUrl" value="https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMMapper/fimi_sites_for_legend/MapServer"/>
+	<resource name="floodExtentsUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtents/MapServer/0"></resource>
+  	<resource name="floodExtentsDynUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtents/MapServer"></resource>
+  	<resource name="breachUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/breach/MapServer/0"></resource>
+  	<resource name="floodBreachDynUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/breach/MapServer"></resource>
+  	<resource name="floodExtentsMultiUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer/0"></resource>
+  	<resource name="floodExtentsMultiDynUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer"></resource>
+  	<resource name="floodExtentsMultiTableUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer/1"></resource>
+  	<resource name="floodExtentsMultiLayerUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsMulti/MapServer"></resource>
+  	<resource name="floodBreachMultiUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/breachMulti/MapServer/0"></resource>
+  	<resource name="floodBreachMultiDynUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/breachMulti/MapServer"></resource>
+  	<resource name="floodExtentsThreeUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsThreeSites/MapServer/0"></resource>
+  	<resource name="floodExtentsThreeDynUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsThreeSites/MapServer"></resource>
+  	<resource name="floodExtentsThreeTableUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/floodExtentsThreeSites/MapServer/1"></resource>
+  	
+  	<resource name="gridsIdentifyUrl" value="https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMMapper/grids/MapServer"></resource>
+  	<resource name="grids1" value="https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMMapper/grids_1/MapServer"></resource>
+  	<resource name="grids2" value="https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMMapper/grids_2/MapServer"></resource>
+  	<resource name="grids3" value="https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMMapper/grids_3/MapServer"></resource>
+  	
+  	<resource name="suppLayersUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/suppLyrs/MapServer"></resource>
+  	<resource name="printUrl" value="http://fim.wim.usgs.gov/arcgis/rest/services/FIMMapper/printTool/GPServer/printTool"></resource>
+  	<resource name="fimiMoreInfoUrl" value="http://fim.wim.usgs.gov/arcgis/rest/services/FIMMapper/fim_add_info/MapServer/1"></resource>
+  </resourceBundle>
+  <resourceBundle name="urls.proxies">
+  	<resource name="httpProxy" value="https://services.wim.usgs.gov/proxies/httpProxy/Default.aspx?"></resource>
+  	<resource name="nwisChartProxy" value="https://services.wim.usgs.gov/proxies/nwisChartProxy/Default.aspx?"></resource>
+  	<resource name="webCamProxy" value="https://services.wim.usgs.gov/webCam/webCamNew/Default.aspx?webCamInfo="></resource>
+  </resourceBundle>
+  <resourceBundle name="urls.nonWim">
+  	<resource name="ahpsForecastUrl" value="https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Observations/ahps_riv_gauges/MapServer"></resource>
+  	<resource name="watchWarnUrl" value="https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/watch_warn_adv/MapServer"></resource>
+  	<resource name="qpfUrl" value="https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/wpc_qpf/MapServer"></resource>
+  	<resource name="hazusUrl" value="https://ec2-107-21-245-18.compute-1.amazonaws.com/hazus-ws-staging/hazus.py?execute=quickass&region="></resource>
+  </resourceBundle>
+
+  <!-- UI graphics -->
+  <resourceBundle name="ui.graphics">
+    <resource name="headerLogo" value="assets/images/usgsLogoSm.jpg" />
+    <resource name="wimLogo" value="assets/images/wim_logo_sm_4c.gif" />    
+  </resourceBundle>
+  
+  <!-- UI text -->
+  <resourceBundle name="ui.text">
+  	<!--  Application Titles -->
+    <resource name="mainTitle" value="Flood Inundation Mapper"/>
+     <resource name="subTitle" value=""></resource>
+    <!-- Component Text -->
+    <resource name="geocodeSearchButtonText" value="Find Location"/>
+    <resource name="geocodeSearchHintText" value="Type Address, Landmark, etc..." />
+    <resource name="headerFooterLinks" value="USGS Links"/>
+  </resourceBundle>
+</resources>
