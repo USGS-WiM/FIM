@@ -555,7 +555,7 @@
 				
 				identifyTask.showBusyCursor = true;
 				
-				identifyTask.url = "https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "_test/MapServer";
+				//identifyTask.url = "https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMMapper/grids_" + grid_serv + "/MapServer";
 				identifyTask.url = resourceManager.getString('urls', 'grids' + grid_serv);
 				
 	
@@ -636,7 +636,7 @@
 				
 				identifyTask.showBusyCursor = true;
 				
-				identifyTask.url = "https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMTest/grids_" + grid_serv + "_test/MapServer";
+				//identifyTask.url = "https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMMapper/grids_" + grid_serv + "/MapServer";
 				identifyTask.url = resourceManager.getString('urls', 'grids' + grid_serv);
 				
 				

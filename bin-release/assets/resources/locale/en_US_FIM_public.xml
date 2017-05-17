@@ -35,8 +35,8 @@
   	<resource name="grids3" value="https://gis.wim.usgs.gov/ArcGIS/rest/services/FIMMapper/grids_3/MapServer"></resource>
   	
   	<resource name="suppLayersUrl" value="https://gis.wim.usgs.gov/arcgis/rest/services/FIMMapper/suppLyrs/MapServer"></resource>
-  	<resource name="printUrl" value="http://fim.wim.usgs.gov/arcgis/rest/services/FIMMapper/printTool/GPServer/printTool"></resource>
-  	<resource name="fimiMoreInfoUrl" value="http://fim.wim.usgs.gov/arcgis/rest/services/FIMMapper/fim_add_info/MapServer/1"></resource>
+  	<resource name="printUrl" value="https://fim.wim.usgs.gov/arcgis/rest/services/FIMMapper/printTool/GPServer/printTool"></resource>
+  	<resource name="fimiMoreInfoUrl" value="https://fim.wim.usgs.gov/arcgis/rest/services/FIMMapper/fim_add_info/MapServer/1"></resource>
   </resourceBundle>
   <resourceBundle name="urls.proxies">
   	<resource name="httpProxy" value="https://services.wim.usgs.gov/proxies/httpProxy/Default.aspx?"></resource>
