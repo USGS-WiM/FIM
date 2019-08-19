@@ -15,7 +15,7 @@
       ]
     },
 
-    "homepageURL": "https://ccviewer.wim.usgs.gov/FIM",
+    "homepageURL": "https://wimcloud.usgs.gov/apps/FIM/FloodInundationMapper.html",
     "downloadURL": "https://github.com/USGS-WiM/FIM/archive/master.zip",
     "disclaimerURL": "https://github.com/USGS-WiM/FIM/blob/master/DISCLAIMER.md",
     "repositoryUrl": "https://github.com/USGS-WiM/FIM",
